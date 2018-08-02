@@ -56,6 +56,8 @@ class MockClient : public google::cloud::storage::internal::RawClient {
 
   MOCK_METHOD1(ListBucketAcl, ResponseWrapper<internal::ListBucketAclResponse>(
                                   internal::ListBucketAclRequest const&));
+  MOCK_METHOD1(CreateBucketAcl, ResponseWrapper<BucketAccessControl>(
+                                    internal::CreateBucketAclRequest const&));
 
   MOCK_METHOD1(ListObjectAcl, ResponseWrapper<internal::ListObjectAclResponse>(
                                   internal::ListObjectAclRequest const&));

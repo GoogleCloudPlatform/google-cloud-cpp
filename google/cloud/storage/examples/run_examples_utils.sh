@@ -75,6 +75,9 @@ run_program_examples() {
         write-object)
             arguments="${base_arguments} 100000"
             ;;
+        create-bucket-acl)
+            arguments="${base_arguments} allAuthenticatedUsers READER"
+            ;;
         create-object-acl)
             arguments="${base_arguments} allAuthenticatedUsers READER"
             ;;
@@ -182,6 +185,7 @@ run_all_bucket_acl_examples() {
   # test. Currently get-metadata assumes that $bucket_name is already created.
   readonly BUCKET_ACL_COMMANDS=$(tr '\n' ',' <<_EOF_
 list-bucket-acl
+create-bucket-acl
 _EOF_
 )
 
