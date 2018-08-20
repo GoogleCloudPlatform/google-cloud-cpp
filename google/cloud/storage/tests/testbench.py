@@ -149,6 +149,24 @@ def raise_csek_error(code=400):
     raise ErrorResponse(json.dumps(error), status_code=code)
 
 
+def patch_dict(original, patch):
+    """Patch a dictionary using the JSON API semantics.
+
+    :param original:dict the dictionary to patch
+    :param patch:dict the patch to apply. Elements pointing to None are removed,
+        other elements are replaced.
+    :return:dict the updated dictionary
+    """
+    tmp = original.copy()
+    for key, value in patch.iteritems():
+        if value is None:
+            if key in tmp:
+                del (tmp[key])
+        else:
+            tmp[key] = value
+    return tmp
+
+
 class GcsObjectVersion(object):
     """Represent a single revision of a GCS Object."""
 
@@ -233,7 +251,6 @@ class GcsObjectVersion(object):
             keybase64 = request.headers.get('x-goog-encryption-key')
             key = base64.standard_b64decode(keybase64)
             if key is None or len(key) != 256 / 8:
-                print("\n\n%s\nLEN=%d\n\n" % (keybase64, len(key)))
                 raise_csek_error()
 
             algo = request.headers.get('x-goog-encryption-algorithm')
@@ -247,8 +264,6 @@ class GcsObjectVersion(object):
             h.update(key)
             expected = base64.standard_b64encode(h.digest())
             if expected != actual:
-                print(
-                    "\n\n\n MISMATCHED HASH %s != %s\n\n" % (expected, actual))
                 raise_csek_error(400)
 
             self.metadata['customerEncryption'] = {
@@ -318,8 +333,8 @@ class GcsObjectVersion(object):
         for acl in self.metadata.get('acl', []):
             if acl.get('entity', '').lower() == entity:
                 return acl
-        raise ErrorResponse(
-            'Entity %s not found in object %s' % (entity, self.name))
+        raise ErrorResponse('Entity %s not found in object %s' % (entity,
+                                                                  self.name))
 
     def update_acl(self, entity, role):
         """
@@ -428,9 +443,47 @@ class GcsObject(object):
             version = self.revisions.get(int(generation))
             if version is None:
                 raise ErrorResponse(
-                    'Precondition Failed: generation %s not found' % generation)
+                    'Precondition Failed: generation %s not found' %
+                    generation)
         metadata = json.loads(request.data)
         version.update_from_metadata(metadata)
+        return version
+
+    def patch_revision(self, request):
+        """
+        Patch the metadata of particular object revision or raise.
+
+        :param request:flask.Request
+        :return:GcsObjectRevision the object revision.
+        :raises:ErrorResponse if the request contains an invalid generation
+            number.
+        """
+        generation = request.args.get('generation')
+        if generation is None:
+            version = self.get_latest()
+        else:
+            version = self.revisions.get(int(generation))
+            if version is None:
+                raise ErrorResponse(
+                    'Precondition Failed: generation %s not found' %
+                    generation)
+        patch = json.loads(request.data)
+        writeable_keys = {
+            'acl', 'cacheControl', 'contentDisposition', 'contentEncoding',
+            'contentLanguage', 'contentType', 'metadata'
+        }
+        for key, value in patch.iteritems():
+            if key not in writeable_keys:
+                raise ErrorResponse(
+                    'Invalid metadata change. %s is not writeable' % key,
+                    status_code=503)
+        # Recursively apply the patch to 'labels' because it is special.
+        if patch.get('metadata') is not None:
+            patch['metadata'] = patch_dict(
+                version.metadata.get('metadata', {}), patch['metadata'])
+        tmp = patch_dict(version.metadata, patch)
+        tmp['metageneration'] = tmp.get('metageneration', 0) + 1
+        version.metadata = tmp
         return version
 
     def get_latest(self):
@@ -550,11 +603,11 @@ class GcsBucket(object):
                 raise ErrorResponse(
                     'Invalid metadata change. %s is not writeable' % key,
                     status_code=503)
-            if value is None:
-                if key in tmp:
-                    del (tmp[key])
-            else:
-                tmp[key] = value
+        # Recursively apply the patch to 'labels' because it is special.
+        if patch.get('labels') is not None:
+            patch['labels'] = patch_dict(
+                self.metadata.get('labels', {}), patch['labels'])
+        tmp = patch_dict(self.metadata, patch)
         tmp['name'] = tmp.get('name', self.name)
         tmp['metageneration'] = tmp.get('metageneration', 0) + 1
         self.metadata = tmp
@@ -636,8 +689,8 @@ class GcsBucket(object):
         for acl in self.metadata.get('acl', []):
             if acl.get('entity', '').lower() == entity:
                 return acl
-        raise ErrorResponse(
-            'Entity %s not found in object %s' % (entity, self.name))
+        raise ErrorResponse('Entity %s not found in object %s' % (entity,
+                                                                  self.name))
 
     def update_acl(self, entity, role):
         """
@@ -699,8 +752,8 @@ class GcsBucket(object):
         for acl in self.metadata.get('defaultObjectAcl', []):
             if acl.get('entity', '').lower() == entity:
                 return acl
-        raise ErrorResponse(
-            'Entity %s not found in object %s' % (entity, self.name))
+        raise ErrorResponse('Entity %s not found in object %s' % (entity,
+                                                                  self.name))
 
     def update_default_object_acl(self, entity, role):
         """
@@ -879,10 +932,10 @@ def bucket_acl_create(bucket_name):
     """
     gcs_bucket = GCS_BUCKETS.get(bucket_name)
     payload = json.loads(flask.request.data)
-    return filtered_response(
-        flask.request,
-        gcs_bucket.insert_acl(
-            payload.get('entity', ''), payload.get('role', '')))
+    return filtered_response(flask.request,
+                             gcs_bucket.insert_acl(
+                                 payload.get('entity', ''),
+                                 payload.get('role', '')))
 
 
 @gcs.route('/b/<bucket_name>/acl/<entity>', methods=['DELETE'])
@@ -958,10 +1011,10 @@ def bucket_default_object_acl_create(bucket_name):
     """
     gcs_bucket = GCS_BUCKETS.get(bucket_name)
     payload = json.loads(flask.request.data)
-    return filtered_response(
-        flask.request,
-        gcs_bucket.insert_default_object_acl(
-            payload.get('entity', ''), payload.get('role', '')))
+    return filtered_response(flask.request,
+                             gcs_bucket.insert_default_object_acl(
+                                 payload.get('entity', ''),
+                                 payload.get('role', '')))
 
 
 @gcs.route('/b/<bucket_name>/defaultObjectAcl/<entity>', methods=['DELETE'])
@@ -1079,6 +1132,17 @@ def objects_update(bucket_name, object_name):
     return json.dumps(revision.metadata)
 
 
+@gcs.route('/b/<bucket_name>/o/<object_name>', methods=['PATCH'])
+def objects_patch(bucket_name, object_name):
+    """Implement the 'Objects: patch' API: update an existing Object."""
+    object_path = bucket_name + '/o/' + object_name
+    gcs_object = GCS_OBJECTS.get(object_path,
+                                 GcsObject(bucket_name, object_name))
+    gcs_object.check_preconditions(flask.request)
+    revision = gcs_object.patch_revision(flask.request)
+    return json.dumps(revision.metadata)
+
+
 @gcs.route('/b/<bucket_name>/o/<object_name>/acl')
 def objects_acl_list(bucket_name, object_name):
     """Implement the 'ObjectAccessControls: list' API.
@@ -1108,10 +1172,10 @@ def objects_acl_create(bucket_name, object_name):
     gcs_object.check_preconditions(flask.request)
     revision = gcs_object.get_revision(flask.request)
     payload = json.loads(flask.request.data)
-    return filtered_response(
-        flask.request,
-        revision.insert_acl(
-            payload.get('entity', ''), payload.get('role', '')))
+    return filtered_response(flask.request,
+                             revision.insert_acl(
+                                 payload.get('entity', ''),
+                                 payload.get('role', '')))
 
 
 @gcs.route('/b/<bucket_name>/o/<object_name>/acl/<entity>', methods=['DELETE'])
