@@ -15,9 +15,11 @@
 """A test bench for the Google Cloud Storage C++ Client Library."""
 
 import argparse
+import base64
 import json
 import time
 import flask
+import hashlib
 import httpbin
 import os
 from werkzeug import serving
@@ -127,6 +129,26 @@ def filtered_response(request, response):
     return json.dumps(tmp)
 
 
+def raise_csek_error(code=400):
+    msg = "Missing a SHA256 hash of the encryption key, or it is not base64 encoded, or it does not match the encryption key."
+    link = "https://cloud.google.com/storage/docs/encryption#customer-supplied_encryption_keys"
+    error = {
+        "error": {
+            "errors": [{
+                "domain": "global",
+                "reason": "customerEncryptionKeySha256IsInvalid",
+                "message": msg,
+                "extendedHelp": link,
+            }],
+            "code":
+            code,
+            "message":
+            msg,
+        }
+    }
+    raise ErrorResponse(json.dumps(error), status_code=code)
+
+
 class GcsObjectVersion(object):
     """Represent a single revision of a GCS Object."""
 
@@ -150,6 +172,7 @@ class GcsObjectVersion(object):
             self.media = request.environ.get('wsgi.input').read()
         else:
             self.media = request.data
+
         self.metadata = {
             'kind': 'storage#object',
             'id': self.object_id,
@@ -168,12 +191,53 @@ class GcsObjectVersion(object):
         }
         if request.headers.get('content-type') is not None:
             self.metadata['contentType'] = request.headers.get('content-type')
+        self._capture_customer_encryption(request)
         self.insert_acl(
             canonical_entity_name('project-owners-123456789'), 'OWNER')
         self.insert_acl(
             canonical_entity_name('project-editors-123456789'), 'OWNER')
         self.insert_acl(
             canonical_entity_name('project-viewers-123456789'), 'READER')
+
+    def _capture_customer_encryption(self, request):
+        """Capture the customer-supplied encryption key, if any.
+
+        :param request:flask.Request the http request.
+        :return:NoneType
+        """
+        if request.headers.get('X-Goog-Encryption-Key') is None:
+            return
+        try:
+            keybase64 = request.headers.get('X-Goog-Encryption-Key')
+            key = base64.standard_b64decode(keybase64)
+            algo = request.headers.get('X-Goog-Encryption-Algorithm')
+            if algo is None or algo != 'AES256':
+                raise ErrorResponse(
+                    'Invalid or missing algorithm %s for CSEK' % algo,
+                    status_code=400)
+
+            actual = request.headers.get('X-Goog-Encryption-Key-Sha256')
+            h = hashlib.sha256()
+            h.update(key)
+            expected = base64.standard_b64encode(h.digest())
+            if expected != actual:
+                print(
+                    "\n\n\n MISMATCHED HASH %s != %s\n\n" % (expected, actual))
+                raise_csek_error(400)
+
+            self.metadata['customerEncryption'] = {
+                "encryptionAlgorithm": algo,
+                "keySha256": actual,
+            }
+        except ErrorResponse:
+            # ErrorResponse indicates that the request was invalid, just pass
+            # that exception through.
+            raise
+        except Exception as ex:
+            print("\n\n\n Exception %s\n\n" % ex)
+            # Many of the functions above may raise, convert those to an
+            # ErrorResponse with the right format.
+            raise raise_csek_error()
 
     def insert_acl(self, entity, role):
         """
@@ -228,8 +292,8 @@ class GcsObjectVersion(object):
         for acl in self.metadata.get('acl', []):
             if acl.get('entity', '').lower() == entity:
                 return acl
-        raise ErrorResponse('Entity %s not found in object %s' % (entity,
-                                                                  self.name))
+        raise ErrorResponse(
+            'Entity %s not found in object %s' % (entity, self.name))
 
     def update_acl(self, entity, role):
         """
@@ -523,8 +587,8 @@ class GcsBucket(object):
         for acl in self.metadata.get('acl', []):
             if acl.get('entity', '').lower() == entity:
                 return acl
-        raise ErrorResponse('Entity %s not found in object %s' % (entity,
-                                                                  self.name))
+        raise ErrorResponse(
+            'Entity %s not found in object %s' % (entity, self.name))
 
     def update_acl(self, entity, role):
         """
@@ -586,8 +650,8 @@ class GcsBucket(object):
         for acl in self.metadata.get('defaultObjectAcl', []):
             if acl.get('entity', '').lower() == entity:
                 return acl
-        raise ErrorResponse('Entity %s not found in object %s' % (entity,
-                                                                  self.name))
+        raise ErrorResponse(
+            'Entity %s not found in object %s' % (entity, self.name))
 
     def update_default_object_acl(self, entity, role):
         """
@@ -766,10 +830,10 @@ def bucket_acl_create(bucket_name):
     """
     gcs_bucket = GCS_BUCKETS.get(bucket_name)
     payload = json.loads(flask.request.data)
-    return filtered_response(flask.request,
-                             gcs_bucket.insert_acl(
-                                 payload.get('entity', ''),
-                                 payload.get('role', '')))
+    return filtered_response(
+        flask.request,
+        gcs_bucket.insert_acl(
+            payload.get('entity', ''), payload.get('role', '')))
 
 
 @gcs.route('/b/<bucket_name>/acl/<entity>', methods=['DELETE'])
@@ -845,10 +909,10 @@ def bucket_default_object_acl_create(bucket_name):
     """
     gcs_bucket = GCS_BUCKETS.get(bucket_name)
     payload = json.loads(flask.request.data)
-    return filtered_response(flask.request,
-                             gcs_bucket.insert_default_object_acl(
-                                 payload.get('entity', ''),
-                                 payload.get('role', '')))
+    return filtered_response(
+        flask.request,
+        gcs_bucket.insert_default_object_acl(
+            payload.get('entity', ''), payload.get('role', '')))
 
 
 @gcs.route('/b/<bucket_name>/defaultObjectAcl/<entity>', methods=['DELETE'])
@@ -984,10 +1048,10 @@ def objects_acl_create(bucket_name, object_name):
     gcs_object.check_preconditions(flask.request)
     revision = gcs_object.get_revision(flask.request)
     payload = json.loads(flask.request.data)
-    return filtered_response(flask.request,
-                             revision.insert_acl(
-                                 payload.get('entity', ''),
-                                 payload.get('role', '')))
+    return filtered_response(
+        flask.request,
+        revision.insert_acl(
+            payload.get('entity', ''), payload.get('role', '')))
 
 
 @gcs.route('/b/<bucket_name>/o/<object_name>/acl/<entity>', methods=['DELETE'])
