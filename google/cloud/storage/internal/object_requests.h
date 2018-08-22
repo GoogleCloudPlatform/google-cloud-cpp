@@ -82,10 +82,11 @@ std::ostream& operator<<(std::ostream& os, GetObjectMetadataRequest const& r);
  * objects.
  */
 class InsertObjectMediaRequest
-    : public GenericObjectRequest<
-          InsertObjectMediaRequest, ContentEncoding, IfGenerationMatch,
-          IfGenerationNotMatch, IfMetagenerationMatch, IfMetagenerationNotMatch,
-          KmsKeyName, PredefinedAcl, Projection, UserProject> {
+    : public GenericObjectRequest<InsertObjectMediaRequest, ContentEncoding,
+                                  EncryptionKey, IfGenerationMatch,
+                                  IfGenerationNotMatch, IfMetagenerationMatch,
+                                  IfMetagenerationNotMatch, KmsKeyName,
+                                  PredefinedAcl, Projection, UserProject> {
  public:
   InsertObjectMediaRequest() : GenericObjectRequest(), contents_() {}
 
@@ -112,10 +113,11 @@ std::ostream& operator<<(std::ostream& os, InsertObjectMediaRequest const& r);
  * application.
  */
 class InsertObjectStreamingRequest
-    : public GenericObjectRequest<
-          InsertObjectStreamingRequest, ContentEncoding, IfGenerationMatch,
-          IfGenerationNotMatch, IfMetagenerationMatch, IfMetagenerationNotMatch,
-          KmsKeyName, PredefinedAcl, Projection, UserProject> {
+    : public GenericObjectRequest<InsertObjectStreamingRequest, ContentEncoding,
+                                  EncryptionKey, IfGenerationMatch,
+                                  IfGenerationNotMatch, IfMetagenerationMatch,
+                                  IfMetagenerationNotMatch, KmsKeyName,
+                                  PredefinedAcl, Projection, UserProject> {
  public:
   using GenericObjectRequest::GenericObjectRequest;
 };
@@ -127,9 +129,9 @@ std::ostream& operator<<(std::ostream& os,
  * Represents a request to the `Objects: get` API with `alt=media`.
  */
 class ReadObjectRangeRequest
-    : public GenericObjectRequest<ReadObjectRangeRequest, Generation,
-                                  IfGenerationMatch, IfGenerationNotMatch,
-                                  IfMetagenerationMatch,
+    : public GenericObjectRequest<ReadObjectRangeRequest, EncryptionKey,
+                                  Generation, IfGenerationMatch,
+                                  IfGenerationNotMatch, IfMetagenerationMatch,
                                   IfMetagenerationNotMatch, UserProject> {
  public:
   ReadObjectRangeRequest() : GenericObjectRequest(), begin_(0), end_(0) {}
