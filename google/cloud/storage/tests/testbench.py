@@ -114,16 +114,16 @@ def raise_csek_error(code=400):
     link = "https://cloud.google.com/storage/docs/encryption#customer-supplied_encryption_keys"
     error = {
         "error": {
-            "errors": [
-                {
-                    "domain": "global",
-                    "reason": "customerEncryptionKeySha256IsInvalid",
-                    "message": msg,
-                    "extendedHelp": link,
-                }
-            ],
-            "code": code,
-            "message": msg,
+            "errors": [{
+                "domain": "global",
+                "reason": "customerEncryptionKeySha256IsInvalid",
+                "message": msg,
+                "extendedHelp": link,
+            }],
+            "code":
+            code,
+            "message":
+            msg,
         }
     }
     raise ErrorResponse(json.dumps(error), status_code=code)
@@ -189,16 +189,23 @@ class GcsObjectVersion(object):
         try:
             keybase64 = request.headers.get('x-goog-encryption-key')
             key = base64.standard_b64decode(keybase64)
+            if key is None or len(key) != 256 / 8:
+                print("\n\n%s\nLEN=%d\n\n" % (keybase64, len(key)))
+                raise_csek_error()
+
             algo = request.headers.get('x-goog-encryption-algorithm')
             if algo is None or algo != 'AES256':
-                raise ErrorResponse('Invalid or missing algorithm %s for CSEK' % algo, status_code=400)
+                raise ErrorResponse(
+                    'Invalid or missing algorithm %s for CSEK' % algo,
+                    status_code=400)
 
             actual = request.headers.get('x-goog-encryption-key-sha256')
             h = hashlib.sha256()
             h.update(key)
             expected = base64.standard_b64encode(h.digest())
             if expected != actual:
-                print("\n\n\n MISMATCHED HASH %s != %s\n\n" % (expected, actual))
+                print(
+                    "\n\n\n MISMATCHED HASH %s != %s\n\n" % (expected, actual))
                 raise_csek_error(400)
 
             self.metadata['customerEncryption'] = {
@@ -387,6 +394,8 @@ class GcsObject(object):
                 raise ErrorResponse('Precondition Failed', status_code=412)
         else:
             current = self.revisions.get(self.generation)
+            if current is None:
+                raise ErrorResponse('Object not found', status_code=404)
             metageneration = current.metadata.get('metageneration')
 
             if metageneration_not_match is not None \
@@ -423,9 +432,9 @@ class GcsBucket(object):
             'storageClass': 'STANDARD',
             'etag': 'XYZ=',
             'labels': {
-                 'foo': 'bar',
-                 'baz': 'qux'
-             }
+                'foo': 'bar',
+                'baz': 'qux'
+            }
         }
         # Update the derived metadata attributes (e.g.: id, kind, selfLink)
         self.update_from_metadata({})
@@ -467,15 +476,19 @@ class GcsBucket(object):
         :param patch:dict a dictionary with metadata changes.
         """
         tmp = self.metadata.copy()
-        writeable_keys = {'acl', 'billing', 'cors', 'defaultObjectAcl',
-                          'encryption', 'labels', 'lifecycle', 'location',
-                          'logging', 'storageClass', 'versioning', 'website'}
+        writeable_keys = {
+            'acl', 'billing', 'cors', 'defaultObjectAcl', 'encryption',
+            'labels', 'lifecycle', 'location', 'logging', 'storageClass',
+            'versioning', 'website'
+        }
         for key, value in patch.iteritems():
             if key not in writeable_keys:
-                raise ErrorResponse('Invalid metadata change. %s is not writeable' % key, status_code=503)
+                raise ErrorResponse(
+                    'Invalid metadata change. %s is not writeable' % key,
+                    status_code=503)
             if value is None:
                 if key in tmp:
-                    del(tmp[key])
+                    del (tmp[key])
             else:
                 tmp[key] = value
         tmp['name'] = tmp.get('name', self.name)
@@ -499,11 +512,15 @@ class GcsBucket(object):
 
         if metageneration_not_match is not None \
                 and int(metageneration_not_match) == metageneration:
-            raise ErrorResponse('Precondition Failed (metageneration = %s)' % metageneration, status_code=412)
+            raise ErrorResponse(
+                'Precondition Failed (metageneration = %s)' % metageneration,
+                status_code=412)
 
         if metageneration_match is not None \
                 and int(metageneration_match) != metageneration:
-            raise ErrorResponse('Precondition Failed (metageneration = %s)' % metageneration, status_code=412)
+            raise ErrorResponse(
+                'Precondition Failed (metageneration = %s)' % metageneration,
+                status_code=412)
 
     def insert_acl(self, entity, role):
         """
@@ -691,11 +708,12 @@ def buckets_insert():
     payload = json.loads(flask.request.data)
     bucket_name = payload.get('name')
     if bucket_name is None:
-        raise ErrorResponse('Missing bucket name in `Buckets: insert`',
-                            status_code=412)
+        raise ErrorResponse(
+            'Missing bucket name in `Buckets: insert`', status_code=412)
     bucket = GCS_BUCKETS.get(bucket_name)
     if bucket is not None:
-        raise ErrorResponse('Bucket %s already exists' % bucket_name, status_code=503)
+        raise ErrorResponse(
+            'Bucket %s already exists' % bucket_name, status_code=503)
     bucket = GcsBucket(base_url, bucket_name)
     bucket.update_from_metadata(payload)
     GCS_BUCKETS[bucket_name] = bucket
@@ -710,11 +728,12 @@ def buckets_update(bucket_name):
     payload = json.loads(flask.request.data)
     bucket_name = payload.get('name')
     if bucket_name is None:
-        raise ErrorResponse('Missing bucket name in `Buckets: update`',
-                            status_code=412)
+        raise ErrorResponse(
+            'Missing bucket name in `Buckets: update`', status_code=412)
     bucket = GCS_BUCKETS.get(bucket_name)
     if bucket is None:
-        raise ErrorResponse('Bucket %s does not exist' % bucket_name, status_code=404)
+        raise ErrorResponse(
+            'Bucket %s does not exist' % bucket_name, status_code=404)
     bucket.check_preconditions(flask.request)
     bucket.update_from_metadata(payload)
     return json.dumps(bucket.metadata)
@@ -734,7 +753,8 @@ def buckets_get(bucket_name):
     bucket = GCS_BUCKETS.setdefault(bucket_name, bucket)
     # end of TODO(#821)
     if bucket is None:
-        raise ErrorResponse('Bucket %s not found' % bucket_name, status_code=404)
+        raise ErrorResponse(
+            'Bucket %s not found' % bucket_name, status_code=404)
     bucket.check_preconditions(flask.request)
     return json.dumps(bucket.metadata)
 
@@ -905,7 +925,8 @@ def objects_list(bucket_name):
     """Implement the 'Objects: list' API: return the objects in a bucket."""
     result = {'next_page_token': '', 'items': []}
     versions_parameter = flask.request.args.get('versions')
-    all_versions = (versions_parameter is not None and bool(versions_parameter))
+    all_versions = (versions_parameter is not None
+                    and bool(versions_parameter))
     for name, o in GCS_OBJECTS.items():
         if name.find(bucket_name + '/o') != 0:
             continue
@@ -1087,7 +1108,6 @@ application = wsgi.DispatcherMiddleware(root, {
     GCS_HANDLER_PATH: gcs,
     UPLOAD_HANDLER_PATH: upload,
 })
-
 
 
 def main():
