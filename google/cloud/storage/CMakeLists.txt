@@ -166,6 +166,8 @@ add_library(storage_client
             internal/retry_client.h
             internal/retry_client.cc
             internal/service_account_credentials.h
+            internal/service_account_requests.h
+            internal/service_account_requests.cc
             lifecycle_rule.h
             lifecycle_rule.cc
             list_buckets_reader.h
@@ -179,6 +181,8 @@ add_library(storage_client
             object_stream.h
             object_stream.cc
             retry_policy.h
+            service_account.h
+            service_account.cc
             status.h
             storage_class.h
             version.h
@@ -234,6 +238,7 @@ set(storage_client_unit_tests
     client_bucket_acl_test.cc
     client_default_object_acl_test.cc
     client_object_acl_test.cc
+    client_service_account_test.cc
     client_test.cc
     client_write_object_test.cc
     credentials_test.cc
@@ -255,6 +260,7 @@ set(storage_client_unit_tests
     internal/patch_builder_test.cc
     internal/retry_client_test.cc
     internal/service_account_credentials_test.cc
+    internal/service_account_requests_test.cc
     lifecycle_rule_test.cc
     list_buckets_reader_test.cc
     list_objects_reader_test.cc
@@ -262,6 +268,7 @@ set(storage_client_unit_tests
     object_metadata_test.cc
     object_test.cc
     retry_policy_test.cc
+    service_account_test.cc
     storage_class_test.cc
     storage_client_options_test.cc
     link_test.cc

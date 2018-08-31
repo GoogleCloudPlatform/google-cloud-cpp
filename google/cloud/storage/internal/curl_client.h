@@ -107,6 +107,9 @@ class CurlClient : public RawClient {
   std::pair<Status, ObjectAccessControl> PatchDefaultObjectAcl(
       PatchDefaultObjectAclRequest const&) override;
 
+  std::pair<Status, ServiceAccount> GetServiceAccount(
+      GetProjectServiceAccountRequest const&) override;
+
  private:
   ClientOptions options_;
   std::string storage_endpoint_;
