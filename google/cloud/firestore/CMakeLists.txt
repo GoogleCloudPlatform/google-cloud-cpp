@@ -58,6 +58,9 @@ target_include_directories(firestore_client
                                   $<INSTALL_INTERFACE:include>)
 target_compile_options(firestore_client
                        PUBLIC ${GOOGLE_CLOUD_CPP_EXCEPTIONS_FLAG})
+set_target_properties(firestore_client PROPERTIES
+                      VERSION ${FIRESTORE_CLIENT_VERSION_MAJOR}.${FIRESTORE_CLIENT_VERSION_MINOR}.${FIRESTORE_CLIENT_VERSION_PATCH}
+                      SOVERSION ${FIRESTORE_CLIENT_VERSION_MAJOR})
 add_library(firestore::client ALIAS firestore_client)
 
 include(CreateBazelConfig)
@@ -100,7 +103,8 @@ install(TARGETS
 
 # The exports can only be installed if all the dependencies are installed. CMake
 # needs to know where the submodules will be installed from,
-install(EXPORT firestore-targets DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake)
+install(EXPORT firestore-targets
+        DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/cmake/Modules")
 
 install(TARGETS firestore_client
         EXPORT firestore-targets
@@ -134,8 +138,6 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/firestore_client.pc" DESTINATION
 configure_file("config.cmake.in" "firestore_client-config.cmake" @ONLY)
 configure_file("${PROJECT_SOURCE_DIR}/google/cloud/config-version.cmake.in"
                "firestore_client-config-version.cmake" @ONLY)
-install(
-    FILES "${CMAKE_CURRENT_BINARY_DIR}/firestore_client-config.cmake"
-          "${CMAKE_CURRENT_BINARY_DIR}/firestore_client-config-version.cmake"
-          DESTINATION
-          ${CMAKE_INSTALL_DATAROOTDIR}/cmake)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/firestore_client-config.cmake"
+              "${CMAKE_CURRENT_BINARY_DIR}/firestore_client-config-version.cmake"
+        DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/cmake/Modules")

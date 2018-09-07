@@ -98,6 +98,9 @@ target_include_directories(bigtable_protos
                                   $<INSTALL_INTERFACE:include>)
 target_compile_options(bigtable_protos
                        PUBLIC ${GOOGLE_CLOUD_CPP_EXCEPTIONS_FLAG})
+set_target_properties(bigtable_protos PROPERTIES
+                      VERSION ${BIGTABLE_CLIENT_VERSION_MAJOR}.${BIGTABLE_CLIENT_VERSION_MINOR}.${BIGTABLE_CLIENT_VERSION_PATCH}
+                      SOVERSION ${BIGTABLE_CLIENT_VERSION_MAJOR})
 add_library(bigtable::protos ALIAS bigtable_protos)
 
 # Enable unit tests
@@ -208,6 +211,9 @@ target_include_directories(bigtable_client
                                   $<INSTALL_INTERFACE:include>)
 target_compile_options(bigtable_client
                        PUBLIC ${GOOGLE_CLOUD_CPP_EXCEPTIONS_FLAG})
+set_target_properties(bigtable_client PROPERTIES
+                      VERSION ${BIGTABLE_CLIENT_VERSION_MAJOR}.${BIGTABLE_CLIENT_VERSION_MINOR}.${BIGTABLE_CLIENT_VERSION_PATCH}
+                      SOVERSION ${BIGTABLE_CLIENT_VERSION_MAJOR})
 add_library(bigtable::client ALIAS bigtable_client)
 
 include(CreateBazelConfig)
@@ -365,7 +371,7 @@ if (NOT ${GOOGLE_CLOUD_CPP_GRPC_PROVIDER} STREQUAL "module")
 
     # Export the CMake targets to make it easy to create configuration files.
     install(EXPORT bigtable-targets
-            DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/bigtable_client")
+            DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/cmake/Modules")
 endif ()
 
 install(TARGETS bigtable_client
@@ -403,5 +409,4 @@ configure_file("${PROJECT_SOURCE_DIR}/google/cloud/config-version.cmake.in"
                "bigtable_client-config-version.cmake" @ONLY)
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/bigtable_client-config.cmake"
               "${CMAKE_CURRENT_BINARY_DIR}/bigtable_client-config-version.cmake"
-              DESTINATION
-              "${CMAKE_INSTALL_LIBDIR}/cmake/bigtable_client")
+        DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/cmake/Modules")

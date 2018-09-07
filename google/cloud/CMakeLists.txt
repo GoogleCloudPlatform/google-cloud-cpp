@@ -97,6 +97,9 @@ target_include_directories(google_cloud_cpp_common
                                   $<INSTALL_INTERFACE:include>)
 target_compile_options(google_cloud_cpp_common
                        PUBLIC ${GOOGLE_CLOUD_CPP_EXCEPTIONS_FLAG})
+set_target_properties(google_cloud_cpp_common PROPERTIES
+                      VERSION ${GOOGLE_CLOUD_CPP_VERSION_MAJOR}.${GOOGLE_CLOUD_CPP_VERSION_MINOR}.${GOOGLE_CLOUD_CPP_VERSION_PATCH}
+                      SOVERSION ${GOOGLE_CLOUD_CPP_VERSION_MAJOR})
 
 include(CreateBazelConfig)
 create_bazel_config(google_cloud_cpp_common)
@@ -149,7 +152,7 @@ endforeach ()
 
 # Export the CMake targets to make it easy to create configuration files.
 install(EXPORT google_cloud_cpp_common-targets
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/google_cloud_cpp_common")
+        DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/cmake/Modules")
 
 # Install the libraries and headers in the locations determined by
 # GNUInstallDirs
@@ -185,12 +188,9 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/google_cloud_cpp_common.pc"
 configure_file("config.cmake.in" "google_cloud_cpp_common-config.cmake" @ONLY)
 configure_file("${PROJECT_SOURCE_DIR}/google/cloud/config-version.cmake.in"
                "google_cloud_cpp_common-config-version.cmake" @ONLY)
-install(
-    FILES
-        "${CMAKE_CURRENT_BINARY_DIR}/google_cloud_cpp_common-config.cmake"
-        "${CMAKE_CURRENT_BINARY_DIR}/google_cloud_cpp_common-config-version.cmake"
-        DESTINATION
-        "${CMAKE_INSTALL_LIBDIR}/cmake/google_cloud_cpp_common")
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/google_cloud_cpp_common-config.cmake"
+              "${CMAKE_CURRENT_BINARY_DIR}/google_cloud_cpp_common-config-version.cmake"
+        DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/cmake/Modules")
 
 add_subdirectory(bigtable)
 add_subdirectory(firestore)

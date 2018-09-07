@@ -214,6 +214,9 @@ target_include_directories(storage_client
                                   $<INSTALL_INTERFACE:include>)
 target_compile_options(storage_client
                        PUBLIC ${GOOGLE_CLOUD_CPP_EXCEPTIONS_FLAG})
+set_target_properties(storage_client PROPERTIES
+                      VERSION ${STORAGE_CLIENT_VERSION_MAJOR}.${STORAGE_CLIENT_VERSION_MINOR}.${STORAGE_CLIENT_VERSION_PATCH}
+                      SOVERSION ${STORAGE_CLIENT_VERSION_MAJOR})
 
 add_library(storage_client_testing
             testing/canonical_errors.h
@@ -326,14 +329,14 @@ install(TARGETS storage_common_options nlohmann_json
 
 # Export the CMake targets to make it easy to create configuration files.
 install(EXPORT storage-targets
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/storage_client")
+        DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/cmake/Modules")
 
 install(TARGETS storage_client
         EXPORT storage-targets
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
-install(DIRECTORY . DESTINATION include/storage/client
+install(DIRECTORY . DESTINATION include/google/cloud/storage/client
         FILES_MATCHING
         PATTERN "*.h"
         PATTERN "testing/*"
@@ -366,5 +369,4 @@ configure_file("${PROJECT_SOURCE_DIR}/google/cloud/config-version.cmake.in"
                "storage_client-config-version.cmake" @ONLY)
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/storage_client-config.cmake"
               "${CMAKE_CURRENT_BINARY_DIR}/storage_client-config-version.cmake"
-              DESTINATION
-              "${CMAKE_INSTALL_LIBDIR}/cmake/storage_client")
+        DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/cmake/Modules")
