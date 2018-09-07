@@ -122,7 +122,7 @@ std::string ObjectMetadata::JsonPayloadForUpdate() const {
   return metadata_as_json.dump();
 }
 
-std::string ObjectMetadata::JsonPayloadForCompose() const {
+internal::nl::json ObjectMetadata::JsonPayloadForCompose() const {
   using internal::nl::json;
   json metadata_as_json;
   if (not acl().empty()) {
@@ -152,7 +152,7 @@ std::string ObjectMetadata::JsonPayloadForCompose() const {
     metadata_as_json["metadata"] = std::move(meta_as_json);
   }
 
-  return metadata_as_json.dump();
+  return metadata_as_json;
 }
 
 bool ObjectMetadata::operator==(ObjectMetadata const& rhs) const {
