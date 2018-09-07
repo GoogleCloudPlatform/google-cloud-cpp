@@ -106,6 +106,8 @@ class LoggingClient : public RawClient {
 
   std::pair<Status, ListNotificationsResponse> ListNotifications(
       ListNotificationsRequest const&) override;
+  std::pair<Status, NotificationMetadata> CreateNotification(
+      CreateNotificationRequest const&) override;
 
   std::shared_ptr<RawClient> client() const { return client_; }
 
