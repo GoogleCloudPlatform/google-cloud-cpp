@@ -87,6 +87,8 @@ class RawClient {
       PatchObjectRequest const&) = 0;
   virtual std::pair<Status, ObjectMetadata> ComposeObject(
       ComposeObjectRequest const&) = 0;
+  virtual std::pair<Status, RewriteObjectResponse> RewriteObject(
+      RewriteObjectRequest const&) = 0;
   //@}
 
   //@{
