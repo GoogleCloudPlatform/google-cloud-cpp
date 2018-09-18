@@ -208,6 +208,7 @@ class ObjectMetadata : private internal::CommonMetadata<ObjectMetadata> {
   std::map<std::string, std::string>& mutable_metadata() { return metadata_; }
   //@}
 
+  using CommonMetadata::has_owner;
   using CommonMetadata::metageneration;
   using CommonMetadata::name;
   using CommonMetadata::owner;
