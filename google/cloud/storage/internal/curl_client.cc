@@ -307,7 +307,7 @@ std::pair<Status, std::unique_ptr<ObjectReadStreambuf>> CurlClient::ReadObject(
   builder.AddQueryParameter("alt", "media");
   // TODO(#937) - use client options to configure buffer size.
   std::unique_ptr<CurlReadStreambuf> buf(new CurlReadStreambuf(
-      builder.BuildDownloadRequest(std::string{}), 128 * 1024));
+      builder.BuildDownloadRequest(std::string{}), kDefaultBufferSize));
   return std::make_pair(Status(),
                         std::unique_ptr<ObjectReadStreambuf>(std::move(buf)));
 }
@@ -333,7 +333,7 @@ CurlClient::WriteObject(InsertObjectStreamingRequest const& request) {
   builder.AddQueryParameter("name", request.object_name());
   // TODO(#937) - use client options to configure buffer size.
   std::unique_ptr<internal::CurlStreambuf> buf(
-      new internal::CurlStreambuf(builder.BuildUpload(), 128 * 1024));
+      new internal::CurlStreambuf(builder.BuildUpload(), kDefaultBufferSize));
   return std::make_pair(
       Status(),
       std::unique_ptr<internal::ObjectWriteStreambuf>(std::move(buf)));
@@ -948,7 +948,7 @@ CurlClient::ReadObjectXml(ReadObjectRangeRequest const& request) {
 
   // TODO(#937) - use client options to configure buffer size.
   std::unique_ptr<CurlReadStreambuf> buf(new CurlReadStreambuf(
-      builder.BuildDownloadRequest(std::string{}), 128 * 1024));
+      builder.BuildDownloadRequest(std::string{}), kDefaultBufferSize));
   return std::make_pair(Status(),
                         std::unique_ptr<ObjectReadStreambuf>(std::move(buf)));
 }
@@ -1010,7 +1010,7 @@ CurlClient::WriteObjectXml(InsertObjectStreamingRequest const& request) {
 
   // TODO(#937) - use client options to configure buffer size.
   std::unique_ptr<internal::CurlStreambuf> buf(
-      new internal::CurlStreambuf(builder.BuildUpload(), 128 * 1024));
+      new internal::CurlStreambuf(builder.BuildUpload(), kDefaultBufferSize));
   return std::make_pair(
       Status(),
       std::unique_ptr<internal::ObjectWriteStreambuf>(std::move(buf)));
