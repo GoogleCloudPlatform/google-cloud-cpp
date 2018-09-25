@@ -84,6 +84,17 @@ class ClientOptions {
     return *this;
   }
 
+  std::string const& user_agent_prefix() const { return user_agent_prefix_; }
+  ClientOptions& add_user_agent_prefx(std::string const& v) {
+    std::string prefix = v;
+    if (not user_agent_prefix_.empty()) {
+      prefix += '/';
+      prefix += user_agent_prefix_;
+    }
+    user_agent_prefix_ = std::move(prefix);
+    return *this;
+  }
+
  private:
   void SetupFromEnvironment();
 
@@ -95,6 +106,7 @@ class ClientOptions {
   bool enable_raw_client_tracing_;
   std::string project_id_;
   std::size_t connection_pool_size_;
+  std::string user_agent_prefix_;
 };
 }  // namespace STORAGE_CLIENT_NS
 }  // namespace storage
