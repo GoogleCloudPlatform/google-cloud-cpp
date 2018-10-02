@@ -27,10 +27,11 @@ The example uses the following headers:
 
 ### Use CheckAndMutate to modify a value only if it exists.
 
-@snippet data_admin_snippets.cc check and mutate 
+@snippet data_admin_snippets.cc check and mutate
 
 ### Put it all together
 
 Here is the full example
 
 @snippet data_admin_snippets.cc all code
+*/
