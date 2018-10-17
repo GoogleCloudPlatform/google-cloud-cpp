@@ -17,7 +17,13 @@
 #include "google/cloud/storage/client.h"
 #include "google/cloud/testing_util/init_google_mock.h"
 #include <gmock/gmock.h>
+#include <fstream>
 #include <regex>
+#if _WIN32
+#include <stdio.h>
+#else
+#include <unistd.h>
+#endif  // _WIN32
 
 namespace google {
 namespace cloud {
@@ -93,10 +99,31 @@ non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                         "abcdefghijklmnopqrstuvwxyz012456789");
   }
 
+  void RemoveFile(std::string const& file_name) {
+#if _WIN32
+    remove(file_name.c_str());
+#else
+    unlink(file_name.c_str());
+#endif  // _WIN32
+  }
+
  protected:
   google::cloud::internal::DefaultPRNG generator_ =
       google::cloud::internal::MakeDefaultPRNG();
 };
+
+template <typename Callable>
+void TestPermanentFailure(Callable&& callable) {
+#if GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
+  EXPECT_THROW(try { callable(); } catch (std::runtime_error const& ex) {
+    EXPECT_THAT(ex.what(), HasSubstr("Permanent error in"));
+    throw;
+  },
+               std::runtime_error);
+#else
+  EXPECT_DEATH_IF_SUPPORTED(callable(), "exceptions are disabled");
+#endif  // GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
+}
 
 /// @test Verify the Object CRUD (Create, Get, Update, Delete, List) operations.
 TEST_F(ObjectIntegrationTest, BasicCRUD) {
@@ -442,6 +469,153 @@ TEST_F(ObjectIntegrationTest, Copy) {
 
   client.DeleteObject(bucket_name, destination_object_name);
   client.DeleteObject(bucket_name, source_object_name);
+}
+
+TEST_F(ObjectIntegrationTest, UploadFile) {
+  Client client;
+  auto file_name = MakeRandomObjectName();
+  auto bucket_name = ObjectTestEnvironment::bucket_name();
+  auto object_name = MakeRandomObjectName();
+
+  // We will construct the expected response while streaming the data up.
+  std::ostringstream expected;
+
+  auto generate_random_line = [this] {
+    std::string const characters =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz"
+        "0123456789"
+        ".,/;:'[{]}=+-_}]`~!@#$%^&*()";
+    return google::cloud::internal::Sample(generator_, 200, characters);
+  };
+
+  // Create a file with the contents to upload.
+  std::ofstream os(file_name);
+  for (int line = 0; line != 1000; ++line) {
+    std::string random = generate_random_line() + "\n";
+    os << line << ": " << random;
+    expected << line << ": " << random;
+  }
+  os.close();
+
+  ObjectMetadata meta = client.UploadFile(file_name, bucket_name, object_name,
+                                          IfGenerationMatch(0));
+  EXPECT_EQ(object_name, meta.name());
+  EXPECT_EQ(bucket_name, meta.bucket());
+  auto expected_str = expected.str();
+  ASSERT_EQ(expected_str.size(), meta.size());
+
+  // Create a iostream to read the object back.
+  auto stream = client.ReadObject(bucket_name, object_name);
+  std::string actual(std::istreambuf_iterator<char>{stream}, {});
+  ASSERT_FALSE(actual.empty());
+  EXPECT_EQ(expected_str.size(), actual.size()) << " meta=" << meta;
+  EXPECT_EQ(expected_str, actual);
+
+  client.DeleteObject(bucket_name, object_name);
+  RemoveFile(file_name);
+}
+
+TEST_F(ObjectIntegrationTest, UploadFileMissingFileFailure) {
+  Client client;
+  auto file_name = MakeRandomObjectName();
+  auto bucket_name = ObjectTestEnvironment::bucket_name();
+  auto object_name = MakeRandomObjectName();
+
+#if GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
+  EXPECT_THROW(
+      try {
+        client.UploadFile(file_name, bucket_name, object_name,
+                          IfGenerationMatch(0));
+      } catch (std::runtime_error const& ex) {
+        EXPECT_THAT(ex.what(), HasSubstr(file_name));
+        throw;
+      },
+      std::runtime_error);
+#else
+  EXPECT_DEATH_IF_SUPPORTED(
+      client.UploadFile(file_name, bucket_name, object_name,
+                        IfGenerationMatch(0)),
+      "exceptions are disabled");
+#endif  // GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
+}
+
+TEST_F(ObjectIntegrationTest, UploadFileUploadFailure) {
+  Client client;
+  auto file_name = MakeRandomObjectName();
+  auto bucket_name = ObjectTestEnvironment::bucket_name();
+  auto object_name = MakeRandomObjectName();
+
+  // Create the file.
+  std::ofstream(file_name) << LoremIpsum();
+
+  // Create the object.
+  ObjectMetadata meta = client.InsertObject(bucket_name, object_name,
+                                            LoremIpsum(), IfGenerationMatch(0));
+
+  // Trying to upload the file to the same object with the IfGenerationMatch(0)
+  // condition should fail because the object already exists.
+#if GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
+  EXPECT_THROW(
+      try {
+        client.UploadFile(file_name, bucket_name, object_name,
+                          IfGenerationMatch(0));
+      } catch (std::runtime_error const& ex) {
+        EXPECT_THAT(ex.what(), HasSubstr("[412]"));
+        throw;
+      },
+      std::runtime_error);
+#else
+  EXPECT_DEATH_IF_SUPPORTED(
+      client.UploadFile(file_name, bucket_name, object_name,
+                        IfGenerationMatch(0)),
+      "exceptions are disabled");
+#endif  // GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
+
+  client.DeleteObject(bucket_name, object_name);
+  RemoveFile(file_name);
+}
+
+TEST_F(ObjectIntegrationTest, XmlUploadFile) {
+  Client client;
+  auto file_name = MakeRandomObjectName();
+  auto bucket_name = ObjectTestEnvironment::bucket_name();
+  auto object_name = MakeRandomObjectName();
+
+  // We will construct the expected response while streaming the data up.
+  std::ostringstream expected;
+
+  auto generate_random_line = [this] {
+    std::string const characters =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz"
+        "0123456789"
+        ".,/;:'[{]}=+-_}]`~!@#$%^&*()";
+    return google::cloud::internal::Sample(generator_, 200, characters);
+  };
+
+  // Create a file with the contents to upload.
+  std::ofstream os(file_name);
+  for (int line = 0; line != 1000; ++line) {
+    std::string random = generate_random_line() + "\n";
+    os << line << ": " << random;
+    expected << line << ": " << random;
+  }
+  os.close();
+
+  ObjectMetadata meta = client.UploadFile(file_name, bucket_name, object_name,
+                                          IfGenerationMatch(0), Fields(""));
+  auto expected_str = expected.str();
+
+  // Create a iostream to read the object back.
+  auto stream = client.ReadObject(bucket_name, object_name);
+  std::string actual(std::istreambuf_iterator<char>{stream}, {});
+  ASSERT_FALSE(actual.empty());
+  EXPECT_EQ(expected_str.size(), actual.size()) << " meta=" << meta;
+  EXPECT_EQ(expected_str, actual);
+
+  client.DeleteObject(bucket_name, object_name);
+  RemoveFile(file_name);
 }
 
 TEST_F(ObjectIntegrationTest, StreamingWrite) {
@@ -1624,19 +1798,6 @@ TEST_F(ObjectIntegrationTest, DisableMD5StreamingWriteJSON) {
   EXPECT_TRUE(os.computed_hash().empty());
 
   client.DeleteObject(bucket_name, object_name);
-}
-
-template <typename Callable>
-void TestPermanentFailure(Callable&& callable) {
-#if GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
-  EXPECT_THROW(try { callable(); } catch (std::runtime_error const& ex) {
-    EXPECT_THAT(ex.what(), HasSubstr("Permanent error in"));
-    throw;
-  },
-               std::runtime_error);
-#else
-  EXPECT_DEATH_IF_SUPPORTED(callable(), "exceptions are disabled");
-#endif  // GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
 }
 
 TEST_F(ObjectIntegrationTest, InsertFailure) {
