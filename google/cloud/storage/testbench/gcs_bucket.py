@@ -19,6 +19,7 @@ import base64
 import error_response
 import json
 import testbench_utils
+import time
 
 
 class GcsBucket(object):
@@ -98,16 +99,28 @@ class GcsBucket(object):
         :param patch:dict a dictionary with metadata changes.
         """
         writeable_keys = {
-            'acl', 'billing', 'cors', 'defaultObjectAcl', 'encryption',
-            'labels', 'lifecycle', 'location', 'logging', 'storageClass',
-            'versioning', 'website'
+            'acl', 'billing', 'cors', 'defaultEventBasedHold',
+            'defaultObjectAcl', 'encryption', 'labels', 'lifecycle', 'location',
+            'logging', 'retentionPolicy', 'storageClass', 'versioning',
+            'website'
         }
         for key, value in patch.iteritems():
             if key not in writeable_keys:
                 raise error_response.ErrorResponse(
                     'Invalid metadata change. %s is not writeable' % key,
-                    status_code=503)
+                    status_code=412)
+        retention_policy = patch.get('retentionPolicy')
+        if retention_policy is not None:
+            for field in ['isLocked', 'effectiveTime']:
+                if retention_policy.get(field) is not None:
+                    raise error_response.ErrorResponse(
+                        'Invalid metadata change. %s is not writeable' % field,
+                        status_code=412)
         patched = testbench_utils.json_api_patch(self.metadata, patch, recurse_on={'labels'})
+        if retention_policy:
+            now = time.gmtime(time.time())
+            timestamp = time.strftime('%Y-%m-%dT%H:%M:%SZ', now)
+            patched['retentionPolicy']['effectiveTime'] = timestamp
         self.metadata = patched
         self.increase_metageneration()
 
