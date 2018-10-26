@@ -61,6 +61,10 @@ bool AlwaysRetryIdempotencyPolicy::IsIdempotent(
     internal::TestBucketIamPermissionsRequest const& request) const {
   return true;
 }
+bool AlwaysRetryIdempotencyPolicy::IsIdempotent(
+    internal::LockBucketRetentionPolicyRequest const& request) const {
+  return true;
+}
 
 bool AlwaysRetryIdempotencyPolicy::IsIdempotent(
     internal::InsertObjectMediaRequest const& request) const {
@@ -260,6 +264,12 @@ bool StrictIdempotencyPolicy::IsIdempotent(
 bool StrictIdempotencyPolicy::IsIdempotent(
     internal::TestBucketIamPermissionsRequest const& request) const {
   // TODO(#714) - determine if the request is idempotent and return accordingly.
+  return true;
+}
+
+bool StrictIdempotencyPolicy::IsIdempotent(
+    internal::LockBucketRetentionPolicyRequest const& request) const {
+  // This request type always requires a metageneration pre-condition.
   return true;
 }
 
