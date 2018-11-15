@@ -1222,7 +1222,7 @@ std::pair<Status, ObjectMetadata> CurlClient::InsertObjectMediaSimple(
   builder.AddQueryParameter("uploadType", "media");
   builder.AddQueryParameter("name", request.object_name());
   builder.AddHeader("Content-Length: " +
-      std::to_string(request.contents().size()));
+                    std::to_string(request.contents().size()));
   auto payload = builder.BuildRequest().MakeRequest(request.contents());
   if (payload.status_code >= 300) {
     return std::make_pair(
@@ -1235,7 +1235,7 @@ std::pair<Status, ObjectMetadata> CurlClient::InsertObjectMediaSimple(
 
 std::pair<Status, std::string> CurlClient::AuthorizationHeader(
     std::shared_ptr<google::cloud::storage::oauth2::Credentials> const&
-    credentials) {
+        credentials) {
   return credentials->AuthorizationHeader();
 };
 
