@@ -43,7 +43,6 @@ def google_cloud_cpp_deps():
             strip_prefix = "googleapis-6a3277c0656219174ff7c345f31fb20a90b30b97",
             sha256 = "82ba91a41fb01305de4e8805c0a9270ed2035007161aa5a4ec60f887a499f5e9",
             build_file = "@com_github_googlecloudplatform_google_cloud_cpp//bazel:googleapis.BUILD",
-            workspace_file = "@com_github_googlecloudplatform_google_cloud_cpp//bazel:googleapis.WORKSPACE",
         )
 
     # Load gRPC and its dependencies, using a similar pattern to this function.
