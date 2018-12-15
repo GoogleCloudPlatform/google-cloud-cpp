@@ -88,7 +88,7 @@ def google_cloud_cpp_deps():
         http_file(
             name = "com_github_nlohmann_json_single_header",
             urls = [
-                "https://github.com/nlohmann/json/releases/download/v3.1.2/json.hpp"
+                "https://github.com/nlohmann/json/releases/download/v3.1.2/json.hpp",
             ],
             sha256 = "fbdfec4b4cf63b3b565d09f87e6c3c183bdd45c5be1864d3fcb338f6f02c1733",
         )
