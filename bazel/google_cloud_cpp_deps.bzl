@@ -14,7 +14,7 @@
 
 """Load dependencies needed to compile and test the google-cloud-cpp library."""
 
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file")
 
 def google_cloud_cpp_deps():
     """Loads dependencies need to compile the google-cloud-cpp library.
@@ -85,9 +85,11 @@ def google_cloud_cpp_deps():
 
     # We need the nlohmann_json library
     if "com_github_nlohmann_json_single_header" not in native.existing_rules():
-        native.http_file(
+        http_file(
             name = "com_github_nlohmann_json_single_header",
-            url = "https://github.com/nlohmann/json/releases/download/v3.1.2/json.hpp",
+            urls = [
+                "https://github.com/nlohmann/json/releases/download/v3.1.2/json.hpp"
+            ],
             sha256 = "fbdfec4b4cf63b3b565d09f87e6c3c183bdd45c5be1864d3fcb338f6f02c1733",
         )
 
