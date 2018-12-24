@@ -77,17 +77,15 @@ MakeCall(RetryPolicy& retry_policy, BackoffPolicy& backoff_policy,
     if (enable_exceptions) {
       google::cloud::internal::RaiseRuntimeError(msg);
     }
-    Status status(last_status.status_code(), msg, last_status.error_details());
-    using Pair = typename CheckSignature<MemberFunction>::ReturnType;
-    return Pair(status, typename Pair::second_type{});
+    return Status(last_status.status_code(), msg, last_status.error_details());
   };
 
   while (not retry_policy.IsExhausted()) {
     auto result = (client.*function)(request);
-    if (result.first.ok()) {
+    if (result.ok()) {
       return result;
     }
-    last_status = std::move(result.first);
+    last_status = std::move(result).status();
     if (not is_idempotent) {
       std::ostringstream os;
       os << "Error in non-idempotent operation " << error_message << ": "
@@ -132,7 +130,7 @@ ClientOptions const& RetryClient::client_options() const {
   return client_->client_options();
 }
 
-std::pair<Status, ListBucketsResponse> RetryClient::ListBuckets(
+StatusOr<ListBucketsResponse> RetryClient::ListBuckets(
     ListBucketsRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -142,7 +140,7 @@ std::pair<Status, ListBucketsResponse> RetryClient::ListBuckets(
                   __func__);
 }
 
-std::pair<Status, BucketMetadata> RetryClient::CreateBucket(
+StatusOr<BucketMetadata> RetryClient::CreateBucket(
     CreateBucketRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -152,7 +150,7 @@ std::pair<Status, BucketMetadata> RetryClient::CreateBucket(
                   __func__);
 }
 
-std::pair<Status, BucketMetadata> RetryClient::GetBucketMetadata(
+StatusOr<BucketMetadata> RetryClient::GetBucketMetadata(
     GetBucketMetadataRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -162,7 +160,7 @@ std::pair<Status, BucketMetadata> RetryClient::GetBucketMetadata(
                   __func__);
 }
 
-std::pair<Status, EmptyResponse> RetryClient::DeleteBucket(
+StatusOr<EmptyResponse> RetryClient::DeleteBucket(
     DeleteBucketRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -172,7 +170,7 @@ std::pair<Status, EmptyResponse> RetryClient::DeleteBucket(
                   __func__);
 }
 
-std::pair<Status, BucketMetadata> RetryClient::UpdateBucket(
+StatusOr<BucketMetadata> RetryClient::UpdateBucket(
     UpdateBucketRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -182,7 +180,7 @@ std::pair<Status, BucketMetadata> RetryClient::UpdateBucket(
                   __func__);
 }
 
-std::pair<Status, BucketMetadata> RetryClient::PatchBucket(
+StatusOr<BucketMetadata> RetryClient::PatchBucket(
     PatchBucketRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -192,7 +190,7 @@ std::pair<Status, BucketMetadata> RetryClient::PatchBucket(
                   __func__);
 }
 
-std::pair<Status, IamPolicy> RetryClient::GetBucketIamPolicy(
+StatusOr<IamPolicy> RetryClient::GetBucketIamPolicy(
     GetBucketIamPolicyRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -202,7 +200,7 @@ std::pair<Status, IamPolicy> RetryClient::GetBucketIamPolicy(
                   __func__);
 }
 
-std::pair<Status, IamPolicy> RetryClient::SetBucketIamPolicy(
+StatusOr<IamPolicy> RetryClient::SetBucketIamPolicy(
     SetBucketIamPolicyRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -212,7 +210,7 @@ std::pair<Status, IamPolicy> RetryClient::SetBucketIamPolicy(
                   __func__);
 }
 
-std::pair<Status, TestBucketIamPermissionsResponse>
+StatusOr<TestBucketIamPermissionsResponse>
 RetryClient::TestBucketIamPermissions(
     TestBucketIamPermissionsRequest const& request) {
   auto retry_policy = retry_policy_->clone();
@@ -223,7 +221,7 @@ RetryClient::TestBucketIamPermissions(
                   enable_exceptions_, __func__);
 }
 
-std::pair<Status, EmptyResponse> RetryClient::LockBucketRetentionPolicy(
+StatusOr<EmptyResponse> RetryClient::LockBucketRetentionPolicy(
     LockBucketRetentionPolicyRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -233,7 +231,7 @@ std::pair<Status, EmptyResponse> RetryClient::LockBucketRetentionPolicy(
                   enable_exceptions_, __func__);
 }
 
-std::pair<Status, ObjectMetadata> RetryClient::InsertObjectMedia(
+StatusOr<ObjectMetadata> RetryClient::InsertObjectMedia(
     InsertObjectMediaRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -243,7 +241,7 @@ std::pair<Status, ObjectMetadata> RetryClient::InsertObjectMedia(
                   __func__);
 }
 
-std::pair<Status, ObjectMetadata> RetryClient::CopyObject(
+StatusOr<ObjectMetadata> RetryClient::CopyObject(
     CopyObjectRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -253,7 +251,7 @@ std::pair<Status, ObjectMetadata> RetryClient::CopyObject(
                   __func__);
 }
 
-std::pair<Status, ObjectMetadata> RetryClient::GetObjectMetadata(
+StatusOr<ObjectMetadata> RetryClient::GetObjectMetadata(
     GetObjectMetadataRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -263,7 +261,7 @@ std::pair<Status, ObjectMetadata> RetryClient::GetObjectMetadata(
                   __func__);
 }
 
-std::pair<Status, std::unique_ptr<ObjectReadStreambuf>> RetryClient::ReadObject(
+StatusOr<std::unique_ptr<ObjectReadStreambuf>> RetryClient::ReadObject(
     ReadObjectRangeRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -273,7 +271,7 @@ std::pair<Status, std::unique_ptr<ObjectReadStreambuf>> RetryClient::ReadObject(
                   __func__);
 }
 
-std::pair<Status, std::unique_ptr<ObjectWriteStreambuf>>
+StatusOr<std::unique_ptr<ObjectWriteStreambuf>>
 RetryClient::WriteObject(
     internal::InsertObjectStreamingRequest const& request) {
   auto retry_policy = retry_policy_->clone();
@@ -284,7 +282,7 @@ RetryClient::WriteObject(
                   __func__);
 }
 
-std::pair<Status, ListObjectsResponse> RetryClient::ListObjects(
+StatusOr<ListObjectsResponse> RetryClient::ListObjects(
     ListObjectsRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -294,7 +292,7 @@ std::pair<Status, ListObjectsResponse> RetryClient::ListObjects(
                   __func__);
 }
 
-std::pair<Status, EmptyResponse> RetryClient::DeleteObject(
+StatusOr<EmptyResponse> RetryClient::DeleteObject(
     DeleteObjectRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -304,7 +302,7 @@ std::pair<Status, EmptyResponse> RetryClient::DeleteObject(
                   __func__);
 }
 
-std::pair<Status, ObjectMetadata> RetryClient::UpdateObject(
+StatusOr<ObjectMetadata> RetryClient::UpdateObject(
     UpdateObjectRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -314,7 +312,7 @@ std::pair<Status, ObjectMetadata> RetryClient::UpdateObject(
                   __func__);
 }
 
-std::pair<Status, ObjectMetadata> RetryClient::PatchObject(
+StatusOr<ObjectMetadata> RetryClient::PatchObject(
     PatchObjectRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -324,7 +322,7 @@ std::pair<Status, ObjectMetadata> RetryClient::PatchObject(
                   __func__);
 }
 
-std::pair<Status, ObjectMetadata> RetryClient::ComposeObject(
+StatusOr<ObjectMetadata> RetryClient::ComposeObject(
     ComposeObjectRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -334,7 +332,7 @@ std::pair<Status, ObjectMetadata> RetryClient::ComposeObject(
                   __func__);
 }
 
-std::pair<Status, RewriteObjectResponse> RetryClient::RewriteObject(
+StatusOr<RewriteObjectResponse> RetryClient::RewriteObject(
     RewriteObjectRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -344,7 +342,7 @@ std::pair<Status, RewriteObjectResponse> RetryClient::RewriteObject(
                   __func__);
 }
 
-std::pair<Status, std::unique_ptr<ResumableUploadSession>>
+StatusOr<std::unique_ptr<ResumableUploadSession>>
 RetryClient::CreateResumableSession(ResumableUploadRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -352,18 +350,17 @@ RetryClient::CreateResumableSession(ResumableUploadRequest const& request) {
   auto result = MakeCall(*retry_policy, *backoff_policy, is_idempotent,
                          *client_, &RawClient::CreateResumableSession, request,
                          enable_exceptions_, __func__);
-  if (not result.first.ok()) {
+  if (not result.ok()) {
     return result;
   }
 
-  return std::make_pair(
-      Status(),
+  return std::unique_ptr<ResumableUploadSession>(
       google::cloud::internal::make_unique<RetryResumableUploadSession>(
-          std::move(result.second), std::move(retry_policy),
+          std::move(result).value(), std::move(retry_policy),
           std::move(backoff_policy)));
 }
 
-std::pair<Status, std::unique_ptr<ResumableUploadSession>>
+StatusOr<std::unique_ptr<ResumableUploadSession>>
 RetryClient::RestoreResumableSession(std::string const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -373,7 +370,7 @@ RetryClient::RestoreResumableSession(std::string const& request) {
                   enable_exceptions_, __func__);
 }
 
-std::pair<Status, ListBucketAclResponse> RetryClient::ListBucketAcl(
+StatusOr<ListBucketAclResponse> RetryClient::ListBucketAcl(
     ListBucketAclRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -383,7 +380,7 @@ std::pair<Status, ListBucketAclResponse> RetryClient::ListBucketAcl(
                   __func__);
 }
 
-std::pair<Status, BucketAccessControl> RetryClient::GetBucketAcl(
+StatusOr<BucketAccessControl> RetryClient::GetBucketAcl(
     GetBucketAclRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -393,7 +390,7 @@ std::pair<Status, BucketAccessControl> RetryClient::GetBucketAcl(
                   __func__);
 }
 
-std::pair<Status, BucketAccessControl> RetryClient::CreateBucketAcl(
+StatusOr<BucketAccessControl> RetryClient::CreateBucketAcl(
     CreateBucketAclRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -403,7 +400,7 @@ std::pair<Status, BucketAccessControl> RetryClient::CreateBucketAcl(
                   __func__);
 }
 
-std::pair<Status, EmptyResponse> RetryClient::DeleteBucketAcl(
+StatusOr<EmptyResponse> RetryClient::DeleteBucketAcl(
     DeleteBucketAclRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -413,7 +410,7 @@ std::pair<Status, EmptyResponse> RetryClient::DeleteBucketAcl(
                   __func__);
 }
 
-std::pair<Status, ListObjectAclResponse> RetryClient::ListObjectAcl(
+StatusOr<ListObjectAclResponse> RetryClient::ListObjectAcl(
     ListObjectAclRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -423,7 +420,7 @@ std::pair<Status, ListObjectAclResponse> RetryClient::ListObjectAcl(
                   __func__);
 }
 
-std::pair<Status, BucketAccessControl> RetryClient::UpdateBucketAcl(
+StatusOr<BucketAccessControl> RetryClient::UpdateBucketAcl(
     UpdateBucketAclRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -433,7 +430,7 @@ std::pair<Status, BucketAccessControl> RetryClient::UpdateBucketAcl(
                   __func__);
 }
 
-std::pair<Status, BucketAccessControl> RetryClient::PatchBucketAcl(
+StatusOr<BucketAccessControl> RetryClient::PatchBucketAcl(
     PatchBucketAclRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -443,7 +440,7 @@ std::pair<Status, BucketAccessControl> RetryClient::PatchBucketAcl(
                   __func__);
 }
 
-std::pair<Status, ObjectAccessControl> RetryClient::CreateObjectAcl(
+StatusOr<ObjectAccessControl> RetryClient::CreateObjectAcl(
     CreateObjectAclRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -453,7 +450,7 @@ std::pair<Status, ObjectAccessControl> RetryClient::CreateObjectAcl(
                   __func__);
 }
 
-std::pair<Status, EmptyResponse> RetryClient::DeleteObjectAcl(
+StatusOr<EmptyResponse> RetryClient::DeleteObjectAcl(
     DeleteObjectAclRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -463,7 +460,7 @@ std::pair<Status, EmptyResponse> RetryClient::DeleteObjectAcl(
                   __func__);
 }
 
-std::pair<Status, ObjectAccessControl> RetryClient::GetObjectAcl(
+StatusOr<ObjectAccessControl> RetryClient::GetObjectAcl(
     GetObjectAclRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -473,7 +470,7 @@ std::pair<Status, ObjectAccessControl> RetryClient::GetObjectAcl(
                   __func__);
 }
 
-std::pair<Status, ObjectAccessControl> RetryClient::UpdateObjectAcl(
+StatusOr<ObjectAccessControl> RetryClient::UpdateObjectAcl(
     UpdateObjectAclRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -483,7 +480,7 @@ std::pair<Status, ObjectAccessControl> RetryClient::UpdateObjectAcl(
                   __func__);
 }
 
-std::pair<Status, ObjectAccessControl> RetryClient::PatchObjectAcl(
+StatusOr<ObjectAccessControl> RetryClient::PatchObjectAcl(
     PatchObjectAclRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -493,7 +490,7 @@ std::pair<Status, ObjectAccessControl> RetryClient::PatchObjectAcl(
                   __func__);
 }
 
-std::pair<Status, ListDefaultObjectAclResponse>
+StatusOr<ListDefaultObjectAclResponse>
 RetryClient::ListDefaultObjectAcl(ListDefaultObjectAclRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -503,7 +500,7 @@ RetryClient::ListDefaultObjectAcl(ListDefaultObjectAclRequest const& request) {
                   __func__);
 }
 
-std::pair<Status, ObjectAccessControl> RetryClient::CreateDefaultObjectAcl(
+StatusOr<ObjectAccessControl> RetryClient::CreateDefaultObjectAcl(
     CreateDefaultObjectAclRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -513,7 +510,7 @@ std::pair<Status, ObjectAccessControl> RetryClient::CreateDefaultObjectAcl(
                   enable_exceptions_, __func__);
 }
 
-std::pair<Status, EmptyResponse> RetryClient::DeleteDefaultObjectAcl(
+StatusOr<EmptyResponse> RetryClient::DeleteDefaultObjectAcl(
     DeleteDefaultObjectAclRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -523,7 +520,7 @@ std::pair<Status, EmptyResponse> RetryClient::DeleteDefaultObjectAcl(
                   enable_exceptions_, __func__);
 }
 
-std::pair<Status, ObjectAccessControl> RetryClient::GetDefaultObjectAcl(
+StatusOr<ObjectAccessControl> RetryClient::GetDefaultObjectAcl(
     GetDefaultObjectAclRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -533,7 +530,7 @@ std::pair<Status, ObjectAccessControl> RetryClient::GetDefaultObjectAcl(
                   __func__);
 }
 
-std::pair<Status, ObjectAccessControl> RetryClient::UpdateDefaultObjectAcl(
+StatusOr<ObjectAccessControl> RetryClient::UpdateDefaultObjectAcl(
     UpdateDefaultObjectAclRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -543,7 +540,7 @@ std::pair<Status, ObjectAccessControl> RetryClient::UpdateDefaultObjectAcl(
                   enable_exceptions_, __func__);
 }
 
-std::pair<Status, ObjectAccessControl> RetryClient::PatchDefaultObjectAcl(
+StatusOr<ObjectAccessControl> RetryClient::PatchDefaultObjectAcl(
     PatchDefaultObjectAclRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -553,7 +550,7 @@ std::pair<Status, ObjectAccessControl> RetryClient::PatchDefaultObjectAcl(
                   enable_exceptions_, __func__);
 }
 
-std::pair<Status, ServiceAccount> RetryClient::GetServiceAccount(
+StatusOr<ServiceAccount> RetryClient::GetServiceAccount(
     GetProjectServiceAccountRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -563,7 +560,7 @@ std::pair<Status, ServiceAccount> RetryClient::GetServiceAccount(
                   __func__);
 }
 
-std::pair<Status, ListNotificationsResponse> RetryClient::ListNotifications(
+StatusOr<ListNotificationsResponse> RetryClient::ListNotifications(
     ListNotificationsRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -573,7 +570,7 @@ std::pair<Status, ListNotificationsResponse> RetryClient::ListNotifications(
                   __func__);
 }
 
-std::pair<Status, NotificationMetadata> RetryClient::CreateNotification(
+StatusOr<NotificationMetadata> RetryClient::CreateNotification(
     CreateNotificationRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -583,7 +580,7 @@ std::pair<Status, NotificationMetadata> RetryClient::CreateNotification(
                   __func__);
 }
 
-std::pair<Status, NotificationMetadata> RetryClient::GetNotification(
+StatusOr<NotificationMetadata> RetryClient::GetNotification(
     GetNotificationRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
@@ -593,7 +590,7 @@ std::pair<Status, NotificationMetadata> RetryClient::GetNotification(
                   __func__);
 }
 
-std::pair<Status, EmptyResponse> RetryClient::DeleteNotification(
+StatusOr<EmptyResponse> RetryClient::DeleteNotification(
     DeleteNotificationRequest const& request) {
   auto retry_policy = retry_policy_->clone();
   auto backoff_policy = backoff_policy_->clone();
