@@ -92,7 +92,7 @@ void ObjectWriteStream::Close() {
     }
   }
 
-  // TODO() - do not raise here.
+  // TODO(#1747) - do not throw exceptions here.
   buf_->ValidateHash(*metadata_);
 }
 

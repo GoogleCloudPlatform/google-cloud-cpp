@@ -1170,7 +1170,7 @@ TEST_F(ObjectIntegrationTest, StreamingWriteFailure) {
 
   auto os = client.WriteObject(bucket_name, object_name, IfGenerationMatch(0));
   os.exceptions(std::ios_base::badbit | std::ios_base::failbit);
-  os << "Test message\n";
+  os << "Expected failure data:\n" << LoremIpsum();
 
   // This operation should fail because the object already exists.
   testing_util::ExpectException<std::ios::failure>(
@@ -1198,7 +1198,7 @@ TEST_F(ObjectIntegrationTest, StreamingWriteFailureNoex) {
   EXPECT_EQ(bucket_name, meta.bucket());
 
   auto os = client.WriteObject(bucket_name, object_name, IfGenerationMatch(0));
-  os << "Test message\n";
+  os << "Expected failure data:\n" << LoremIpsum();
 
   // This operation should fail because the object already exists.
   os.Close();
