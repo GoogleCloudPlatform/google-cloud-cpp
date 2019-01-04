@@ -60,8 +60,8 @@ export_variables_to_bazel("storage_client_version.bzl"
 add_library(storage_common_options INTERFACE)
 google_cloud_cpp_add_common_options(storage_common_options)
 
-# We use an if here because an empty generator expression would create an invalid
-# target_link_libraries().
+# We use an if here because an empty generator expression would create an
+# invalid target_link_libraries().
 if (GOOGLE_CLOUD_CPP_USE_LIBCXX)
     target_link_libraries(storage_common_options INTERFACE "c++abi")
 endif ()

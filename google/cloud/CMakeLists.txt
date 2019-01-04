@@ -231,7 +231,8 @@ install(EXPORT google_cloud_cpp_common-targets
 
 # Install the libraries and headers in the locations determined by
 # GNUInstallDirs
-install(TARGETS google_cloud_cpp_common google_cloud_cpp_common_options google_cloud_cpp_cxxabi_options
+install(TARGETS google_cloud_cpp_common google_cloud_cpp_common_options
+                google_cloud_cpp_cxxabi_options
         EXPORT google_cloud_cpp_common-targets
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
