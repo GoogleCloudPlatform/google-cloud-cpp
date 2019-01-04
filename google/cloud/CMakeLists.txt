@@ -62,6 +62,10 @@ include(GoogleCloudCppCommon)
 add_library(google_cloud_cpp_common_options INTERFACE)
 google_cloud_cpp_add_common_options(google_cloud_cpp_common_options)
 
+if (USE_LIBCXX)
+    target_link_libraries(google_cloud_cpp_common_options INTERFACE "c++abi")
+endif ()
+
 # Capture the compiler version and the git revision into variables, then
 # generate a config file with the values.
 if ("${GOOGLE_CLOUD_CPP_IS_RELEASE}")
@@ -170,7 +174,8 @@ if (BUILD_TESTING)
                 testing_util/testing_types.h
                 testing_util/testing_types.cc)
     target_link_libraries(google_cloud_cpp_testing
-                          PUBLIC google_cloud_cpp_common GTest::gmock)
+                          PUBLIC google_cloud_cpp_common GTest::gmock
+                          PRIVATE google_cloud_cpp_common_options)
 
     create_bazel_config(google_cloud_cpp_testing)
 

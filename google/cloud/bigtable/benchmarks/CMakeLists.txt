@@ -30,7 +30,12 @@ target_link_libraries(bigtable_benchmark_common
                       gRPC::grpc++
                       gRPC::grpc
                       protobuf::libprotobuf
-                      bigtable_common_options)
+                      bigtable_common_options
+                      $<$<BOOL:${USE_LIBCXX}>:c++abi>)
+
+if (USE_LIBCXX)
+    target_compile_options(bigtable_benchmark_common INTERFACE "-stdlib=libc++")
+endif ()
 
 if (BUILD_TESTING)
     # List the unit tests, then setup the targets and dependencies.

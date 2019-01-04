@@ -60,6 +60,10 @@ export_variables_to_bazel("storage_client_version.bzl"
 add_library(storage_common_options INTERFACE)
 google_cloud_cpp_add_common_options(storage_common_options)
 
+if (USE_LIBCXX)
+    target_link_libraries(storage_common_options INTERFACE "c++abi")
+endif ()
+
 # Enable unit tests
 include(CTest)
 
@@ -271,6 +275,12 @@ if (BUILD_TESTING)
                                       $<INSTALL_INTERFACE:include>)
     target_compile_options(storage_client_testing
                            PUBLIC ${GOOGLE_CLOUD_CPP_EXCEPTIONS_FLAG})
+
+    if (USE_LIBCXX)
+        target_compile_options(storage_client_testing
+                               INTERFACE "-stdlib=libc++")
+        target_link_libraries(storage_client_testing INTERFACE "c++abi")
+    endif ()
 
     create_bazel_config(storage_client_testing)
 

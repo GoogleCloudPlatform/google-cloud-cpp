@@ -41,7 +41,6 @@ if (NOT TARGET gprc_project)
                                                    "grpc++"
                                                    "gpr"
                                                    "address_sorting")
-
     include(ExternalProject)
     externalproject_add(
         grpc_project
@@ -60,6 +59,12 @@ if (NOT TARGET gprc_project)
                    -DgRPC_SSL_PROVIDER=package
                    -DgRPC_CARES_PROVIDER=package
                    -DgRPC_PROTOBUF_PROVIDER=package
+                   $<$<BOOL:${USE_LIBCXX}>:
+                   -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+                   -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+                   -DCMAKE_CXX_FLAGS=-stdlib=libc++
+                   -DCMAKE_SHARED_LINKER_FLAGS=-Wl,-lc++abi
+                   >
         BUILD_COMMAND ${CMAKE_COMMAND}
                       --build
                       <BINARY_DIR>
