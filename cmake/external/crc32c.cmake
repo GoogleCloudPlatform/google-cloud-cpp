@@ -50,6 +50,12 @@ if (NOT TARGET crc32c_project)
                                    -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}
                                    -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
                                    -DCMAKE_PREFIX_PATH=<INSTALL_DIR>
+                                   $<$<BOOL:${USE_LIBCXX}>:
+                                   -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+                                   -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+                                   -DCMAKE_CXX_FLAGS=-stdlib=libc++
+                                   -DCMAKE_SHARED_LINKER_FLAGS=-Wl,-lc++abi
+                                   >
                         BUILD_COMMAND ${CMAKE_COMMAND}
                                       --build
                                       <BINARY_DIR>

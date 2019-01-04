@@ -62,6 +62,10 @@ include(GoogleCloudCppCommon)
 add_library(google_cloud_cpp_common_options INTERFACE)
 google_cloud_cpp_add_common_options(google_cloud_cpp_common_options)
 
+if (USE_LIBCXX)
+    target_link_libraries(google_cloud_cpp_common_options INTERFACE "c++abi")
+endif ()
+
 # Capture the compiler version and the git revision into variables, then
 # generate a config file with the values.
 if ("${GOOGLE_CLOUD_CPP_IS_RELEASE}")
