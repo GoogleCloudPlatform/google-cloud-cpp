@@ -62,8 +62,9 @@ include(GoogleCloudCppCommon)
 add_library(google_cloud_cpp_common_options INTERFACE)
 google_cloud_cpp_add_common_options(google_cloud_cpp_common_options)
 
-if (USE_LIBCXX)
-    target_link_libraries(google_cloud_cpp_common_options INTERFACE "c++abi")
+add_library(google_cloud_cpp_cxxabi_options INTERFACE)
+if (GOOGLE_CLOUD_CPP_USE_LIBCXX)
+    target_link_libraries(google_cloud_cpp_cxxabi_options INTERFACE "c++abi")
 endif ()
 
 # Capture the compiler version and the git revision into variables, then
@@ -140,7 +141,8 @@ add_library(google_cloud_cpp_common
             version.h)
 target_link_libraries(google_cloud_cpp_common
                       PUBLIC Threads::Threads
-                      PRIVATE google_cloud_cpp_common_options)
+                      PRIVATE google_cloud_cpp_common_options
+                              google_cloud_cpp_cxxabi_options)
 target_include_directories(google_cloud_cpp_common
                            PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
                                   $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
@@ -175,7 +177,8 @@ if (BUILD_TESTING)
                 testing_util/testing_types.cc)
     target_link_libraries(google_cloud_cpp_testing
                           PUBLIC google_cloud_cpp_common GTest::gmock
-                          PRIVATE google_cloud_cpp_common_options)
+                          PRIVATE google_cloud_cpp_common_options
+                                  google_cloud_cpp_cxxabi_options)
 
     create_bazel_config(google_cloud_cpp_testing)
 
@@ -228,7 +231,7 @@ install(EXPORT google_cloud_cpp_common-targets
 
 # Install the libraries and headers in the locations determined by
 # GNUInstallDirs
-install(TARGETS google_cloud_cpp_common google_cloud_cpp_common_options
+install(TARGETS google_cloud_cpp_common google_cloud_cpp_common_options google_cloud_cpp_cxxabi_options
         EXPORT google_cloud_cpp_common-targets
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

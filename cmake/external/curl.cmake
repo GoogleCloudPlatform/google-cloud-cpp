@@ -62,6 +62,7 @@ if (NOT TARGET curl_project)
                    -DCURL_STATICLIB=$<NOT:$<BOOL:${BUILD_SHARED_LIBS}>>
                    -DCMAKE_DEBUG_POSTFIX=
                    -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+                   -DCMAKE_INSTALL_RPATH=<INSTALL_DIR>/external/lib;<INSTALL_DIR>/external/lib64
         BUILD_COMMAND ${CMAKE_COMMAND}
                       --build
                       <BINARY_DIR>

@@ -43,7 +43,7 @@ include(GoogleCloudCppCommon)
 add_library(firestore_common_options INTERFACE)
 google_cloud_cpp_add_common_options(firestore_common_options)
 
-if (USE_LIBCXX)
+if (GOOGLE_CLOUD_CPP_USE_LIBCXX)
     target_link_libraries(firestore_common_options INTERFACE "c++abi")
 endif ()
 

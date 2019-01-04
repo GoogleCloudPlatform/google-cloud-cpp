@@ -56,14 +56,13 @@ if (NOT TARGET gprc_project)
                    -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
                    -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}
                    -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+                   -DCMAKE_INSTALL_RPATH=<INSTALL_DIR>/external/lib;<INSTALL_DIR>/external/lib64
                    -DgRPC_BUILD_TESTS=OFF
                    -DgRPC_ZLIB_PROVIDER=package
                    -DgRPC_SSL_PROVIDER=package
                    -DgRPC_CARES_PROVIDER=package
                    -DgRPC_PROTOBUF_PROVIDER=package
-                   $<$<BOOL:${USE_LIBCXX}>:
-                   -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-                   -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+                   $<$<BOOL:${GOOGLE_CLOUD_CPP_USE_LIBCXX}>:
                    -DCMAKE_CXX_FLAGS=-stdlib=libc++
                    -DCMAKE_SHARED_LINKER_FLAGS=-Wl,-lc++abi
                    >

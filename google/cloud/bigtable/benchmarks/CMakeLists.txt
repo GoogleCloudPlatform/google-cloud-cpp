@@ -31,9 +31,9 @@ target_link_libraries(bigtable_benchmark_common
                       gRPC::grpc
                       protobuf::libprotobuf
                       bigtable_common_options
-                      $<$<BOOL:${USE_LIBCXX}>:c++abi>)
+                      google_cloud_cpp_cxxabi_options)
 
-if (USE_LIBCXX)
+if (GOOGLE_CLOUD_CPP_USE_LIBCXX)
     target_compile_options(bigtable_benchmark_common INTERFACE "-stdlib=libc++")
 endif ()
 

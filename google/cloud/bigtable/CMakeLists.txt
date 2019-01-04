@@ -50,7 +50,9 @@ include(GoogleCloudCppCommon)
 add_library(bigtable_common_options INTERFACE)
 google_cloud_cpp_add_common_options(bigtable_common_options)
 
-if (USE_LIBCXX)
+# We use an if here because an empty generator expression would create an invalid
+# target_link_libraries().
+if (GOOGLE_CLOUD_CPP_USE_LIBCXX)
     target_link_libraries(bigtable_common_options INTERFACE "c++abi")
 endif ()
 
@@ -104,14 +106,14 @@ target_link_libraries(bigtable_protos
                       gRPC::grpc++
                       gRPC::grpc
                       protobuf::libprotobuf
-                      $<$<BOOL:${USE_LIBCXX}>:c++abi>)
+                      google_cloud_cpp_cxxabi_options)
 target_include_directories(bigtable_protos
                            PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
                                   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
                                   $<INSTALL_INTERFACE:include>)
 target_compile_options(bigtable_protos
                        PUBLIC ${GOOGLE_CLOUD_CPP_EXCEPTIONS_FLAG}
-                       PRIVATE $<$<BOOL:${USE_LIBCXX}>:-stdlib=libc++>)
+                              $<$<BOOL:${GOOGLE_CLOUD_CPP_USE_LIBCXX}>:-stdlib=libc++>)
 set_target_properties(
     bigtable_protos
     PROPERTIES
@@ -304,7 +306,7 @@ if (BUILD_TESTING)
                                  protobuf::libprotobuf
                           PRIVATE bigtable_common_options)
 
-    if (USE_LIBCXX)
+    if (GOOGLE_CLOUD_CPP_USE_LIBCXX)
         target_compile_options(bigtable_client_testing
                                INTERFACE "-stdlib=libc++")
         target_link_libraries(bigtable_client_testing INTERFACE "c++abi")
