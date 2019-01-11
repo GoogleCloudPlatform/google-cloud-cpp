@@ -230,10 +230,11 @@ TEST_F(ObjectInsertIntegrationTest, InsertPredefinedAclBucketOwnerFullControl) {
   auto bucket_name = ObjectTestEnvironment::bucket_name();
   auto object_name = MakeRandomObjectName();
 
-  BucketMetadata bucket =
+  StatusOr<BucketMetadata> bucket =
       client.GetBucketMetadata(bucket_name, Projection::Full());
-  ASSERT_TRUE(bucket.has_owner());
-  std::string owner = bucket.owner().entity;
+  ASSERT_TRUE(bucket.ok()) << "status=" << bucket.status();
+  ASSERT_TRUE(bucket->has_owner());
+  std::string owner = bucket->owner().entity;
 
   ObjectMetadata meta = client.InsertObject(
       bucket_name, object_name, LoremIpsum(), IfGenerationMatch(0),
@@ -251,10 +252,11 @@ TEST_F(ObjectInsertIntegrationTest, InsertPredefinedAclBucketOwnerRead) {
   auto bucket_name = ObjectTestEnvironment::bucket_name();
   auto object_name = MakeRandomObjectName();
 
-  BucketMetadata bucket =
+  StatusOr<BucketMetadata> bucket =
       client.GetBucketMetadata(bucket_name, Projection::Full());
-  ASSERT_TRUE(bucket.has_owner());
-  std::string owner = bucket.owner().entity;
+  ASSERT_TRUE(bucket.ok()) << "status=" << bucket.status();
+  ASSERT_TRUE(bucket->has_owner());
+  std::string owner = bucket->owner().entity;
 
   ObjectMetadata meta = client.InsertObject(
       bucket_name, object_name, LoremIpsum(), IfGenerationMatch(0),
@@ -345,10 +347,11 @@ TEST_F(ObjectInsertIntegrationTest,
   auto bucket_name = ObjectTestEnvironment::bucket_name();
   auto object_name = MakeRandomObjectName();
 
-  BucketMetadata bucket =
+  StatusOr<BucketMetadata> bucket =
       client.GetBucketMetadata(bucket_name, Projection::Full());
-  ASSERT_TRUE(bucket.has_owner());
-  std::string owner = bucket.owner().entity;
+  ASSERT_TRUE(bucket.ok()) << "status=" << bucket.status();
+  ASSERT_TRUE(bucket->has_owner());
+  std::string owner = bucket->owner().entity;
 
   client.InsertObject(bucket_name, object_name, LoremIpsum(),
                       IfGenerationMatch(0),
@@ -368,10 +371,11 @@ TEST_F(ObjectInsertIntegrationTest, XmlInsertPredefinedAclBucketOwnerRead) {
   auto bucket_name = ObjectTestEnvironment::bucket_name();
   auto object_name = MakeRandomObjectName();
 
-  BucketMetadata bucket =
+  StatusOr<BucketMetadata> bucket =
       client.GetBucketMetadata(bucket_name, Projection::Full());
-  ASSERT_TRUE(bucket.has_owner());
-  std::string owner = bucket.owner().entity;
+  ASSERT_TRUE(bucket.ok()) << "status=" << bucket.status();
+  ASSERT_TRUE(bucket->has_owner());
+  std::string owner = bucket->owner().entity;
 
   client.InsertObject(bucket_name, object_name, LoremIpsum(),
                       IfGenerationMatch(0), PredefinedAcl::BucketOwnerRead(),

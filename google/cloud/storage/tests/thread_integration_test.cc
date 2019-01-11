@@ -150,10 +150,10 @@ TEST_F(ThreadIntegrationTest, Unshared) {
     t.get();
   }
 
-  client.DeleteBucket(bucket_name);
+  auto delete_status = client.DeleteBucket(bucket_name);
+  ASSERT_TRUE(delete_status.ok()) << "status=" << delete_status.status();
   // This is basically a smoke test, if the test does not crash it was
   // successful.
-  SUCCEED();
 }
 
 class CaptureSendHeaderBackend : public LogBackend {
@@ -214,7 +214,8 @@ TEST_F(ThreadIntegrationTest, ReuseConnections) {
     delete_elapsed.emplace_back(std::chrono::steady_clock::now() - start);
   }
   LogSink::Instance().RemoveBackend(id);
-  client.DeleteBucket(bucket_name);
+  auto delete_status = client.DeleteBucket(bucket_name);
+  ASSERT_TRUE(delete_status.ok()) << "status=" << delete_status.status();
 
   std::set<std::string> connected;
   std::copy_if(
