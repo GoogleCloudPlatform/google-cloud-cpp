@@ -693,7 +693,7 @@ $VAR1 = {
                                        },
                             '54774' => {
                                          'Header' => 'throw_delegate.h',
-                                         'MnglName' => '_ZN6google5cloud2v08internal15RaiseLogicErrorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE',
+                                         'MnglName' => '_ZN6google5cloud2v08internal15ThrowLogicErrorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE',
                                          'NameSpace' => 'google::cloud::v0::internal',
                                          'Param' => {
                                                       '0' => {
@@ -702,13 +702,13 @@ $VAR1 = {
                                                              }
                                                     },
                                          'Return' => '1',
-                                         'ShortName' => 'RaiseLogicError',
+                                         'ShortName' => 'ThrowLogicError',
                                          'Source' => 'throw_delegate.cc',
                                          'SourceLine' => '63'
                                        },
                             '54795' => {
                                          'Header' => 'throw_delegate.h',
-                                         'MnglName' => '_ZN6google5cloud2v08internal15RaiseLogicErrorEPKc',
+                                         'MnglName' => '_ZN6google5cloud2v08internal15ThrowLogicErrorEPKc',
                                          'NameSpace' => 'google::cloud::v0::internal',
                                          'Param' => {
                                                       '0' => {
@@ -717,13 +717,13 @@ $VAR1 = {
                                                              }
                                                     },
                                          'Return' => '1',
-                                         'ShortName' => 'RaiseLogicError',
+                                         'ShortName' => 'ThrowLogicError',
                                          'Source' => 'throw_delegate.cc',
                                          'SourceLine' => '61'
                                        },
                             '54816' => {
                                          'Header' => 'throw_delegate.h',
-                                         'MnglName' => '_ZN6google5cloud2v08internal17RaiseRuntimeErrorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE',
+                                         'MnglName' => '_ZN6google5cloud2v08internal17ThrowRuntimeErrorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE',
                                          'NameSpace' => 'google::cloud::v0::internal',
                                          'Param' => {
                                                       '0' => {
@@ -732,13 +732,13 @@ $VAR1 = {
                                                              }
                                                     },
                                          'Return' => '1',
-                                         'ShortName' => 'RaiseRuntimeError',
+                                         'ShortName' => 'ThrowRuntimeError',
                                          'Source' => 'throw_delegate.cc',
                                          'SourceLine' => '57'
                                        },
                             '54837' => {
                                          'Header' => 'throw_delegate.h',
-                                         'MnglName' => '_ZN6google5cloud2v08internal17RaiseRuntimeErrorEPKc',
+                                         'MnglName' => '_ZN6google5cloud2v08internal17ThrowRuntimeErrorEPKc',
                                          'NameSpace' => 'google::cloud::v0::internal',
                                          'Param' => {
                                                       '0' => {
@@ -747,13 +747,13 @@ $VAR1 = {
                                                              }
                                                     },
                                          'Return' => '1',
-                                         'ShortName' => 'RaiseRuntimeError',
+                                         'ShortName' => 'ThrowRuntimeError',
                                          'Source' => 'throw_delegate.cc',
                                          'SourceLine' => '53'
                                        },
                             '54858' => {
                                          'Header' => 'throw_delegate.h',
-                                         'MnglName' => '_ZN6google5cloud2v08internal15RaiseRangeErrorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE',
+                                         'MnglName' => '_ZN6google5cloud2v08internal15ThrowRangeErrorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE',
                                          'NameSpace' => 'google::cloud::v0::internal',
                                          'Param' => {
                                                       '0' => {
@@ -762,13 +762,13 @@ $VAR1 = {
                                                              }
                                                     },
                                          'Return' => '1',
-                                         'ShortName' => 'RaiseRangeError',
+                                         'ShortName' => 'ThrowRangeError',
                                          'Source' => 'throw_delegate.cc',
                                          'SourceLine' => '49'
                                        },
                             '54879' => {
                                          'Header' => 'throw_delegate.h',
-                                         'MnglName' => '_ZN6google5cloud2v08internal15RaiseRangeErrorEPKc',
+                                         'MnglName' => '_ZN6google5cloud2v08internal15ThrowRangeErrorEPKc',
                                          'NameSpace' => 'google::cloud::v0::internal',
                                          'Param' => {
                                                       '0' => {
@@ -777,13 +777,13 @@ $VAR1 = {
                                                              }
                                                     },
                                          'Return' => '1',
-                                         'ShortName' => 'RaiseRangeError',
+                                         'ShortName' => 'ThrowRangeError',
                                          'Source' => 'throw_delegate.cc',
                                          'SourceLine' => '47'
                                        },
                             '54900' => {
                                          'Header' => 'throw_delegate.h',
-                                         'MnglName' => '_ZN6google5cloud2v08internal20RaiseInvalidArgumentERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE',
+                                         'MnglName' => '_ZN6google5cloud2v08internal20ThrowInvalidArgumentERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE',
                                          'NameSpace' => 'google::cloud::v0::internal',
                                          'Param' => {
                                                       '0' => {
@@ -792,13 +792,13 @@ $VAR1 = {
                                                              }
                                                     },
                                          'Return' => '1',
-                                         'ShortName' => 'RaiseInvalidArgument',
+                                         'ShortName' => 'ThrowInvalidArgument',
                                          'Source' => 'throw_delegate.cc',
                                          'SourceLine' => '43'
                                        },
                             '54921' => {
                                          'Header' => 'throw_delegate.h',
-                                         'MnglName' => '_ZN6google5cloud2v08internal20RaiseInvalidArgumentEPKc',
+                                         'MnglName' => '_ZN6google5cloud2v08internal20ThrowInvalidArgumentEPKc',
                                          'NameSpace' => 'google::cloud::v0::internal',
                                          'Param' => {
                                                       '0' => {
@@ -807,7 +807,7 @@ $VAR1 = {
                                                              }
                                                     },
                                          'Return' => '1',
-                                         'ShortName' => 'RaiseInvalidArgument',
+                                         'ShortName' => 'ThrowInvalidArgument',
                                          'Source' => 'throw_delegate.cc',
                                          'SourceLine' => '39'
                                        }
@@ -831,14 +831,14 @@ $VAR1 = {
                                                               '_ZN6google5cloud2v07LogSinkD1Ev' => 1,
                                                               '_ZN6google5cloud2v07LogSinkD2Ev' => 1,
                                                               '_ZN6google5cloud2v08internal14compiler_flagsB5cxx11Ev' => 1,
-                                                              '_ZN6google5cloud2v08internal15RaiseLogicErrorEPKc' => 1,
-                                                              '_ZN6google5cloud2v08internal15RaiseLogicErrorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE' => 1,
-                                                              '_ZN6google5cloud2v08internal15RaiseRangeErrorEPKc' => 1,
-                                                              '_ZN6google5cloud2v08internal15RaiseRangeErrorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE' => 1,
-                                                              '_ZN6google5cloud2v08internal17RaiseRuntimeErrorEPKc' => 1,
-                                                              '_ZN6google5cloud2v08internal17RaiseRuntimeErrorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE' => 1,
-                                                              '_ZN6google5cloud2v08internal20RaiseInvalidArgumentEPKc' => 1,
-                                                              '_ZN6google5cloud2v08internal20RaiseInvalidArgumentERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE' => 1,
+                                                              '_ZN6google5cloud2v08internal15ThrowLogicErrorEPKc' => 1,
+                                                              '_ZN6google5cloud2v08internal15ThrowLogicErrorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE' => 1,
+                                                              '_ZN6google5cloud2v08internal15ThrowRangeErrorEPKc' => 1,
+                                                              '_ZN6google5cloud2v08internal15ThrowRangeErrorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE' => 1,
+                                                              '_ZN6google5cloud2v08internal17ThrowRuntimeErrorEPKc' => 1,
+                                                              '_ZN6google5cloud2v08internal17ThrowRuntimeErrorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE' => 1,
+                                                              '_ZN6google5cloud2v08internal20ThrowInvalidArgumentEPKc' => 1,
+                                                              '_ZN6google5cloud2v08internal20ThrowInvalidArgumentERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE' => 1,
                                                               '_ZN6google5cloud2v08internal6SetEnvEPKcS4_' => 1,
                                                               '_ZN6google5cloud2v08internal6gitrevB5cxx11Ev' => 1,
                                                               '_ZN6google5cloud2v08internal8UnsetEnvEPKc' => 1,
