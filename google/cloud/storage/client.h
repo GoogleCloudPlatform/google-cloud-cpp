@@ -1343,7 +1343,7 @@ class Client {
     internal::ListBucketAclRequest request(bucket_name);
     request.set_multiple_options(std::forward<Options>(options)...);
     auto items = raw_client_->ListBucketAcl(request);
-    if (not items.ok()) {
+    if (!items.ok()) {
       return std::move(items).status();
     }
     return std::move(items.value().items);
@@ -1840,7 +1840,7 @@ class Client {
     internal::ListDefaultObjectAclRequest request(bucket_name);
     request.set_multiple_options(std::forward<Options>(options)...);
     auto response = raw_client_->ListDefaultObjectAcl(request);
-    if (not response.ok()) {
+    if (!response.ok()) {
       return std::move(response).status();
     }
     return std::move(response.value().items);
@@ -2231,7 +2231,7 @@ class Client {
     internal::ListNotificationsRequest request(bucket_name);
     request.set_multiple_options(std::forward<Options>(options)...);
     auto result = raw_client_->ListNotifications(request);
-    if (not result.ok()) {
+    if (!result.ok()) {
       return std::move(result).status();
     }
     return std::move(result).value().items;

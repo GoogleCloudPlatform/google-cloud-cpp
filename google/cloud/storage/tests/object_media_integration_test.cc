@@ -357,7 +357,7 @@ TEST_F(ObjectMediaIntegrationTest, UploadFileNonRegularWarning) {
   auto count = std::count_if(
       backend->log_lines.begin(), backend->log_lines.end(),
       [file_name](std::string const& line) {
-        return line.find(file_name) != std::string::npos and
+        return line.find(file_name) != std::string::npos &&
                line.find("not a regular file") != std::string::npos;
       });
   EXPECT_NE(0U, count);
@@ -622,7 +622,7 @@ TEST_F(ObjectMediaIntegrationTest, StreamingReadClose) {
 
 /// @test Verify that MD5 hash mismatches are reported by default on downloads.
 TEST_F(ObjectMediaIntegrationTest, MismatchedMD5StreamingReadXML) {
-  if (not UsingTestbench()) {
+  if (!UsingTestbench()) {
     // This test is disabled when not using the testbench as it relies on the
     // testbench to inject faults.
     return;
@@ -664,7 +664,7 @@ TEST_F(ObjectMediaIntegrationTest, MismatchedMD5StreamingReadXML) {
 
 /// @test Verify that MD5 hash mismatches are reported by default on downloads.
 TEST_F(ObjectMediaIntegrationTest, MismatchedMD5StreamingReadJSON) {
-  if (not UsingTestbench()) {
+  if (!UsingTestbench()) {
     // This test is disabled when not using the testbench as it relies on the
     // testbench to inject faults.
     return;
@@ -707,7 +707,7 @@ TEST_F(ObjectMediaIntegrationTest, MismatchedMD5StreamingReadJSON) {
 
 /// @test Verify that MD5 hash mismatches are reported by default on downloads.
 TEST_F(ObjectMediaIntegrationTest, MismatchedMD5StreamingWriteXML) {
-  if (not UsingTestbench()) {
+  if (!UsingTestbench()) {
     // This test is disabled when not using the testbench as it relies on the
     // testbench to inject faults.
     return;
@@ -735,7 +735,7 @@ TEST_F(ObjectMediaIntegrationTest, MismatchedMD5StreamingWriteXML) {
 
 /// @test Verify that MD5 hash mismatches are reported by default on downloads.
 TEST_F(ObjectMediaIntegrationTest, MismatchedMD5StreamingWriteJSON) {
-  if (not UsingTestbench()) {
+  if (!UsingTestbench()) {
     // This test is disabled when not using the testbench as it relies on the
     // testbench to inject faults.
     return;
@@ -1023,7 +1023,7 @@ TEST_F(ObjectMediaIntegrationTest, DefaultCrc32cStreamingWriteJSON) {
 /// @test Verify that CRC32C checksum mismatches are reported by default on
 /// downloads.
 TEST_F(ObjectMediaIntegrationTest, MismatchedCrc32cStreamingReadXML) {
-  if (not UsingTestbench()) {
+  if (!UsingTestbench()) {
     // This test is disabled when not using the testbench as it relies on the
     // testbench to inject faults.
     return;
@@ -1067,7 +1067,7 @@ TEST_F(ObjectMediaIntegrationTest, MismatchedCrc32cStreamingReadXML) {
 /// @test Verify that CRC32C checksum mismatches are reported by default on
 /// downloads.
 TEST_F(ObjectMediaIntegrationTest, MismatchedCrc32cStreamingReadJSON) {
-  if (not UsingTestbench()) {
+  if (!UsingTestbench()) {
     // This test is disabled when not using the testbench as it relies on the
     // testbench to inject faults.
     return;
@@ -1111,7 +1111,7 @@ TEST_F(ObjectMediaIntegrationTest, MismatchedCrc32cStreamingReadJSON) {
 /// @test Verify that CRC32C checksum mismatches are reported by default on
 /// downloads.
 TEST_F(ObjectMediaIntegrationTest, MismatchedCrc32cStreamingWriteXML) {
-  if (not UsingTestbench()) {
+  if (!UsingTestbench()) {
     // This test is disabled when not using the testbench as it relies on the
     // testbench to inject faults.
     return;
@@ -1140,7 +1140,7 @@ TEST_F(ObjectMediaIntegrationTest, MismatchedCrc32cStreamingWriteXML) {
 /// @test Verify that CRC32C checksum mismatches are reported by default on
 /// downloads.
 TEST_F(ObjectMediaIntegrationTest, MismatchedCrc32cStreamingWriteJSON) {
-  if (not UsingTestbench()) {
+  if (!UsingTestbench()) {
     // This test is disabled when not using the testbench as it relies on the
     // testbench to inject faults.
     return;

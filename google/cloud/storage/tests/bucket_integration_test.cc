@@ -161,11 +161,11 @@ TEST_F(BucketIntegrationTest, FullPatch) {
                                             .set_role("READER"));
 
   // billing()
-  if (not desired_state.has_billing()) {
+  if (!desired_state.has_billing()) {
     desired_state.set_billing(BucketBilling(false));
   } else {
     desired_state.set_billing(
-        BucketBilling(not desired_state.billing().requester_pays));
+        BucketBilling(!desired_state.billing().requester_pays));
   }
 
   // cors()
@@ -207,7 +207,7 @@ TEST_F(BucketIntegrationTest, FullPatch) {
   desired_state.set_storage_class(storage_class::Coldline());
 
   // versioning()
-  if (not desired_state.has_versioning()) {
+  if (!desired_state.has_versioning()) {
     desired_state.enable_versioning();
   } else {
     desired_state.reset_versioning();
@@ -637,8 +637,8 @@ TEST_F(BucketIntegrationTest, CreateFailure) {
   // uppercase letter), the service (or testbench) will reject the request and
   // we should report that error correctly. For good measure, make the project
   // id invalid too.
-  StatusOr<BucketMetadata> meta = client.CreateBucketForProject("Invalid_Bucket_Name", "Invalid-project-id-",
-                                  BucketMetadata());
+  StatusOr<BucketMetadata> meta = client.CreateBucketForProject(
+      "Invalid_Bucket_Name", "Invalid-project-id-", BucketMetadata());
   ASSERT_FALSE(meta.ok()) << "metadata=" << meta.value();
 }
 

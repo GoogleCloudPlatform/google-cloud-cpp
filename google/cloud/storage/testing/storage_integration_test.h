@@ -60,11 +60,12 @@ class StorageIntegrationTest : public ::testing::Test {
 template <typename Callable>
 void TestPermanentFailure(Callable&& callable) {
 #if GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
-  EXPECT_THROW(try { callable(); } catch (std::runtime_error const& ex) {
-    EXPECT_THAT(ex.what(), ::testing::HasSubstr("Permanent error in"));
-    throw;
-  },
-               std::runtime_error);
+  EXPECT_THROW(
+      try { callable(); } catch (std::runtime_error const& ex) {
+        EXPECT_THAT(ex.what(), ::testing::HasSubstr("Permanent error in"));
+        throw;
+      },
+      std::runtime_error);
 #else
   EXPECT_DEATH_IF_SUPPORTED(callable(), "exceptions are disabled");
 #endif  // GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
@@ -79,7 +80,7 @@ CountMatchingEntities(std::vector<AccessControlResource> const& acl,
                       AccessControlResource const& expected) {
   return std::count_if(
       acl.begin(), acl.end(), [&expected](AccessControlResource const& x) {
-        return x.entity() == expected.entity() and x.role() == expected.role();
+        return x.entity() == expected.entity() && x.role() == expected.role();
       });
 }
 

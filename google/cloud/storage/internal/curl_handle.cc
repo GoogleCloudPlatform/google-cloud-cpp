@@ -26,9 +26,8 @@ using google::cloud::storage::internal::BinaryDataAsDebugString;
 
 std::size_t const MAX_DATA_DEBUG_SIZE = 48;
 
-extern "C" int CurlHandleDebugCallback(CURL*, curl_infotype type,
-                                       char* data, std::size_t size,
-                                       void* userptr) {
+extern "C" int CurlHandleDebugCallback(CURL*, curl_infotype type, char* data,
+                                       std::size_t size, void* userptr) {
   auto debug_buffer = reinterpret_cast<std::string*>(userptr);
   switch (type) {
     case CURLINFO_TEXT:
@@ -139,7 +138,7 @@ void CurlHandle::EnableLogging(bool enabled) {
 }
 
 void CurlHandle::FlushDebug(char const* where) {
-  if (not debug_buffer_.empty()) {
+  if (!debug_buffer_.empty()) {
     GCP_LOG(DEBUG) << where << ' ' << debug_buffer_;
     debug_buffer_.clear();
   }

@@ -73,10 +73,10 @@ class Status {
   bool ok() const { return status_code_ == StatusCode::kOk; }
 
   bool operator==(Status const& rhs) const {
-    return status_code() == rhs.status_code() and
+    return status_code() == rhs.status_code() &&
            error_message() == rhs.error_message();
   }
-  bool operator!=(Status const& rhs) const { return not(*this == rhs); }
+  bool operator!=(Status const& rhs) const { return !(*this == rhs); }
 
   StatusCode code() const { return status_code_; }
   long status_code() const { return status_code_; }

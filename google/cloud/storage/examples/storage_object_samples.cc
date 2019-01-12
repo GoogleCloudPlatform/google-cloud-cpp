@@ -57,7 +57,7 @@ void ListObjects(google::cloud::storage::Client client, int& argc,
   namespace gcs = google::cloud::storage;
   [](gcs::Client client, std::string bucket_name) {
     for (auto&& object_metadata : client.ListObjects(bucket_name)) {
-      if (not object_metadata.ok()) {
+      if (!object_metadata.ok()) {
         std::cerr << "Error reading object list for " << bucket_name
                   << ", status=" << object_metadata.status();
         return;
@@ -86,7 +86,7 @@ void InsertObject(google::cloud::storage::Client client, int& argc,
      std::string contents) {
     StatusOr<gcs::ObjectMetadata> meta =
         client.InsertObject(bucket_name, object_name, std::move(contents));
-    if (not meta.ok()) {
+    if (!meta.ok()) {
       std::cerr << "Error inserting object " << object_name << " in bucket "
                 << bucket_name << ", status=" << meta.status() << std::endl;
       return;
@@ -118,7 +118,7 @@ void InsertObjectStrictIdempotency(google::cloud::storage::Client unused,
     StatusOr<gcs::ObjectMetadata> meta =
         client.InsertObject(bucket_name, object_name, std::move(contents),
                             gcs::IfGenerationMatch(0));
-    if (not meta.ok()) {
+    if (!meta.ok()) {
       std::cerr << "Error inserting object " << object_name << " in bucket "
                 << bucket_name << ", status=" << meta.status() << std::endl;
       return;
@@ -151,7 +151,7 @@ void InsertObjectModifiedRetry(google::cloud::storage::Client unused, int& argc,
     StatusOr<gcs::ObjectMetadata> meta =
         client.InsertObject(bucket_name, object_name, std::move(contents),
                             gcs::IfGenerationMatch(0));
-    if (not meta.ok()) {
+    if (!meta.ok()) {
       std::cerr << "Error inserting object " << object_name << " in bucket "
                 << bucket_name << ", status=" << meta.status() << std::endl;
       return;
@@ -249,7 +249,7 @@ void ReadObject(google::cloud::storage::Client client, int& argc,
   [](gcs::Client client, std::string bucket_name, std::string object_name) {
     gcs::ObjectReadStream stream = client.ReadObject(bucket_name, object_name);
     int count = 0;
-    while (not stream.eof()) {
+    while (!stream.eof()) {
       std::string line;
       std::getline(stream, line, '\n');
       ++count;
@@ -594,7 +594,7 @@ void ReadObjectUnauthenticated(google::cloud::storage::Client client, int& argc,
     // Read an object, the object must have been made public.
     gcs::ObjectReadStream stream = client.ReadObject(bucket_name, object_name);
     int count = 0;
-    while (not stream.eof()) {
+    while (!stream.eof()) {
       std::string line;
       std::getline(stream, line, '\n');
       ++count;
@@ -668,7 +668,7 @@ void WriteEncryptedObject(google::cloud::storage::Client client, int& argc,
     StatusOr<gcs::ObjectMetadata> meta = client.InsertObject(
         bucket_name, object_name, "top secret",
         gcs::EncryptionKey::FromBase64Key(base64_aes256_key));
-    if (not meta.ok()) {
+    if (!meta.ok()) {
       std::cerr << "Error inserting object " << object_name << " in bucket "
                 << bucket_name << ", status=" << meta.status() << std::endl;
       return;
@@ -844,7 +844,7 @@ void RewriteObjectNonBlocking(google::cloud::storage::Client client, int& argc,
                              destination_bucket_name, destination_object_name);
     StatusOr<gcs::ObjectMetadata> meta = rewriter.ResultWithProgressCallback(
         [](StatusOr<gcs::RewriteProgress> const& progress) {
-          if (not progress.ok()) {
+          if (!progress.ok()) {
             std::cerr << "Error during rewrite: " << progress.status()
                       << std::endl;
             return;
@@ -882,7 +882,7 @@ void RewriteObjectToken(google::cloud::storage::Client client, int& argc,
         source_bucket_name, source_object_name, destination_bucket_name,
         destination_object_name, gcs::MaxBytesRewrittenPerCall(1024 * 1024));
     StatusOr<gcs::RewriteProgress> progress = rewriter.Iterate();
-    if (not progress.ok()) {
+    if (!progress.ok()) {
       std::cerr << "Error during rewrite: " << progress.status() << std::endl;
       return;
     }
@@ -923,7 +923,7 @@ void RewriteObjectResume(google::cloud::storage::Client client, int& argc,
         gcs::MaxBytesRewrittenPerCall(1024 * 1024));
     StatusOr<gcs::ObjectMetadata> meta = rewriter.ResultWithProgressCallback(
         [](StatusOr<gcs::RewriteProgress> const& progress) {
-          if (not progress.ok()) {
+          if (!progress.ok()) {
             std::cerr << "Error during rewrite: " << progress.status()
                       << std::endl;
             return;
@@ -960,7 +960,7 @@ void RotateEncryptionKey(google::cloud::storage::Client client, int& argc,
         bucket_name, object_name, bucket_name, object_name,
         gcs::SourceEncryptionKey::FromBase64Key(old_key_base64),
         gcs::EncryptionKey::FromBase64Key(new_key_base64));
-    if (not meta.ok()) {
+    if (!meta.ok()) {
       std::cerr << "Error rotating key on object " << object_name
                 << ", status=" << meta.status() << std::endl;
     }
@@ -988,7 +988,7 @@ void RenameObject(google::cloud::storage::Client client, int& argc,
      std::string new_object_name) {
     StatusOr<gcs::ObjectMetadata> meta = client.RewriteObjectBlocking(
         bucket_name, old_object_name, bucket_name, new_object_name);
-    if (not meta.ok()) {
+    if (!meta.ok()) {
       std::cerr << "Error renaming object " << old_object_name
                 << ", status=" << meta.status() << std::endl;
       return;

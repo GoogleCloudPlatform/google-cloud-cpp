@@ -92,8 +92,9 @@ std::ostream& operator<<(std::ostream& os, LifecycleRuleCondition const& rhs) {
   return os << "}";
 }
 
-StatusOr<LifecycleRule> LifecycleRule::ParseFromJson(internal::nl::json const& json) {
-  if (not json.is_object()) {
+StatusOr<LifecycleRule> LifecycleRule::ParseFromJson(
+    internal::nl::json const& json) {
+  if (!json.is_object()) {
     return Status(StatusCode::kInvalidArgument, __func__);
   }
   LifecycleRule result;
@@ -129,7 +130,8 @@ StatusOr<LifecycleRule> LifecycleRule::ParseFromJson(internal::nl::json const& j
   return result;
 }
 
-StatusOr<LifecycleRule> LifecycleRule::ParseFromString(std::string const& text) {
+StatusOr<LifecycleRule> LifecycleRule::ParseFromString(
+    std::string const& text) {
   auto json = internal::nl::json::parse(text, nullptr, false);
   return ParseFromJson(json);
 }

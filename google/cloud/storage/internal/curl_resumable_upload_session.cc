@@ -20,17 +20,15 @@ namespace storage {
 inline namespace STORAGE_CLIENT_NS {
 namespace internal {
 
-StatusOr<ResumableUploadResponse>
-CurlResumableUploadSession::UploadChunk(std::string const& buffer,
-                                        std::uint64_t upload_size) {
+StatusOr<ResumableUploadResponse> CurlResumableUploadSession::UploadChunk(
+    std::string const& buffer, std::uint64_t upload_size) {
   UploadChunkRequest request(session_id_, next_expected_, buffer, upload_size);
   auto result = client_->UploadChunk(request);
   Update(result);
   return result;
 }
 
-StatusOr<ResumableUploadResponse>
-CurlResumableUploadSession::ResetSession() {
+StatusOr<ResumableUploadResponse> CurlResumableUploadSession::ResetSession() {
   QueryResumableUploadRequest request(session_id_);
   auto result = client_->QueryResumableUpload(request);
   Update(result);
@@ -43,7 +41,7 @@ std::uint64_t CurlResumableUploadSession::next_expected_byte() const {
 
 void CurlResumableUploadSession::Update(
     StatusOr<ResumableUploadResponse> const& result) {
-  if (not result.ok()) {
+  if (!result.ok()) {
     return;
   }
   if (result->last_committed_byte == 0) {
@@ -51,7 +49,7 @@ void CurlResumableUploadSession::Update(
   } else {
     next_expected_ = result->last_committed_byte + 1;
   }
-  if (not result->upload_session_url.empty()) {
+  if (!result->upload_session_url.empty()) {
     session_id_ = result->upload_session_url;
   }
 }

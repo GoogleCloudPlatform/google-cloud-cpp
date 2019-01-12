@@ -100,7 +100,7 @@ void CreateBucket(google::cloud::storage::Client client, int& argc,
   [](gcs::Client client, std::string bucket_name) {
     StatusOr<gcs::BucketMetadata> meta =
         client.CreateBucket(bucket_name, gcs::BucketMetadata());
-    if (not meta.ok()) {
+    if (!meta.ok()) {
       std::cerr << "Could not create bucket " << bucket_name << std::endl;
       return;
     }
@@ -124,7 +124,7 @@ void CreateBucketForProject(google::cloud::storage::Client client, int& argc,
   [](gcs::Client client, std::string bucket_name, std::string project_id) {
     StatusOr<gcs::BucketMetadata> meta = client.CreateBucketForProject(
         bucket_name, project_id, gcs::BucketMetadata());
-    if (not meta.ok()) {
+    if (!meta.ok()) {
       std::cerr << "Could not create bucket " << bucket_name << " in project "
                 << project_id << std::endl;
       return;
@@ -264,7 +264,7 @@ void GetBucketDefaultKmsKey(google::cloud::storage::Client client, int& argc,
   namespace gcs = google::cloud::storage;
   [](gcs::Client client, std::string bucket_name) {
     gcs::BucketMetadata metadata = client.GetBucketMetadata(bucket_name);
-    if (not metadata.has_encryption()) {
+    if (!metadata.has_encryption()) {
       std::cout << "The bucket " << bucket_name
                 << " does not have a default KMS key set." << std::endl;
       return;
@@ -388,7 +388,7 @@ void GetBilling(google::cloud::storage::Client client, int& argc,
   namespace gcs = google::cloud::storage;
   [](gcs::Client client, std::string bucket_name) {
     gcs::BucketMetadata metadata = client.GetBucketMetadata(bucket_name);
-    if (not metadata.has_billing()) {
+    if (!metadata.has_billing()) {
       std::cout << "The bucket " << bucket_name << " does not have a billing"
                 << " configuration. The default applies, i.e., the project"
                    " that owns the bucket pays for the requests."
@@ -422,7 +422,7 @@ void EnableRequesterPays(google::cloud::storage::Client client, int& argc,
         gcs::BucketMetadataPatchBuilder().SetBilling(gcs::BucketBilling{true}));
     std::cout << "Billing configuration for bucket " << bucket_name
               << " is updated. The bucket now";
-    if (not metadata.has_billing()) {
+    if (!metadata.has_billing()) {
       std::cout << " has no billing configuration." << std::endl;
     } else if (metadata.billing().requester_pays) {
       std::cout << " is configured to charge the caller for requests"
@@ -452,7 +452,7 @@ void DisableRequesterPays(google::cloud::storage::Client client, int& argc,
         gcs::UserProject(project_id));
     std::cout << "Billing configuration for bucket " << bucket_name
               << " is updated. The bucket now";
-    if (not metadata.has_billing()) {
+    if (!metadata.has_billing()) {
       std::cout << " has no billing configuration." << std::endl;
     } else if (metadata.billing().requester_pays) {
       std::cout << " is configured to charge the caller for requests"
@@ -515,7 +515,7 @@ void ReadObjectRequesterPays(google::cloud::storage::Client client, int& argc,
      std::string billed_project) {
     gcs::ObjectReadStream stream = client.ReadObject(
         bucket_name, object_name, gcs::UserProject(billed_project));
-    while (not stream.eof()) {
+    while (!stream.eof()) {
       std::string line;
       std::getline(stream, line, '\n');
       if (stream.good()) {
@@ -647,7 +647,7 @@ void GetRetentionPolicy(google::cloud::storage::Client client, int& argc,
   namespace gcs = google::cloud::storage;
   [](gcs::Client client, std::string bucket_name) {
     gcs::BucketMetadata metadata = client.GetBucketMetadata(bucket_name);
-    if (not metadata.has_retention_policy()) {
+    if (!metadata.has_retention_policy()) {
       std::cout << "The bucket " << bucket_name
                 << " does not have a retention policy set." << std::endl;
       return;
@@ -676,7 +676,7 @@ void SetRetentionPolicy(google::cloud::storage::Client client, int& argc,
         bucket_name,
         gcs::BucketMetadataPatchBuilder().SetRetentionPolicy(period),
         gcs::IfMetagenerationMatch(original.metageneration()));
-    if (not updated_metadata.has_retention_policy()) {
+    if (!updated_metadata.has_retention_policy()) {
       std::cout << "The bucket " << bucket_name
                 << " does not have a retention policy set." << std::endl;
       return;
@@ -703,7 +703,7 @@ void RemoveRetentionPolicy(google::cloud::storage::Client client, int& argc,
     gcs::BucketMetadata updated_metadata = client.PatchBucket(
         bucket_name, gcs::BucketMetadataPatchBuilder().ResetRetentionPolicy(),
         gcs::IfMetagenerationMatch(original.metageneration()));
-    if (not updated_metadata.has_retention_policy()) {
+    if (!updated_metadata.has_retention_policy()) {
       std::cout << "The bucket " << bucket_name
                 << " does not have a retention policy set." << std::endl;
       return;

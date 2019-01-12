@@ -274,8 +274,8 @@ TEST(BucketMetadataTest, ParseFailure) {
 
 /// @test Verify that we parse JSON objects into BucketMetadata objects.
 TEST(BucketMetadataTest, ParseAclFailure) {
-  auto actual = BucketMetadata::ParseFromString(
-      R"""({"acl: ["invalid-item"]})""");
+  auto actual =
+      BucketMetadata::ParseFromString(R"""({"acl: ["invalid-item"]})""");
   EXPECT_FALSE(actual.ok());
 }
 
@@ -534,7 +534,7 @@ TEST(BucketMetadataTest, SetBilling) {
   auto expected = CreateBucketMetadataForTest();
   auto copy = expected;
   auto billing = copy.billing();
-  billing.requester_pays = not billing.requester_pays;
+  billing.requester_pays = !billing.requester_pays;
   copy.set_billing(billing);
   EXPECT_NE(expected, copy);
 }
@@ -579,7 +579,7 @@ TEST(BucketMetadataTest, SetDefaultEventBasedHold) {
   auto expected = CreateBucketMetadataForTest();
   auto copy = expected;
   EXPECT_TRUE(copy.default_event_based_hold());
-  copy.set_default_event_based_hold(not copy.default_event_based_hold());
+  copy.set_default_event_based_hold(!copy.default_event_based_hold());
   EXPECT_NE(expected, copy);
   std::ostringstream os;
   os << copy;
@@ -919,8 +919,10 @@ TEST(BucketMetadataPatchBuilder, ResetDefaultEventBasedHold) {
 
 TEST(BucketMetadataPatchBuilder, SetDefaultAcl) {
   BucketMetadataPatchBuilder builder;
-  builder.SetDefaultAcl({ObjectAccessControl::ParseFromString(
-      R"""({"entity": "user-test-user", "role": "OWNER"})""").value()});
+  builder.SetDefaultAcl(
+      {ObjectAccessControl::ParseFromString(
+           R"""({"entity": "user-test-user", "role": "OWNER"})""")
+           .value()});
 
   auto actual = builder.BuildPatch();
   auto json = internal::nl::json::parse(actual);

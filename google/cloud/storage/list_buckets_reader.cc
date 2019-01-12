@@ -62,7 +62,7 @@ static_assert(
 ListBucketsIterator::ListBucketsIterator(
     ListBucketsReader* owner, google::cloud::optional<BucketMetadata> value)
     : owner_(owner), value_(std::move(value)) {
-  if (not value_) {
+  if (!value_) {
     // This iterator was initialized by begin() on an empty list, turn it into
     // an end() iterator.
     owner_ = nullptr;
@@ -71,7 +71,7 @@ ListBucketsIterator::ListBucketsIterator(
 
 ListBucketsIterator& ListBucketsIterator::operator++() {
   value_ = owner_->GetNext();
-  if (not value_) {
+  if (!value_) {
     owner_ = nullptr;
   }
   return *this;
