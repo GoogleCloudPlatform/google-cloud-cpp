@@ -1154,7 +1154,7 @@ int main(int argc, char* argv[]) try {
   google::cloud::storage::Client client;
 
   using CommandType =
-      std::function<void(google::cloud::storage::Client, int&, char*[])>;
+      std::function<void(google::cloud::storage::Client, int&, char* [])>;
   std::map<std::string, CommandType> commands = {
       {"list-objects", &ListObjects},
       {"insert-object", &InsertObject},

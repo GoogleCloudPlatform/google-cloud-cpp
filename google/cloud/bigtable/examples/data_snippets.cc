@@ -327,7 +327,7 @@ void SampleRowsCollections(google::cloud::bigtable::Table table, int argc,
 
 int main(int argc, char* argv[]) try {
   using CommandType =
-      std::function<void(google::cloud::bigtable::Table, int, char*[])>;
+      std::function<void(google::cloud::bigtable::Table, int, char* [])>;
 
   std::map<std::string, CommandType> commands = {
       {"apply", &Apply},
