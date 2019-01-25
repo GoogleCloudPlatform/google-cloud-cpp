@@ -19,10 +19,9 @@ include(ExternalProjectHelper)
 if (NOT TARGET googletest_project)
     # Give application developers a hook to configure the version and hash
     # downloaded from GitHub.
-    set(GOOGLE_CLOUD_CPP_GOOGLETEST_URL
-        "https://github.com/google/googletest/archive/release-1.8.1.tar.gz")
-    set(GOOGLE_CLOUD_CPP_GOOGLETEST_SHA256
-        "9bf1fe5182a604b4135edc1a425ae356c9ad15e9b23f9f12a02e80184c3a249c")
+    set(GOOGLE_CLOUD_CPP_GOOGLETEST_URL "https://github.com/google/googletest")
+    set(GOOGLE_CLOUD_CPP_GOOGLETEST_COMMIT_HASH
+        "b6cd405286ed8635ece71c72f118e659f4ade3fb")
 
     if ("${CMAKE_GENERATOR}" STREQUAL "Unix Makefiles")
         include(ProcessorCount)
@@ -43,8 +42,10 @@ if (NOT TARGET googletest_project)
                         EXCLUDE_FROM_ALL ON
                         PREFIX "${CMAKE_BINARY_DIR}/external/googletest"
                         INSTALL_DIR "${CMAKE_BINARY_DIR}/external"
-                        URL ${GOOGLE_CLOUD_CPP_GOOGLETEST_URL}
-                        URL_HASH SHA256=${GOOGLE_CLOUD_CPP_GOOGLETEST_SHA256}
+                        GIT_REPOSITORY
+                        ${GOOGLE_CLOUD_CPP_GOOGLETEST_URL}
+                        GIT_TAG
+                        ${GOOGLE_CLOUD_CPP_GOOGLETEST_COMMIT_HASH}
                         CMAKE_ARGS ${GOOGLE_CLOUD_CPP_EXTERNAL_PROJECT_CCACHE}
                                    -DCMAKE_BUILD_TYPE=Release
                                    -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
