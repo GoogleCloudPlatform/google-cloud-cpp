@@ -46,6 +46,13 @@ if (NOT TARGET googletest_project)
                         ${GOOGLE_CLOUD_CPP_GOOGLETEST_URL}
                         GIT_TAG
                         ${GOOGLE_CLOUD_CPP_GOOGLETEST_COMMIT_HASH}
+                        # For some reason, git clone does not work in the
+                        # CentOS image. Git will complain about not being able
+                        # to find the current user in /etc/passwd, so it cannot
+                        # create the default user identity. We create a default
+                        # user identity here using dummy information.
+                        GIT_CONFIG user.email="foo@foo.com"
+                                   user.name="foo"
                         CMAKE_ARGS ${GOOGLE_CLOUD_CPP_EXTERNAL_PROJECT_CCACHE}
                                    -DCMAKE_BUILD_TYPE=Release
                                    -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
