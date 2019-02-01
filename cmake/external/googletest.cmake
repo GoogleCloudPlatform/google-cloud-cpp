@@ -72,12 +72,11 @@ if (NOT TARGET googletest_project)
     endif ()
 
     # On Windows GTest uses library postfixes for debug versions, that is
-    # gtest.lib becomes gtestd.lib when compiled with for debugging.  This ugly
-    # expression computes that value. Note that it must be a generator
-    # expression because with MSBuild the config type can change after the
-    # configuration phase.
+    # gtest.lib becomes gtestd.lib when compiled with for debugging.
     if (WIN32)
-        set(_lib_postfix $<$<CONFIG:DEBUG>:d>)
+        if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+            set(_lib_postfix d)
+        endif ()
     endif ()
 
     add_library(GTest::gtest INTERFACE IMPORTED)
