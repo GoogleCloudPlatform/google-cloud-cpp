@@ -83,7 +83,8 @@ int main(int argc, char* argv[]) try {
   //! [write rows] [END writing_rows]
 
   //! [create filter] [START creating_a_filter]
-  auto filter = google::cloud::bigtable::Filter::ColumnRangeClosed("family", "c0", "c0");
+  auto filter =
+      google::cloud::bigtable::Filter::ColumnRangeClosed("family", "c0", "c0");
   //! [create filter] [END creating_a_filter]
 
   // Read a single row.
@@ -116,7 +117,11 @@ int main(int argc, char* argv[]) try {
 
   // Delete the table
   //! [delete table] [START deleting_a_table]
-  table_admin.DeleteTable(table_id);
+  google::cloud::Status status = table_admin.DeleteTable(table_id);
+  if (!status.ok()) {
+    std::cerr << "DeleteTable failed: " << status << std::endl;
+    return 1;
+  }
   //! [delete table] [END deleting_a_table]
 
   return 0;

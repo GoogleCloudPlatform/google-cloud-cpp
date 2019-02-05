@@ -380,16 +380,8 @@ TEST_F(TableAdminTest, CopyConstructibleAssignablePolicyTest) {
       .WillRepeatedly(
           Return(grpc::Status(grpc::StatusCode::UNAVAILABLE, "try-again")));
 
-#if GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
-  // After all the setup, make the actual call we want to test.
-  EXPECT_THROW(table_admin.GetTable("other-table"), bigtable::GRpcError);
-  EXPECT_THROW(table_admin_assign.GetTable("other-table"), bigtable::GRpcError);
-#else
-  EXPECT_DEATH_IF_SUPPORTED(table_admin.GetTable("other-table"),
-                            "exceptions are disabled");
-  EXPECT_DEATH_IF_SUPPORTED(table_admin_assign.GetTable("other-table"),
-                            "exceptions are disabled");
-#endif  // GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
+  EXPECT_FALSE(table_admin.GetTable("other-table"));
+  EXPECT_FALSE(table_admin_assign.GetTable("other-table"));
 }
 
 /// @test Verify that `bigtable::TableAdmin::GetTable` works in the easy case.
@@ -426,13 +418,8 @@ TEST_F(TableAdminTest, GetTableUnrecoverableFailures) {
       .WillRepeatedly(
           Return(grpc::Status(grpc::StatusCode::NOT_FOUND, "uh oh")));
 
-#if GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
   // After all the setup, make the actual call we want to test.
-  EXPECT_THROW(tested.GetTable("other-table"), bigtable::GRpcError);
-#else
-  EXPECT_DEATH_IF_SUPPORTED(tested.GetTable("other-table"),
-                            "exceptions are disabled");
-#endif  // GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
+  EXPECT_FALSE(tested.GetTable("other-table"));
 }
 
 /**
@@ -450,13 +437,8 @@ TEST_F(TableAdminTest, GetTableTooManyFailures) {
       .WillRepeatedly(
           Return(grpc::Status(grpc::StatusCode::UNAVAILABLE, "try-again")));
 
-#if GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
   // After all the setup, make the actual call we want to test.
-  EXPECT_THROW(tested.GetTable("other-table"), bigtable::GRpcError);
-#else
-  EXPECT_DEATH_IF_SUPPORTED(tested.GetTable("other-table"),
-                            "exceptions are disabled");
-#endif  // GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
+  EXPECT_FALSE(tested.GetTable("other-table"));
 }
 
 /// @test Verify that bigtable::TableAdmin::DeleteTable works as expected.
@@ -473,7 +455,7 @@ TEST_F(TableAdminTest, DeleteTable) {
   EXPECT_CALL(*client_, DeleteTable(_, _, _)).WillOnce(Invoke(mock));
 
   // After all the setup, make the actual call we want to test.
-  tested.DeleteTable("the-table");
+  EXPECT_TRUE(tested.DeleteTable("the-table").ok());
 }
 
 /**
@@ -488,13 +470,8 @@ TEST_F(TableAdminTest, DeleteTableFailure) {
       .WillRepeatedly(
           Return(grpc::Status(grpc::StatusCode::PERMISSION_DENIED, "uh oh")));
 
-#if GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
   // After all the setup, make the actual call we want to test.
-  EXPECT_THROW(tested.DeleteTable("other-table"), bigtable::GRpcError);
-#else
-  EXPECT_DEATH_IF_SUPPORTED(tested.DeleteTable("other-table"),
-                            "exceptions are disabled");
-#endif  // GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
+  EXPECT_FALSE(tested.DeleteTable("other-table").ok());
 }
 
 /**
@@ -548,15 +525,7 @@ TEST_F(TableAdminTest, ModifyColumnFamiliesFailure) {
   std::vector<M> changes{M::Create("foo", GC::MaxAge(48_h)),
                          M::Update("bar", GC::MaxAge(24_h))};
 
-#if GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
-  // After all the setup, make the actual call we want to test.
-  EXPECT_THROW(tested.ModifyColumnFamilies("other-table", std::move(changes)),
-               bigtable::GRpcError);
-#else
-  EXPECT_DEATH_IF_SUPPORTED(
-      tested.ModifyColumnFamilies("other-table", std::move(changes)),
-      "exceptions are disabled");
-#endif  // GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
+  EXPECT_FALSE(tested.ModifyColumnFamilies("other-table", std::move(changes)));
 }
 
 /// @test Verify that bigtable::TableAdmin::DropRowsByPrefix works as expected.
@@ -574,7 +543,7 @@ TEST_F(TableAdminTest, DropRowsByPrefix) {
   EXPECT_CALL(*client_, DropRowRange(_, _, _)).WillOnce(Invoke(mock));
 
   // After all the setup, make the actual call we want to test.
-  tested.DropRowsByPrefix("the-table", "foobar");
+  EXPECT_TRUE(tested.DropRowsByPrefix("the-table", "foobar").ok());
 }
 
 /**
@@ -589,14 +558,7 @@ TEST_F(TableAdminTest, DropRowsByPrefixFailure) {
       .WillRepeatedly(
           Return(grpc::Status(grpc::StatusCode::PERMISSION_DENIED, "uh oh")));
 
-#if GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
-  // After all the setup, make the actual call we want to test.
-  EXPECT_THROW(tested.DropRowsByPrefix("other-table", "prefix"),
-               bigtable::GRpcError);
-#else
-  EXPECT_DEATH_IF_SUPPORTED(tested.DropRowsByPrefix("other-table", "prefix"),
-                            "exceptions are disabled");
-#endif  // GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
+  EXPECT_FALSE(tested.DropRowsByPrefix("other-table", "prefix").ok());
 }
 
 /// @test Verify that bigtable::TableAdmin::DropRowsByPrefix works as expected.
@@ -614,7 +576,7 @@ TEST_F(TableAdminTest, DropAllRows) {
   EXPECT_CALL(*client_, DropRowRange(_, _, _)).WillOnce(Invoke(mock));
 
   // After all the setup, make the actual call we want to test.
-  tested.DropAllRows("the-table");
+  EXPECT_TRUE(tested.DropAllRows("the-table").ok());
 }
 
 /**
@@ -629,13 +591,8 @@ TEST_F(TableAdminTest, DropAllRowsFailure) {
       .WillRepeatedly(
           Return(grpc::Status(grpc::StatusCode::PERMISSION_DENIED, "uh oh")));
 
-#if GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
   // After all the setup, make the actual call we want to test.
-  EXPECT_THROW(tested.DropAllRows("other-table"), bigtable::GRpcError);
-#else
-  EXPECT_DEATH_IF_SUPPORTED(tested.DropAllRows("other-table"),
-                            "exceptions are disabled");
-#endif  // GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
+  EXPECT_FALSE(tested.DropAllRows("other-table").ok());
 }
 
 /**
@@ -671,14 +628,8 @@ TEST_F(TableAdminTest, GenerateConsistencyTokenFailure) {
       .WillRepeatedly(
           Return(grpc::Status(grpc::StatusCode::PERMISSION_DENIED, "uh oh")));
 
-#if GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
   // After all the setup, make the actual call we want to test.
-  EXPECT_THROW(tested.GenerateConsistencyToken("other-table"),
-               bigtable::GRpcError);
-#else
-  EXPECT_DEATH_IF_SUPPORTED(tested.GenerateConsistencyToken("other-table"),
-                            "exceptions are disabled");
-#endif  // GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
+  EXPECT_FALSE(tested.GenerateConsistencyToken("other-table"));
 }
 
 /**
@@ -718,15 +669,8 @@ TEST_F(TableAdminTest, CheckConsistencyFailure) {
 
   bigtable::TableId table_id("other-table");
   bigtable::ConsistencyToken consistency_token("test-token");
-#if GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
   // After all the setup, make the actual call we want to test.
-  EXPECT_THROW(tested.CheckConsistency(table_id, consistency_token),
-               bigtable::GRpcError);
-#else
-  EXPECT_DEATH_IF_SUPPORTED(
-      tested.CheckConsistency(table_id, consistency_token),
-      "exceptions are disabled");
-#endif  // GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
+  EXPECT_FALSE(tested.CheckConsistency(table_id, consistency_token));
 }
 
 /**
@@ -830,14 +774,8 @@ TEST_F(TableAdminTest, GetSnapshotUnrecoverableFailures) {
           Return(grpc::Status(grpc::StatusCode::NOT_FOUND, "No snapshot.")));
   bigtable::ClusterId cluster_id("other-cluster");
   bigtable::SnapshotId snapshot_id("other-snapshot");
-#if GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
   // After all the setup, make the actual call we want to test.
-  EXPECT_THROW(tested.GetSnapshot(cluster_id, snapshot_id),
-               bigtable::GRpcError);
-#else
-  EXPECT_DEATH_IF_SUPPORTED(tested.GetSnapshot(cluster_id, snapshot_id),
-                            "exceptions are disabled");
-#endif  // GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
+  EXPECT_FALSE(tested.GetSnapshot(cluster_id, snapshot_id));
 }
 
 /**
@@ -856,14 +794,8 @@ TEST_F(TableAdminTest, GetSnapshotTooManyFailures) {
           Return(grpc::Status(grpc::StatusCode::UNAVAILABLE, "try-again")));
   bigtable::ClusterId cluster_id("other-cluster");
   bigtable::SnapshotId snapshot_id("other-snapshot");
-#if GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
   // After all the setup, make the actual call we want to test.
-  EXPECT_THROW(tested.GetSnapshot(cluster_id, snapshot_id),
-               bigtable::GRpcError);
-#else
-  EXPECT_DEATH_IF_SUPPORTED(tested.GetSnapshot(cluster_id, snapshot_id),
-                            "exceptions are disabled");
-#endif  // GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
+  EXPECT_FALSE(tested.GetSnapshot(cluster_id, snapshot_id));
 }
 
 /// @test Verify that bigtable::TableAdmin::DeleteSnapshot works as expected.
@@ -882,7 +814,7 @@ TEST_F(TableAdminTest, DeleteSnapshotSimple) {
   // After all the setup, make the actual call we want to test.
   bigtable::ClusterId cluster_id("the-cluster");
   bigtable::SnapshotId snapshot_id("random-snapshot");
-  tested.DeleteSnapshot(cluster_id, snapshot_id);
+  EXPECT_TRUE(tested.DeleteSnapshot(cluster_id, snapshot_id).ok());
 }
 
 /**
@@ -899,14 +831,8 @@ TEST_F(TableAdminTest, DeleteSnapshotFailure) {
   bigtable::ClusterId cluster_id("other-cluster");
   bigtable::SnapshotId snapshot_id("other-snapshot");
 
-#if GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
   // After all the setup, make the actual call we want to test.
-  EXPECT_THROW(tested.DeleteSnapshot(cluster_id, snapshot_id),
-               bigtable::GRpcError);
-#else
-  EXPECT_DEATH_IF_SUPPORTED(tested.DeleteSnapshot(cluster_id, snapshot_id),
-                            "exceptions are disabled");
-#endif  // GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
+  EXPECT_FALSE(tested.DeleteSnapshot(cluster_id, snapshot_id).ok());
 }
 
 /// @test Verify that bigtable::TableAdmin::SnapshotTable works as expected.
@@ -1223,36 +1149,13 @@ TEST_F(TableAdminTest, ListSnapshots_Simple) {
 
   bigtable::ClusterId cluster_id("the-cluster");
   auto actual_snapshots = tested.ListSnapshots(cluster_id);
-  ASSERT_EQ(2UL, actual_snapshots.size());
+  EXPECT_TRUE(actual_snapshots);
+  ASSERT_EQ(2UL, actual_snapshots->size());
   std::string instance_name = tested.instance_name();
   EXPECT_EQ(instance_name + "/clusters/the-cluster/snapshots/s0",
-            actual_snapshots[0].name());
+            (*actual_snapshots)[0].name());
   EXPECT_EQ(instance_name + "/clusters/the-cluster/snapshots/s1",
-            actual_snapshots[1].name());
-}
-
-/**
- * @test Verify that `bigtable::TableAdmin::ListSnapshots` works for std::list
- * container.
- */
-TEST_F(TableAdminTest, ListSnapshots_SimpleList) {
-  using namespace ::testing;
-  bigtable::TableAdmin tested(client_, kInstanceId);
-  auto mock_list_snapshots = create_list_snapshots_lambda("", "", {"s0", "s1"});
-  EXPECT_CALL(*client_, ListSnapshots(_, _, _))
-      .WillOnce(Invoke(mock_list_snapshots));
-
-  bigtable::ClusterId cluster_id("the-cluster");
-  std::list<btadmin::Snapshot> actual_snapshots =
-      tested.ListSnapshots<std::list>(cluster_id);
-  ASSERT_EQ(2UL, actual_snapshots.size());
-  std::string instance_name = tested.instance_name();
-  std::list<btadmin::Snapshot>::iterator it = actual_snapshots.begin();
-  EXPECT_EQ(instance_name + "/clusters/the-cluster/snapshots/s0", it->name());
-  it++;
-  EXPECT_EQ(instance_name + "/clusters/the-cluster/snapshots/s1", it->name());
-  it++;
-  EXPECT_EQ(actual_snapshots.end(), it);
+            (*actual_snapshots)[1].name());
 }
 
 /**
@@ -1279,16 +1182,17 @@ TEST_F(TableAdminTest, ListSnapshots_RecoverableFailure) {
 
   bigtable::ClusterId cluster_id("the-cluster");
   auto actual_snapshots = tested.ListSnapshots(cluster_id);
-  ASSERT_EQ(4UL, actual_snapshots.size());
+  EXPECT_TRUE(actual_snapshots);
+  ASSERT_EQ(4UL, actual_snapshots->size());
   std::string instance_name = tested.instance_name();
   EXPECT_EQ(instance_name + "/clusters/the-cluster/snapshots/s0",
-            actual_snapshots[0].name());
+            (*actual_snapshots)[0].name());
   EXPECT_EQ(instance_name + "/clusters/the-cluster/snapshots/s1",
-            actual_snapshots[1].name());
+            (*actual_snapshots)[1].name());
   EXPECT_EQ(instance_name + "/clusters/the-cluster/snapshots/s2",
-            actual_snapshots[2].name());
+            (*actual_snapshots)[2].name());
   EXPECT_EQ(instance_name + "/clusters/the-cluster/snapshots/s3",
-            actual_snapshots[3].name());
+            (*actual_snapshots)[3].name());
 }
 
 /**
@@ -1304,13 +1208,7 @@ TEST_F(TableAdminTest, ListSnapshots_UnrecoverableFailures) {
           Return(grpc::Status(grpc::StatusCode::PERMISSION_DENIED, "uh-oh")));
 
   bigtable::ClusterId cluster_id("other-cluster");
-#if GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
-  // After all the setup, make the actual call we want to test.
-  EXPECT_THROW(tested.ListSnapshots(cluster_id), bigtable::GRpcError);
-#else
-  EXPECT_DEATH_IF_SUPPORTED(tested.ListSnapshots(cluster_id),
-                            "exceptions are disabled");
-#endif  // GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
+  EXPECT_FALSE(tested.ListSnapshots(cluster_id));
 }
 
 /**

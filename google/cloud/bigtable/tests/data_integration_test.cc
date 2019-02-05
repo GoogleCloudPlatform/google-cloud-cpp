@@ -121,7 +121,7 @@ TEST_F(DataIntegrationTest, TableApply) {
       {row_key, family, "c1", 2000, "v2000", {}}};
 
   auto actual = ReadRows(*table, bigtable::Filter::PassAllFilter());
-  DeleteTable(table_id);
+  EXPECT_TRUE(DeleteTable(table_id).ok());
   CheckEqualUnordered(expected, actual);
 }
 
@@ -150,7 +150,7 @@ TEST_F(DataIntegrationTest, TableBulkApply) {
       {"row-key-4", family, "c1", 2000, "v2000", {}}};
 
   auto actual = ReadRows(*table, bigtable::Filter::PassAllFilter());
-  DeleteTable(table_id);
+  EXPECT_TRUE(DeleteTable(table_id).ok());
   CheckEqualUnordered(expected, actual);
 }
 
@@ -170,7 +170,7 @@ TEST_F(DataIntegrationTest, TableSingleRow) {
       {row_key, family, "c3", 3000, "V3000", {}}};
 
   auto actual = ReadRows(*table, bigtable::Filter::PassAllFilter());
-  DeleteTable(table_id);
+  EXPECT_TRUE(DeleteTable(table_id).ok());
   CheckEqualUnordered(expected, actual);
 }
 
@@ -190,7 +190,7 @@ TEST_F(DataIntegrationTest, TableReadRowTest) {
   auto row_cell = table->ReadRow(row_key1, bigtable::Filter::PassAllFilter());
   std::vector<bigtable::Cell> actual;
   actual.emplace_back(row_cell.second.cells().at(0));
-  DeleteTable(table_id);
+  EXPECT_TRUE(DeleteTable(table_id).ok());
   CheckEqualUnordered(expected, actual);
 }
 
@@ -205,7 +205,7 @@ TEST_F(DataIntegrationTest, TableReadRowNotExistTest) {
 
   CreateCells(*table, created);
   auto row_cell = table->ReadRow(row_key2, bigtable::Filter::PassAllFilter());
-  DeleteTable(table_id);
+  EXPECT_TRUE(DeleteTable(table_id).ok());
   EXPECT_FALSE(row_cell.first);
 }
 
@@ -247,7 +247,7 @@ TEST_F(DataIntegrationTest, TableReadRowsAllRows) {
         table->ReadRows(bigtable::RowSet(), bigtable::Filter::PassAllFilter());
     CheckEqualUnordered(created, MoveCellsFromReader(read4));
   }
-  DeleteTable(table_id);
+  EXPECT_TRUE(DeleteTable(table_id).ok());
 }
 
 TEST_F(DataIntegrationTest, TableReadRowsPartialRows) {
@@ -288,7 +288,7 @@ TEST_F(DataIntegrationTest, TableReadRowsPartialRows) {
       table->ReadRows(std::move(rs3), bigtable::Filter::PassAllFilter());
   CheckEqualUnordered(expected, MoveCellsFromReader(read3));
 
-  DeleteTable(table_id);
+  EXPECT_TRUE(DeleteTable(table_id).ok());
 }
 
 TEST_F(DataIntegrationTest, TableReadRowsNoRows) {
@@ -320,7 +320,7 @@ TEST_F(DataIntegrationTest, TableReadRowsNoRows) {
                                bigtable::Filter::PassAllFilter());
   CheckEqualUnordered(expected, MoveCellsFromReader(read3));
 
-  DeleteTable(table_id);
+  EXPECT_TRUE(DeleteTable(table_id).ok());
 }
 
 TEST_F(DataIntegrationTest, TableReadRowsWrongTable) {
@@ -360,7 +360,7 @@ TEST_F(DataIntegrationTest, TableCheckAndMutateRowPass) {
   std::vector<bigtable::Cell> expected{{key, family, "c1", 0, "v1000", {}},
                                        {key, family, "c2", 0, "v2000", {}}};
   auto actual = ReadRows(*table, bigtable::Filter::PassAllFilter());
-  DeleteTable(table_id);
+  EXPECT_TRUE(DeleteTable(table_id).ok());
   CheckEqualUnordered(expected, actual);
 }
 
@@ -379,7 +379,7 @@ TEST_F(DataIntegrationTest, TableCheckAndMutateRowFail) {
   std::vector<bigtable::Cell> expected{{key, family, "c1", 0, "v1000", {}},
                                        {key, family, "c3", 0, "v3000", {}}};
   auto actual = ReadRows(*table, bigtable::Filter::PassAllFilter());
-  DeleteTable(table_id);
+  EXPECT_TRUE(DeleteTable(table_id).ok());
   CheckEqualUnordered(expected, actual);
 }
 
@@ -420,7 +420,7 @@ TEST_F(DataIntegrationTest, TableReadModifyWriteAppendValueTest) {
   auto actual_cells_ignore_timestamp =
       GetCellsIgnoringTimestamp(result_row.cells());
 
-  DeleteTable(table_id);
+  EXPECT_TRUE(DeleteTable(table_id).ok());
   CheckEqualUnordered(expected_cells_ignore_timestamp,
                       actual_cells_ignore_timestamp);
 }
@@ -450,7 +450,7 @@ TEST_F(DataIntegrationTest, TableReadModifyWriteRowIncrementAmountTest) {
   auto expected_ignore_timestamp = GetCellsIgnoringTimestamp(expected);
   auto actual_ignore_timestamp = GetCellsIgnoringTimestamp(row.cells());
 
-  DeleteTable(table_id);
+  EXPECT_TRUE(DeleteTable(table_id).ok());
   CheckEqualUnordered(expected_ignore_timestamp, actual_ignore_timestamp);
 }
 
@@ -497,7 +497,7 @@ TEST_F(DataIntegrationTest, TableReadModifyWriteRowMultipleTest) {
   auto expected_ignore_timestamp = GetCellsIgnoringTimestamp(expected);
   auto actual_ignore_timestamp = GetCellsIgnoringTimestamp(row.cells());
 
-  DeleteTable(table_id);
+  EXPECT_TRUE(DeleteTable(table_id).ok());
   CheckEqualUnordered(expected_ignore_timestamp, actual_ignore_timestamp);
 }
 
@@ -536,7 +536,7 @@ TEST_F(DataIntegrationTest, TableCellValueInt64Test) {
   auto expected_ignore_timestamp = GetCellsIgnoringTimestamp(expected);
   auto actual_ignore_timestamp = GetCellsIgnoringTimestamp(row.cells());
 
-  DeleteTable(table_id);
+  EXPECT_TRUE(DeleteTable(table_id).ok());
   CheckEqualUnordered(expected_ignore_timestamp, actual_ignore_timestamp);
 }
 
@@ -569,7 +569,7 @@ TEST_F(DataIntegrationTest, TableSampleRowKeysTest) {
     table->BulkApply(std::move(bulk));
   }
   auto samples = table->SampleRows<std::vector>();
-  DeleteTable(table_id);
+  EXPECT_TRUE(DeleteTable(table_id).ok());
 
   // It is somewhat hard to verify that the values returned here are correct.
   // We cannot check the specific values, not even the format, of the row keys
@@ -629,6 +629,6 @@ TEST_F(DataIntegrationTest, TableReadMultipleCellsBigValue) {
   auto expected_ignore_timestamp = GetCellsIgnoringTimestamp(expected);
   auto actual_ignore_timestamp =
       GetCellsIgnoringTimestamp(result.second.cells());
-  DeleteTable(table_id);
+  EXPECT_TRUE(DeleteTable(table_id).ok());
   CheckEqualUnordered(expected_ignore_timestamp, actual_ignore_timestamp);
 }
