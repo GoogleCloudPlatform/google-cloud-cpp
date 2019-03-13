@@ -19,9 +19,9 @@ Write-Host "netsh"
 Get-Date -Format o
 netsh interface ipv4 show subinterface
 
-Write-Host "Get-NetIPInterface"
+Write-Host "Get-CimInstance"
 Get-Date -Format o
-Get-NetIPInterface | where {($_.AddressFamily -eq "IPv4") -and ($_.NlMtu -lt 10000)} | select NlMtu, interfacealias, ServiceName
+Get-CimInstance Win32_NetworkAdapter
 
 do {
     $netkvm = Get-CimInstance Win32_NetworkAdapter -filter "ServiceName='netkvm'"
