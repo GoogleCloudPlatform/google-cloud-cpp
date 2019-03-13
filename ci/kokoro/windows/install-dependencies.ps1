@@ -21,7 +21,7 @@ netsh interface ipv4 show subinterface
 
 Write-Host
 Get-Date -Format o
-Get-NetIPInterface | where {($_.AddressFamily -eq "IPv4") -and ($_.NlMtu -lt 10000)} | select NlMtu, interfacealias
+Get-NetIPInterface | where {($_.AddressFamily -eq "IPv4") -and ($_.NlMtu -lt 10000)} | select NlMtu, interfacealias, ServiceName
 
 do {
     Write-Host
