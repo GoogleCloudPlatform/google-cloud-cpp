@@ -21,7 +21,10 @@ netsh interface ipv4 show subinterface
 
 Write-Host "Get-CimInstance"
 Get-Date -Format o
-Get-CimInstance Win32_NetworkAdapter
+Get-CimInstance Win32_NetworkAdapter | Write-Host
+
+Write-Host "before netkvm loop"
+Get-Date -Format o
 
 do {
     $netkvm = Get-CimInstance Win32_NetworkAdapter -filter "ServiceName='netkvm'"
@@ -38,7 +41,7 @@ Get-Date -Format o
 $netkvm | ForEach-Object {
     Write-Host "setting via netsh on" $_.NetConnectionID
     Get-Date -Format o
-    Write-Host $_
+    Write-Host "object = " $_
     netsh interface ipv4 set interface $_.NetConnectionID mtu=1460
 }
 
@@ -47,10 +50,16 @@ Get-Date -Format o
 netsh interface ipv4 show subinterface
 ## DEBUG DEBUG DEBUG DO NOT MERGE
 
+Write-Host
+Write-Host "choco sources"
+Get-Date -Format o
 
 choco sources list
 
 # Ignore errors
+Write-Host
+Write-Host "choco install"
+Get-Date -Format o
 choco install --no-progress -y cmake
 
 # Ignore errors
@@ -58,3 +67,7 @@ choco install --no-progress -y cmake.portable
 
 # Ignore errors
 choco install --no-progress -y ninja
+
+Write-Host
+Write-Host "Post choco install"
+Get-Date -Format o
