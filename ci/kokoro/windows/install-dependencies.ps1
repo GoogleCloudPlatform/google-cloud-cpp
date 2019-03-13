@@ -15,9 +15,13 @@
 # limitations under the License.
 
 ## DEBUG DEBUG DEBUG DO NOT MERGE
-Write-Host "netsh"
+Write-Host "netsh ipv4"
 Get-Date -Format o
 netsh interface ipv4 show subinterface
+
+Write-Host "netsh ipv6"
+Get-Date -Format o
+netsh interface ipv6 show subinterface
 
 Write-Host "Get-CimInstance"
 Get-Date -Format o
@@ -45,9 +49,15 @@ $netkvm | ForEach-Object {
     netsh interface ipv4 set interface $_.NetConnectionID mtu=1460
 }
 
-Write-Host "netsh at end"
+Write-Host
+Write-Host "netsh ipv4 at end"
 Get-Date -Format o
 netsh interface ipv4 show subinterface
+
+Write-Host
+Write-Host "netsh ipv6 at end"
+Get-Date -Format o
+netsh interface ipv6 show subinterface
 ## DEBUG DEBUG DEBUG DO NOT MERGE
 
 Write-Host
