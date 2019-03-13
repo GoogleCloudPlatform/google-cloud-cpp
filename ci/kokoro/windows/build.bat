@@ -13,9 +13,6 @@ REM See the License for the specific language governing permissions and
 REM limitations under the License.
 
 echo %date% %time%
-netsh interface ipv4 show subinterface
-
-echo %date% %time%
 cd github\google-cloud-cpp
 
 echo %date% %time%
