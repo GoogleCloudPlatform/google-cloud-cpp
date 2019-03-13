@@ -15,37 +15,34 @@
 # limitations under the License.
 
 ## DEBUG DEBUG DEBUG DO NOT MERGE
-Write-Host
+Write-Host "netsh"
 Get-Date -Format o
 netsh interface ipv4 show subinterface
 
-Write-Host
+Write-Host "Get-NetIPInterface"
 Get-Date -Format o
 Get-NetIPInterface | where {($_.AddressFamily -eq "IPv4") -and ($_.NlMtu -lt 10000)} | select NlMtu, interfacealias, ServiceName
 
-Write-Host
-Get-Date -Format o
-Get-CimInstance Win32_NetworkAdapter -filter "ServiceName='netkvm'"
-
 do {
-    Write-Host
-    Get-Date -Format o
     $netkvm = Get-CimInstance Win32_NetworkAdapter -filter "ServiceName='netkvm'"
+    Write-Host "netkvm loop"
+    Get-Date -Format o
+    Write-Host "netkvm = " $netkvm
     if (!$netkvm) {
         Start-Sleep 5
     }
 } while (!$netkvm)
 
-Write-Host
+Write-Host "netkvm set loop"
 Get-Date -Format o
 $netkvm | ForEach-Object {
-    Write-Host
+    Write-Host "setting via netsh on" $_.NetConnectionID
     Get-Date -Format o
     Write-Host $_
     netsh interface ipv4 set interface $_.NetConnectionID mtu=1460
 }
 
-Write-Host
+Write-Host "netsh at end"
 Get-Date -Format o
 netsh interface ipv4 show subinterface
 ## DEBUG DEBUG DEBUG DO NOT MERGE
