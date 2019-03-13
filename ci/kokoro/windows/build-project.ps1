@@ -30,28 +30,31 @@ $PROVIDER = $env:PROVIDER
 $GENERATOR = "Ninja"
 
 Write-Host
-Write-Host "netsh ipv4 at git"
 Get-Date -Format o
-netsh interface ipv4 show subinterface
-
-Write-Host
-Write-Host "netsh ipv6 at git"
-Get-Date -Format o
-netsh interface ipv6 show subinterface
-
+Write-Host "Running git submodule update --init"
 git submodule update --init
 if ($LastExitCode) {
     throw "git submodule failed with exit code $LastExitCode"
 }
+
+Get-Date -Format o
+Write-Host "Submodule done."  ## DEBUG DO NOT MERGE
 
 # By default assume "module", use the configuration parameters and build in the `build-output` directory.
 $cmake_flags=@("-G$GENERATOR", "-DCMAKE_BUILD_TYPE=$CONFIG", "-H.", "-Bbuild-output")
 
 # This script expects vcpkg to be installed in ..\vcpkg, discover the full
 # path to that directory:
+Write-Host "Get path"  ## DEBUG DO NOT MERGE
+Get-Date -Format o
 $dir = Split-Path (Get-Item -Path ".\" -Verbose).FullName
 
+Write-Host "\nGet path $dir" ## DEBUG DO NOT MERGE
+
 # Run the vcpkg integration.
+Write-Host
+Get-Date -Format o
+Write-Host "\nRunning vcpkg integrate"  ## DEBUG DO NOT MERGE
 $integrate = "$dir\vcpkg\vcpkg.exe integrate install"
 Invoke-Expression $integrate
 if ($LastExitCode) {

@@ -14,52 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-## DEBUG DEBUG DEBUG DO NOT MERGE
-Write-Host "netsh ipv4"
-Get-Date -Format o
-netsh interface ipv4 show subinterface
-
-Write-Host "netsh ipv6"
-Get-Date -Format o
-netsh interface ipv6 show subinterface
-
-Write-Host "Get-CimInstance"
-Get-Date -Format o
-Get-CimInstance Win32_NetworkAdapter | Write-Host
-
-Write-Host "before netkvm loop"
-Get-Date -Format o
-
-do {
-    $netkvm = Get-CimInstance Win32_NetworkAdapter -filter "ServiceName='netkvm'"
-    Write-Host "netkvm loop"
-    Get-Date -Format o
-    Write-Host "netkvm = " $netkvm
-    if (!$netkvm) {
-        Start-Sleep 5
-    }
-} while (!$netkvm)
-
-Write-Host "netkvm set loop"
-Get-Date -Format o
-$netkvm | ForEach-Object {
-    Write-Host "setting via netsh on" $_.NetConnectionID
-    Get-Date -Format o
-    Write-Host "object = " $_
-    netsh interface ipv4 set interface $_.NetConnectionID mtu=1460
-}
-
-Write-Host
-Write-Host "netsh ipv4 at end"
-Get-Date -Format o
-netsh interface ipv4 show subinterface
-
-Write-Host
-Write-Host "netsh ipv6 at end"
-Get-Date -Format o
-netsh interface ipv6 show subinterface
-## DEBUG DEBUG DEBUG DO NOT MERGE
-
 Write-Host
 Write-Host "choco sources"
 Get-Date -Format o
