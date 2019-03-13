@@ -23,6 +23,10 @@ Write-Host
 Get-Date -Format o
 Get-NetIPInterface | where {($_.AddressFamily -eq "IPv4") -and ($_.NlMtu -lt 10000)} | select NlMtu, interfacealias, ServiceName
 
+Write-Host
+Get-Date -Format o
+Get-CimInstance Win32_NetworkAdapter -filter "ServiceName='netkvm'"
+
 do {
     Write-Host
     Get-Date -Format o
