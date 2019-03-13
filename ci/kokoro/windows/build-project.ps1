@@ -29,6 +29,16 @@ $CONFIG = $env:CONFIG
 $PROVIDER = $env:PROVIDER
 $GENERATOR = "Ninja"
 
+Write-Host
+Write-Host "netsh ipv4 at git"
+Get-Date -Format o
+netsh interface ipv4 show subinterface
+
+Write-Host
+Write-Host "netsh ipv6 at git"
+Get-Date -Format o
+netsh interface ipv6 show subinterface
+
 git submodule update --init
 if ($LastExitCode) {
     throw "git submodule failed with exit code $LastExitCode"
