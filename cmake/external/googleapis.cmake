@@ -1,0 +1,101 @@
+# ~~~
+# Copyright 2019 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ~~~
+
+include(ExternalProjectHelper)
+find_package(Threads REQUIRED)
+
+if (NOT TARGET googleapis_project)
+    # Give application developers a hook to configure the version and hash
+    # downloaded from GitHub.
+    set(
+        GOOGLE_CLOUD_CPP_GOOGLEAPIS_URL
+        "https://github.com/googleapis/googleapis/archive/6a3277c0656219174ff7c345f31fb20a90b30b97.tar.gz"
+        )
+    set(GOOGLE_CLOUD_CPP_GOOGLEAPIS_SHA256
+        "793f1fe9d3adf28900792b4151b7cb2fa4ef14ae1e14ea4e7faa2be14be7a301")
+
+    if ("${CMAKE_GENERATOR}" STREQUAL "Unix Makefiles"
+        OR "${CMAKE_GENERATOR}" STREQUAL "Ninja")
+        include(ProcessorCount)
+        processorcount(NCPU)
+        set(PARALLEL "--" "-j" "${NCPU}")
+    else()
+        set(PARALLEL "")
+    endif ()
+
+    # When passing a semi-colon delimited list to ExternalProject_Add, we need
+    # to escape the semi-colon. Quoting does not work and escaping the semi-
+    # colon does not seem to work (see https://reviews.llvm.org/D40257). A
+    # workaround is to use LIST_SEPARATOR to change the delimiter, which will
+    # then be replaced by an escaped semi-colon by CMake. This allows us to use
+    # multiple directories for our RPATH. Normally, it'd make sense to use : as
+    # a delimiter since it is a typical path-list separator, but it is a special
+    # character in CMake.
+    set(GOOGLE_CLOUD_CPP_INSTALL_RPATH "<INSTALL_DIR>/lib;<INSTALL_DIR>/lib64")
+    string(REPLACE ";"
+                   "|"
+                   GOOGLE_CLOUD_CPP_INSTALL_RPATH
+                   "${GOOGLE_CLOUD_CPP_INSTALL_RPATH}")
+
+    create_external_project_library_byproduct_list(googleapis_byproducts
+                                                   "googleapis")
+
+    include(ExternalProject)
+    externalproject_add(
+        googleapis_project
+        DEPENDS grpc_project
+        EXCLUDE_FROM_ALL ON
+        PREFIX "${CMAKE_BINARY_DIR}/external/googleapis"
+        INSTALL_DIR "${CMAKE_BINARY_DIR}/external"
+        URL ${GOOGLE_CLOUD_CPP_GOOGLEAPIS_URL}
+        URL_HASH SHA256=${GOOGLE_CLOUD_CPP_GOOGLEAPIS_SHA256}
+        LIST_SEPARATOR |
+        PATCH_COMMAND
+            ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/cmake/CMakeLists.googleapis.cmake
+            <SOURCE_DIR>/CMakeLists.txt
+        COMMAND
+            ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/cmake/CompileProtos.cmake
+            ${PROJECT_SOURCE_DIR}/google/cloud/config.pc.in
+            ${PROJECT_SOURCE_DIR}/google/cloud/config.cmake.in
+            ${PROJECT_SOURCE_DIR}/google/cloud/config-version.cmake.in
+            <SOURCE_DIR>
+        CONFIGURE_COMMAND
+            ${CMAKE_COMMAND}
+            -G${CMAKE_GENERATOR}
+            ${GOOGLE_CLOUD_CPP_EXTERNAL_PROJECT_CCACHE}
+            -DCMAKE_BUILD_TYPE=Debug
+            -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+            -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+            -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}
+            -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+            -DCMAKE_PREFIX_PATH=<INSTALL_DIR>
+            -DCMAKE_INSTALL_RPATH=${GOOGLE_CLOUD_CPP_INSTALL_RPATH}
+            -H<SOURCE_DIR>
+            -B<BINARY_DIR>
+        BUILD_COMMAND ${CMAKE_COMMAND}
+                      --build
+                      <BINARY_DIR>
+                      ${PARALLEL}
+        BUILD_BYPRODUCTS ${googleapis_byproducts}
+        LOG_DOWNLOAD ON
+        LOG_CONFIGURE OFF
+        LOG_BUILD OFF
+        LOG_INSTALL OFF)
+
+    if (TARGET google-cloud-cpp-dependencies)
+        add_dependencies(google-cloud-cpp-dependencies googleapis_project)
+    endif ()
+endif ()

@@ -14,6 +14,8 @@
 # limitations under the License.
 # ~~~
 
+include(external/googleapis)
+
 # This should be included from the top level CMakeLists file
 set(BIGTABLE_CLIENT_VERSION_MAJOR 0)
 set(BIGTABLE_CLIENT_VERSION_MINOR 8)
