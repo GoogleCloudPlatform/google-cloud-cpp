@@ -122,7 +122,7 @@ install(TARGETS googleapis_cpp_protos
 
 # Install proto generated files into include/google.
 install(DIRECTORY ${CMAKE_BINARY_DIR}/google
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/google
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         FILES_MATCHING PATTERN "*.pb.h")
 
 # Export the CMake targets to make it easy to create configuration files.

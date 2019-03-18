@@ -85,6 +85,10 @@ if (NOT TARGET googleapis_project)
             -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
             -DCMAKE_PREFIX_PATH=<INSTALL_DIR>
             -DCMAKE_INSTALL_RPATH=${GOOGLE_CLOUD_CPP_INSTALL_RPATH}
+            $<$<BOOL:${GOOGLE_CLOUD_CPP_USE_LIBCXX}>:
+            -DCMAKE_CXX_FLAGS=-stdlib=libc++
+            -DCMAKE_SHARED_LINKER_FLAGS=-Wl,-lc++abi
+            >
             -H<SOURCE_DIR>
             -B<BINARY_DIR>
         BUILD_COMMAND ${CMAKE_COMMAND}
@@ -100,4 +104,16 @@ if (NOT TARGET googleapis_project)
     if (TARGET google-cloud-cpp-dependencies)
         add_dependencies(google-cloud-cpp-dependencies googleapis_project)
     endif ()
+endif ()
+
+if (NOT TARGET googleapis::cpp_protos)
+    add_library(googleapis::cpp_protos INTERFACE IMPORTED)
+    set_library_properties_for_external_project(googleapis::cpp_protos
+            googleapis_cpp_protos)
+    add_dependencies(googleapis::cpp_protos googleapis_project)
+    set_property(TARGET googleapis::cpp_protos
+            APPEND
+            PROPERTY INTERFACE_LINK_LIBRARIES
+            gRPC::grpc++
+            protobuf::libprotobuf)
 endif ()
