@@ -64,13 +64,15 @@ if (NOT TARGET googleapis_project)
         URL_HASH SHA256=${GOOGLE_CLOUD_CPP_GOOGLEAPIS_SHA256}
         LIST_SEPARATOR |
         PATCH_COMMAND
-            ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/cmake/CMakeLists.googleapis.cmake
+            ${CMAKE_COMMAND} -E copy
+            ${PROJECT_SOURCE_DIR}/cmake/external/googleapis/CMakeLists.txt
             <SOURCE_DIR>/CMakeLists.txt
         COMMAND
-            ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/cmake/CompileProtos.cmake
+            ${CMAKE_COMMAND} -E copy
+            ${PROJECT_SOURCE_DIR}/cmake/CompileProtos.cmake
             ${PROJECT_SOURCE_DIR}/google/cloud/config.pc.in
-            ${PROJECT_SOURCE_DIR}/google/cloud/config.cmake.in
-            ${PROJECT_SOURCE_DIR}/google/cloud/config-version.cmake.in
+            ${PROJECT_SOURCE_DIR}/cmake/external/googleapis/config.cmake.in
+            ${PROJECT_SOURCE_DIR}/cmake/external/googleapis/config-version.cmake.in
             <SOURCE_DIR>
         CONFIGURE_COMMAND
             ${CMAKE_COMMAND}

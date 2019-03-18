@@ -21,7 +21,7 @@ set(PACKAGE_BUGREPORT "https://github.com/googleapis/google-cloud-cpp/issues")
 project(googleapis-cpp-protos CXX C)
 
 set(GOOGLEAPIS_CPP_PROTOS_VERSION_MAJOR 0)
-set(GOOGLEAPIS_CPP_PROTOS_VERSION_MINOR 8)
+set(GOOGLEAPIS_CPP_PROTOS_VERSION_MINOR 1)
 set(GOOGLEAPIS_CPP_PROTOS_VERSION_PATCH 0)
 
 # Configure the compiler options, we will be using C++11 features.
@@ -30,9 +30,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(gRPC REQUIRED)
 
-# Some versions of gRPC (at <= 1.19.1) define the target but do not define the
-# imported executable that goes with it (so it is pretty useless). We do this
-# ourselves if needed.
+# The current and previous versions of gRPC (1.19.1) define the target but do
+# not define the imported executable that goes with it. Such a target is not
+# usable, so we define it ourselves. If a future version of gRPC defines the
+# target and a value for it we will use their value instead.
 if (NOT TARGET gRPC::grpc_cpp_plugin)
     add_executable(gRPC::grpc_cpp_plugin IMPORTED)
 endif ()
@@ -46,18 +47,6 @@ if (NOT gRPC::grpc_cpp_plugin)
             PROPERTY IMPORTED_LOCATION ${GRPC_CPP_PLUGIN_EXECUTABLE})
 endif ()
 
-### DEBUG DEBUG DEBUG DO NOT MERGE
-if (TARGET grpc_cpp_plugin)
-    get_target_property(FOO grpc_cpp_plugin IMPORTED_LOCATION)
-    message(STATUS "     **** grpc_cpp_plugin IS TARGET ${FOO}")
-elseif (TARGET gRPC::grpc_cpp_plugin)
-    get_target_property(FOO gRPC::grpc_cpp_plugin IMPORTED_LOCATION)
-    message(STATUS "     **** Grpc::grpc_cpp_plugin IS TARGET ${FOO}")
-else()
-    message(STATUS "     **** NO PLYGIN! ${GRPC_VERSION} ${gRPC_VERSION}")
-endif ()
-### DEBUG DEBUG DEBUG DO NOT MERGE
-
 # Configure the location of proto files, particulary the googleapis protos.
 list(APPEND PROTOBUF_IMPORT_DIRS "${PROJECT_SOURCE_DIR}")
 
@@ -69,7 +58,7 @@ if (PROTO_INCLUDE_DIR)
     list(INSERT PROTOBUF_IMPORT_DIRS 0 "${PROTO_INCLUDE_DIR}")
 endif ()
 
-list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR})
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}")
 # Include the functions to compile proto files.
 include(CompileProtos)
 
@@ -111,15 +100,13 @@ target_link_libraries(googleapis_cpp_protos PUBLIC
         protobuf::libprotobuf)
 target_include_directories(googleapis_cpp_protos
         PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-                $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
-                $<INSTALL_INTERFACE:include>)
+               $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+               $<INSTALL_INTERFACE:include>)
 set_target_properties(
         googleapis_cpp_protos
         PROPERTIES
         VERSION
-        ${GOOGLEAPIS_CPP_PROTOS_VERSION_MAJOR}
-        .${GOOGLEAPIS_CPP_PROTOS_VERSION_MINOR}
-        .${GOOGLEAPIS_CPP_PROTOS_VERSION_PATCH}
+        "${GOOGLEAPIS_CPP_PROTOS_VERSION_MAJOR}.${GOOGLEAPIS_CPP_PROTOS_VERSION_MINOR}.${GOOGLEAPIS_CPP_PROTOS_VERSION_PATCH}"
         SOVERSION ${GOOGLEAPIS_CPP_PROTOS_VERSION_MAJOR})
 add_library(googleapis::cpp_protos ALIAS googleapis_cpp_protos)
 
