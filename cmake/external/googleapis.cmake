@@ -90,9 +90,9 @@ if (NOT TARGET googleapis_project)
                       ${PARALLEL}
         BUILD_BYPRODUCTS ${googleapis_byproducts}
         LOG_DOWNLOAD ON
-        LOG_CONFIGURE OFF
-        LOG_BUILD OFF
-        LOG_INSTALL OFF)
+        LOG_CONFIGURE ON
+        LOG_BUILD ON
+        LOG_INSTALL ON)
 
     if (TARGET google-cloud-cpp-dependencies)
         add_dependencies(google-cloud-cpp-dependencies googleapis_project)
