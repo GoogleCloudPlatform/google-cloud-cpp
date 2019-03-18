@@ -147,14 +147,14 @@ if [ "${BUILD_TESTING:-}" != "no" ]; then
   echo
   echo "${COLOR_YELLOW}Running unit and integration tests $(date)${COLOR_RESET}"
   echo
-  (cd "${BUILD_OUTPUT}" && ctest --output-on-failure)
+# DEBUG DO NOT MERGE  (cd "${BUILD_OUTPUT}" && ctest --output-on-failure)
 
   # Run the integration tests. Not all projects have them, so just iterate over
   # the ones that do.
   for subdir in google/cloud google/cloud/bigtable google/cloud/storage; do
     echo
     echo "${COLOR_GREEN}Running integration tests for ${subdir}${COLOR_RESET}"
-    (cd "${BUILD_OUTPUT}" && "${PROJECT_ROOT}/${subdir}/ci/run_integration_tests.sh")
+# DEBUG DO NOT MERGE    (cd "${BUILD_OUTPUT}" && "${PROJECT_ROOT}/${subdir}/ci/run_integration_tests.sh")
   done
   echo
   echo "${COLOR_YELLOW}Completed unit and integration tests $(date)${COLOR_RESET}"
@@ -165,7 +165,14 @@ fi
 if [[ "${TEST_INSTALL:-}" = "yes" ]]; then
   echo
   echo "${COLOR_YELLOW}Testing install rule.${COLOR_RESET}"
-  cmake --build "${BUILD_OUTPUT}" --target install
+  cmake --build "${BUILD_OUTPUT}" --target install || echo "FAILED"
+  ls -l /usr/local/include/google
+  ls -l /usr/local/include
+  id
+  ls -ld /usr/local
+  ls -ld /usr/local/include
+  ls -ld /usr/local/include/google
+  id
   echo
   echo "${COLOR_YELLOW}Test installed libraries using cmake(1).${COLOR_RESET}"
   readonly TEST_INSTALL_DIR="${PROJECT_ROOT}/ci/test-install"

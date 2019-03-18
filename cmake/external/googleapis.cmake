@@ -96,7 +96,11 @@ if (NOT TARGET googleapis_project)
         LOG_DOWNLOAD ON
         LOG_CONFIGURE ON
         LOG_BUILD ON
-        LOG_INSTALL ON)
+        LOG_INSTALL OFF)
+
+    externalproject_get_property(googleapis_project BINARY_DIR)
+    install(SCRIPT "${BINARY_DIR}/cmake_install.cmake")
+    unset(BINARY_DIR)
 
     if (TARGET google-cloud-cpp-dependencies)
         add_dependencies(google-cloud-cpp-dependencies googleapis_project)
