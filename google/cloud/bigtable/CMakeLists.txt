@@ -60,7 +60,6 @@ google_cloud_cpp_add_common_options(bigtable_common_options)
 list(APPEND PROTOBUF_IMPORT_DIRS "${PROJECT_THIRD_PARTY_DIR}/googleapis"
             "${PROJECT_SOURCE_DIR}")
 
-
 include(external/googleapis)
 
 # Create a library with the generated files from the relevant protos.

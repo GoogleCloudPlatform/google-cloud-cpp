@@ -135,7 +135,8 @@ if (NOT TARGET gprc_project)
 
     add_executable(gRPC::grpc_cpp_plugin IMPORTED)
     add_dependencies(gRPC::grpc_cpp_plugin grpc_project)
-    set_executable_name_for_external_project(gRPC::grpc_cpp_plugin grpc_cpp_plugin)
+    set_executable_name_for_external_project(gRPC::grpc_cpp_plugin
+                                             grpc_cpp_plugin)
 
     list(APPEND PROTOBUF_IMPORT_DIRS "${PROJECT_BINARY_DIR}/external/include")
 endif ()

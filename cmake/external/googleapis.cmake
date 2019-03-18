@@ -62,11 +62,14 @@ if (NOT TARGET googleapis_project)
         INSTALL_DIR "${CMAKE_BINARY_DIR}/external"
         URL ${GOOGLE_CLOUD_CPP_GOOGLEAPIS_URL}
         URL_HASH SHA256=${GOOGLE_CLOUD_CPP_GOOGLEAPIS_SHA256}
-        LIST_SEPARATOR |
+        LIST_SEPARATOR
+        |
         PATCH_COMMAND
-            ${CMAKE_COMMAND} -E copy
-            ${PROJECT_SOURCE_DIR}/cmake/external/googleapis/CMakeLists.txt
-            <SOURCE_DIR>/CMakeLists.txt
+        ${CMAKE_COMMAND}
+        -E
+        copy
+        ${PROJECT_SOURCE_DIR}/cmake/external/googleapis/CMakeLists.txt
+        <SOURCE_DIR>/CMakeLists.txt
         COMMAND
             ${CMAKE_COMMAND} -E copy
             ${PROJECT_SOURCE_DIR}/cmake/CompileProtos.cmake
@@ -109,11 +112,10 @@ endif ()
 if (NOT TARGET googleapis::cpp_protos)
     add_library(googleapis::cpp_protos INTERFACE IMPORTED)
     set_library_properties_for_external_project(googleapis::cpp_protos
-            googleapis_cpp_protos)
+                                                googleapis_cpp_protos)
     add_dependencies(googleapis::cpp_protos googleapis_project)
     set_property(TARGET googleapis::cpp_protos
-            APPEND
-            PROPERTY INTERFACE_LINK_LIBRARIES
-            gRPC::grpc++
-            protobuf::libprotobuf)
+                 APPEND
+                 PROPERTY INTERFACE_LINK_LIBRARIES gRPC::grpc++
+                          protobuf::libprotobuf)
 endif ()
