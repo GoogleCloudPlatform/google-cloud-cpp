@@ -409,9 +409,6 @@ if ("${GOOGLE_CLOUD_CPP_BIGTABLE_ENABLE_INSTALL}")
             LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
             ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
-    # Install proto generated files into include/google.
-    google_cloud_cpp_install_headers(bigtable_protos include)
-
     # Export the CMake targets to make it easy to create configuration files.
     install(EXPORT bigtable-targets
             DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/bigtable_client")

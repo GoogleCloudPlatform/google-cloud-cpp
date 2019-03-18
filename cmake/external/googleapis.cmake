@@ -17,6 +17,10 @@
 include(ExternalProjectHelper)
 find_package(Threads REQUIRED)
 
+if (NOT TARGET grpc_project)
+    add_custom_target(grpc_project)
+endif ()
+
 if (NOT TARGET googleapis_project)
     # Give application developers a hook to configure the version and hash
     # downloaded from GitHub.
