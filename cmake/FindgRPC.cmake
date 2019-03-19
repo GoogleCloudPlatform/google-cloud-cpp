@@ -32,7 +32,6 @@ Defines the following variables:
 
 ``gRPC_FOUND``
   Found the gRPC library
-  (libprotobuf & header files)
 ``gRPC_VERSION``
   Version of package found.
 

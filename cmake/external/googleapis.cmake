@@ -79,6 +79,7 @@ if (NOT TARGET googleapis_project)
             ${PROJECT_SOURCE_DIR}/cmake/CompileProtos.cmake
             ${PROJECT_SOURCE_DIR}/cmake/PkgConfigHelper.cmake
             ${PROJECT_SOURCE_DIR}/cmake/FindgRPC.cmake
+            ${PROJECT_SOURCE_DIR}/cmake/Findprotobuf.cmake
             ${PROJECT_SOURCE_DIR}/google/cloud/config.pc.in
             ${PROJECT_SOURCE_DIR}/cmake/external/googleapis/config.cmake.in
             ${PROJECT_SOURCE_DIR}/cmake/external/googleapis/config-version.cmake.in
@@ -91,6 +92,7 @@ if (NOT TARGET googleapis_project)
                    -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
                    -DCMAKE_INSTALL_RPATH=${GOOGLE_CLOUD_CPP_INSTALL_RPATH}
                    -DgRPC_DEBUG=ON
+                   -Dprotobuf_DEBUG=ON
         BUILD_COMMAND ${CMAKE_COMMAND}
                       --build
                       <BINARY_DIR>
