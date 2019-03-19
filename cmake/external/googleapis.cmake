@@ -77,6 +77,8 @@ if (NOT TARGET googleapis_project)
         COMMAND
             ${CMAKE_COMMAND} -E copy
             ${PROJECT_SOURCE_DIR}/cmake/CompileProtos.cmake
+            ${PROJECT_SOURCE_DIR}/cmake/PkgConfigHelper.cmake
+            ${PROJECT_SOURCE_DIR}/cmake/FindgRPC.cmake
             ${PROJECT_SOURCE_DIR}/google/cloud/config.pc.in
             ${PROJECT_SOURCE_DIR}/cmake/external/googleapis/config.cmake.in
             ${PROJECT_SOURCE_DIR}/cmake/external/googleapis/config-version.cmake.in
@@ -88,14 +90,15 @@ if (NOT TARGET googleapis_project)
                    -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}
                    -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
                    -DCMAKE_INSTALL_RPATH=${GOOGLE_CLOUD_CPP_INSTALL_RPATH}
+                   -DgRPC_DEBUG=ON
         BUILD_COMMAND ${CMAKE_COMMAND}
                       --build
                       <BINARY_DIR>
                       ${PARALLEL}
         BUILD_BYPRODUCTS ${googleapis_byproducts}
         LOG_DOWNLOAD ON
-        LOG_CONFIGURE ON
-        LOG_BUILD ON
+        LOG_CONFIGURE OFF
+        LOG_BUILD OFF
         LOG_INSTALL OFF)
 
     externalproject_get_property(googleapis_project BINARY_DIR)

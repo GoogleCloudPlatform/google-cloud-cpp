@@ -105,7 +105,7 @@ elseif("${GOOGLE_CLOUD_CPP_GRPC_PROVIDER}" STREQUAL "package")
     find_program(
         PROTOC_GRPCPP_PLUGIN_EXECUTABLE
         NAMES grpc_cpp_plugin
-        DOC "The Google Protocol Buffers Compiler"
+        DOC "The gRPC C++ plugin for protoc"
         PATHS
             ${PROTOBUF_SRC_ROOT_FOLDER}/vsprojects/${_PROTOBUF_ARCH_DIR}Release
             ${PROTOBUF_SRC_ROOT_FOLDER}/vsprojects/${_PROTOBUF_ARCH_DIR}Debug)
@@ -143,7 +143,7 @@ elseif("${GOOGLE_CLOUD_CPP_GRPC_PROVIDER}" STREQUAL "pkg-config")
     find_program(
         PROTOC_GRPCPP_PLUGIN_EXECUTABLE
         NAMES grpc_cpp_plugin
-        DOC "The Google Protocol Buffers Compiler"
+        DOC "The gRPC C++ plugin for protoc"
         PATHS
             ${PROTOBUF_SRC_ROOT_FOLDER}/vsprojects/${_PROTOBUF_ARCH_DIR}Release
             ${PROTOBUF_SRC_ROOT_FOLDER}/vsprojects/${_PROTOBUF_ARCH_DIR}Debug)

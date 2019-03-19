@@ -28,6 +28,7 @@ set(GOOGLEAPIS_CPP_PROTOS_VERSION_PATCH 0)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}")
 find_package(gRPC REQUIRED)
 
 # The current and previous versions of gRPC (1.19.1) define the target but do
@@ -57,7 +58,6 @@ if (PROTO_INCLUDE_DIR)
     list(INSERT PROTOBUF_IMPORT_DIRS 0 "${PROTO_INCLUDE_DIR}")
 endif ()
 
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}")
 # Include the functions to compile proto files.
 include(CompileProtos)
 
