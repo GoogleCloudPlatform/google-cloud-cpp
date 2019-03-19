@@ -95,12 +95,6 @@ source "${PROJECT_ROOT}/ci/travis/linux-config.sh"
 source "${PROJECT_ROOT}/ci/define-dump-log.sh"
 
 echo "================================================================"
-echo "Updating submodules $(date)."
-cd "${PROJECT_ROOT}"
-git submodule update --init
-echo "================================================================"
-
-echo "================================================================"
 export NCPU=$(nproc)
 echo "Building with ${NCPU} cores $(date)."
 
