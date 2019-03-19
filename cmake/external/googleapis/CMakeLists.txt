@@ -29,6 +29,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}")
+find_package(ProtobufTargets REQUIRED)
 find_package(gRPC REQUIRED)
 
 # The current and previous versions of gRPC (1.19.1) define the target but do

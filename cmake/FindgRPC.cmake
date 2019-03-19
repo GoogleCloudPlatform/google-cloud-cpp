@@ -64,7 +64,7 @@ endif ()
 
 # gRPC always requires Protobuf and thread support.
 find_package(Threads REQUIRED)
-find_package(Protobuf REQUIRED)
+find_package(ProtobufTargets REQUIRED)
 
 # First try to use the `GrpcConfig.cmake` or `Grpc-config.cmake` file if it was
 # installed. This is common on systems (or package managers) where gRPC was

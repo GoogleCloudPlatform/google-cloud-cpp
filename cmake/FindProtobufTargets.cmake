@@ -15,31 +15,15 @@
 # ~~~
 
 #[=======================================================================[.rst:
-FixProtobufTargets
-------------------
+FindProtobufTargets
+-------------------
 
 Old versions (pre CMake-3.9) of the FindProtobuf module do not define the
 `protobuf::*` targets.  This module defines these targets in a portable way.
+In addition, the module loads ``protobuf-config.cmake`` or
+``protobufConfig.cmake`` if they are present.
 
-- This module always defines the ``protobuf::*`` target, while the stock
-  CMake module only defines them after CMake-3.9.
-
-The following variables can be set and are optional:
-
-``protobuf_DEBUG``
-  Show debug messages.
-``protobuf_USE_STATIC_LIBS``
-  Set to ON to force the use of the static libraries.
-  Default is OFF.
-
-Defines the following variables:
-
-``protobuf_FOUND``
-  Found the protobuf library
-``protobuf_VERSION``
-  Version of package found.
-
-The following :prop_tgt:`IMPORTED` targets are also defined:
+The following :prop_tgt:`IMPORTED` targets are defined:
 
 ``protobuf::libprotobuf``
   The protobuf library.
@@ -54,7 +38,7 @@ Example:
 
 .. code-block:: cmake
 
-  find_package(Protobuf REQUIRED)
+  find_package(ProtobufTargets REQUIRED)
   add_executable(bar bar.cc)
   target_link_libraries(bar PRIVATE protobuf::libprotobuf)
 
@@ -72,7 +56,7 @@ find_package(Threads REQUIRED)
 # First try to use the ``protobufConfig.cmake`` or ``protobuf-config.cmake``
 # file if it was installed. This is common on systems (or package managers)
 # where protobuf was compiled and installed with `CMake`.
-find_package(protobuf NO_MODULE QUIET)
+find_package(protobuf NO_MODULE )
 
 if (protobuf_DEBUG)
     # Output the progress so far.
