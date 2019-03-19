@@ -55,7 +55,7 @@ if (NOT TARGET googleapis_project)
                    "${GOOGLE_CLOUD_CPP_INSTALL_RPATH}")
 
     create_external_project_library_byproduct_list(googleapis_byproducts
-                                                   "googleapis_cpp_protos")
+                                                   "googleapis_cpp_bigtable")
 
     include(ExternalProject)
     externalproject_add(
