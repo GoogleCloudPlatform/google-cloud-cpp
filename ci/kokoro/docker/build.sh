@@ -96,7 +96,8 @@ source "${PROJECT_ROOT}/ci/define-dump-log.sh"
 
 echo "================================================================"
 export NCPU=$(nproc)
-echo "Building with ${NCPU} cores $(date)."
+cd "${PROJECT_ROOT}"
+echo "Building with ${NCPU} cores $(date) on ${PWD}."
 
 echo "================================================================"
 echo "Creating Docker image with all the development tools $(date)."
