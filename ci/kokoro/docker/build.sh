@@ -123,11 +123,11 @@ echo "Build finished with ${exit_status} exit status $(date)."
 echo "================================================================"
 
 echo "================================================================"
-# DEBUG DO NOT MERGE "${PROJECT_ROOT}/ci/travis/dump-logs.sh"
+"${PROJECT_ROOT}/ci/travis/dump-logs.sh"
 echo "================================================================"
 
 echo "================================================================"
-# DEBUG DO NOT MERGE "${PROJECT_ROOT}/ci/travis/dump-reports.sh"
+"${PROJECT_ROOT}/ci/travis/dump-reports.sh"
 echo "================================================================"
 
 exit ${exit_status}
