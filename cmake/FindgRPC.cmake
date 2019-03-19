@@ -114,15 +114,30 @@ endif ()
 # We also should try to find the gRPC C++ plugin for the protocol buffers
 # compiler. Without it, it is not possible to generate the gRPC bindings.
 if (gRPC_FOUND)
-    find_program(_gRPC_CPP_PLUGIN_EXECUTABLE
-                 NAMES gRPC_cpp_plugin
-                 DOC "The gRPC C++ plugin for protoc")
-    if (_gRPC_CPP_PLUGIN_EXECUTABLE)
-        mark_as_advanced(_gRPC_CPP_PLUGIN_EXECUTABLE)
+    # The target may already exist, do not create it again if it does.
+    if (NOT TARGET gRPC::grpc_cpp_plugin)
         add_executable(gRPC::grpc_cpp_plugin IMPORTED)
-        set_property(TARGET gRPC::grpc_cpp_plugin
-                     PROPERTY IMPORTED_LOCATION ${_gRPC_CPP_PLUGIN_EXECUTABLE})
-    else()
-        set(gRPC_FOUND "grpc_cpp_plugin-NOTFOUND")
     endif ()
+    get_target_property(_gRPC_CPP_PLUGIN_EXECUTABLE gRPC::grpc_cpp_plugin
+                        IMPORTED_LOCATION)
+    message(STATUS "[ ${CMAKE_CURRENT_LIST_FILE}:${CMAKE_CURRENT_LIST_LINE} ] "
+                   "LOCATION=${_gRPC_CPP_PLUGIN_EXECUTABLE}")
+    # Even if the target exists, gRPC CMake support files do not define the
+    # executable for the imported target (at least they do not in v1.19.1), so
+    # we need to define it ourselves.
+    if (NOT _gRPC_CPP_PLUGIN_EXECUTABLE)
+        find_program(_gRPC_CPP_PLUGIN_EXECUTABLE
+                     NAMES grpc_cpp_plugin
+                     DOC "The gRPC C++ plugin for protoc")
+        if (_gRPC_CPP_PLUGIN_EXECUTABLE)
+            mark_as_advanced(_gRPC_CPP_PLUGIN_EXECUTABLE)
+            set_property(TARGET gRPC::grpc_cpp_plugin
+                         PROPERTY IMPORTED_LOCATION
+                                  ${_gRPC_CPP_PLUGIN_EXECUTABLE})
+        else()
+            set(gRPC_FOUND "grpc_cpp_plugin-NOTFOUND")
+        endif ()
+    endif ()
+    message(STATUS "[ ${CMAKE_CURRENT_LIST_FILE}:${CMAKE_CURRENT_LIST_LINE} ] "
+                   "LOCATION=${_gRPC_CPP_PLUGIN_EXECUTABLE}")
 endif ()
