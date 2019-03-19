@@ -168,6 +168,9 @@ if [[ "${TEST_INSTALL:-}" = "yes" ]]; then
   cmake --build "${BUILD_OUTPUT}" --target install || echo "FAILED"
   ls -l /usr/local/include/google
   ls -l /usr/local/include
+  ls -l /usr/local/lib
+  ls -l /usr/local/lib/cmake
+  ls -l /usr/local/lib/cmake/googleapis
   id
   ls -ld /usr/local
   ls -ld /usr/local/include

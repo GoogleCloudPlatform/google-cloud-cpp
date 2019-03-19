@@ -107,12 +107,12 @@ if (NOT TARGET googleapis_project)
     endif ()
 endif ()
 
-if (NOT TARGET googleapis::cpp_protos)
-    add_library(googleapis::cpp_protos INTERFACE IMPORTED)
-    set_library_properties_for_external_project(googleapis::cpp_protos
-                                                googleapis_cpp_protos)
-    add_dependencies(googleapis::cpp_protos googleapis_project)
-    set_property(TARGET googleapis::cpp_protos
+if (NOT TARGET googleapis-c++::bigtable)
+    add_library(googleapis-c++::bigtable INTERFACE IMPORTED)
+    set_library_properties_for_external_project(googleapis-c++::bigtable
+                                                googleapis_cpp_bigtable)
+    add_dependencies(googleapis-c++::bigtable googleapis_project)
+    set_property(TARGET googleapis-c++::bigtable
                  APPEND
                  PROPERTY INTERFACE_LINK_LIBRARIES gRPC::grpc++
                           protobuf::libprotobuf)

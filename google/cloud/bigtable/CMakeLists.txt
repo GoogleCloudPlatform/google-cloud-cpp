@@ -64,7 +64,7 @@ include(external/googleapis)
 
 # Create a library with the generated files from the relevant protos.
 add_library(bigtable_protos INTERFACE)
-target_link_libraries(bigtable_protos INTERFACE googleapis::cpp_protos)
+target_link_libraries(bigtable_protos INTERFACE googleapis-c++::bigtable)
 add_library(bigtable::protos ALIAS bigtable_protos)
 
 # Enable unit tests
@@ -428,7 +428,8 @@ if ("${GOOGLE_CLOUD_CPP_BIGTABLE_ENABLE_INSTALL}")
     set(GOOGLE_CLOUD_CPP_PC_NAME "The Google Cloud Bigtable C++ Client Library")
     set(GOOGLE_CLOUD_CPP_PC_DESCRIPTION
         "Provides C++ APIs to access Google Cloud Bigtable.")
-    set(GOOGLE_CLOUD_CPP_PC_LIBS "-lbigtable_client -lbigtable_protos")
+    set(GOOGLE_CLOUD_CPP_PC_REQUIRES "google_cloud_cpp_common googleapis")
+    set(GOOGLE_CLOUD_CPP_PC_LIBS "-lbigtable_client")
 
     # Create and install the pkg-config files.
     configure_file("${PROJECT_SOURCE_DIR}/google/cloud/config.pc.in"

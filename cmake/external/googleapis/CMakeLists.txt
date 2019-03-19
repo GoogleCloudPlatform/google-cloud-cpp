@@ -61,6 +61,7 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}")
 # Include the functions to compile proto files.
 include(CompileProtos)
 
+# TODO(coryan) - refactor common (non-bigtable) protos to a library
 protobuf_generate_cpp(
     PROTO_SOURCES
     PROTO_HDRS
@@ -87,32 +88,34 @@ grpc_generate_cpp(
     ${PROJECT_SOURCE_DIR}/google/bigtable/v2/bigtable.proto
     ${PROJECT_SOURCE_DIR}/google/longrunning/operations.proto)
 
-# Create a library with the generated files from the relevant protos.
-add_library(googleapis_cpp_protos
+# Create a library with the generated files from the relevant protos. When
+# adding new services (e.g. Spanner) please create a new library and refactor
+# common protos
+add_library(googleapis_cpp_bigtable
             ${PROTO_SOURCES}
             ${PROTO_HDRS}
             ${GRPCPP_SOURCES}
             ${GRPCPP_HDRS})
-target_link_libraries(googleapis_cpp_protos
+target_link_libraries(googleapis_cpp_bigtable
                       PUBLIC gRPC::grpc++ gRPC::grpc protobuf::libprotobuf)
-target_include_directories(googleapis_cpp_protos
+target_include_directories(googleapis_cpp_bigtable
                            PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
                                   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
                                   $<INSTALL_INTERFACE:include>)
 set_target_properties(
-    googleapis_cpp_protos
+    googleapis_cpp_bigtable
     PROPERTIES
         VERSION
         "${GOOGLEAPIS_CPP_PROTOS_VERSION_MAJOR}.${GOOGLEAPIS_CPP_PROTOS_VERSION_MINOR}.${GOOGLEAPIS_CPP_PROTOS_VERSION_PATCH}"
         SOVERSION
         ${GOOGLEAPIS_CPP_PROTOS_VERSION_MAJOR})
-add_library(googleapis::cpp_protos ALIAS googleapis_cpp_protos)
+add_library(googleapis-c++::bigtable ALIAS googleapis_cpp_bigtable)
 
 # Install the libraries and headers in the locations determined by
 # GNUInstallDirs
 include(GNUInstallDirs)
 
-install(TARGETS googleapis_cpp_protos
+install(TARGETS googleapis_cpp_bigtable
         EXPORT googleapis-targets
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -145,7 +148,7 @@ set(
 set(GOOGLE_CLOUD_CPP_PC_NAME "The Google APIS C++ Proto Library")
 set(GOOGLE_CLOUD_CPP_PC_DESCRIPTION
     "Provides C++ APIs to access Google Cloud Platforms.")
-set(GOOGLE_CLOUD_CPP_PC_LIBS "-lgoogleapis_cpp_protos")
+set(GOOGLE_CLOUD_CPP_PC_LIBS "-lgoogleapis_cpp_bigtable")
 
 # Create and install the pkg-config files.
 configure_file("${PROJECT_SOURCE_DIR}/config.pc.in" "googleapis.pc" @ONLY)
