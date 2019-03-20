@@ -137,6 +137,19 @@ if (gRPC_FOUND)
             set(gRPC_FOUND "grpc_cpp_plugin-NOTFOUND")
         endif ()
     endif ()
+
+    # Including gRPC headers without this definition results in a build error.
+    if (WIN32)
+      set_property(TARGET gRPC::grpc
+                    APPEND
+                    PROPERTY INTERFACE_COMPILE_DEFINITIONS
+                        _WIN32_WINNT=0x600)
+      set_property(TARGET gRPC::grpc++
+                    APPEND
+                    PROPERTY INTERFACE_COMPILE_DEFINITIONS
+                        _WIN32_WINNT=0x600)
+    endif ()
+
     message(STATUS "[ ${CMAKE_CURRENT_LIST_FILE}:${CMAKE_CURRENT_LIST_LINE} ] "
                    "LOCATION=${_gRPC_CPP_PLUGIN_EXECUTABLE}")
 endif ()

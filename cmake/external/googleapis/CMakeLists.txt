@@ -32,22 +32,6 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}")
 find_package(ProtobufTargets REQUIRED)
 find_package(gRPC REQUIRED)
 
-# The current and previous versions of gRPC (1.19.1) define the target but do
-# not define the imported executable that goes with it. Such a target is not
-# usable, so we define it ourselves. If a future version of gRPC defines the
-# target and a value for it we will use their value instead.
-if (NOT TARGET gRPC::grpc_cpp_plugin)
-    add_executable(gRPC::grpc_cpp_plugin IMPORTED)
-endif ()
-if (NOT gRPC::grpc_cpp_plugin)
-    find_program(GRPC_CPP_PLUGIN_EXECUTABLE
-                 NAMES grpc_cpp_plugin
-                 DOC "The gRPC C++ pluging for the Protocol Buffers Compiler")
-    mark_as_advanced(GRPC_CPP_PLUGIN_EXECUTABLE)
-    set_property(TARGET gRPC::grpc_cpp_plugin
-                 PROPERTY IMPORTED_LOCATION ${GRPC_CPP_PLUGIN_EXECUTABLE})
-endif ()
-
 # Configure the location of proto files, particulary the googleapis protos.
 list(APPEND PROTOBUF_IMPORT_DIRS "${PROJECT_SOURCE_DIR}")
 
