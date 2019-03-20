@@ -57,6 +57,14 @@ if (NOT TARGET googleapis_project)
     create_external_project_library_byproduct_list(googleapis_byproducts
                                                    "googleapis_cpp_bigtable")
 
+    set(EXTRA_GOOGLEAPIS_FLAGS "")
+    if (NOT "${CMAKE_TOOLCHAIN_FILE}" STREQUAL "")
+        set(EXTRA_GOOGLEAPIS_FLAGS
+                "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}")
+    endif ()
+    if (NOT "${VCPKG_TARGET_TRIPLET}" STREQUAL "")
+    endif ()
+
     include(ExternalProject)
     externalproject_add(
         googleapis_project
@@ -93,7 +101,7 @@ if (NOT TARGET googleapis_project)
                    -DCMAKE_INSTALL_RPATH=${GOOGLE_CLOUD_CPP_INSTALL_RPATH}
                    -DgRPC_DEBUG=ON
                    -Dprotobuf_DEBUG=ON
-                   ${CMAKE_ARGS}
+                   ${EXTRA_GOOGLEAPIS_FLAGS}
         BUILD_COMMAND ${CMAKE_COMMAND}
                       --build
                       <BINARY_DIR>
