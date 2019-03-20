@@ -56,6 +56,37 @@ if (GOOGLE_CLOUD_CPP_USE_LIBCXX)
                           INTERFACE "-stdlib=libc++" "c++abi")
 endif ()
 
+# When compiling against *-static vcpkg packages we need to use the static C++
+# runtime with MSVC. The default is to use the dynamic runtime, which does not
+# work in this case.  This seems to be the recommended way to change the
+# runtime:
+#
+#  https://gitlab.kitware.com/cmake/community/wikis/FAQ#how-can-i-build-my-msvc-application-with-a-static-runtime
+#
+if (VCPKG_TARGET_TRIPLET MATCHES "-static$" AND MSVC)
+    # Replace the runtime flags because all the dependencies are linked
+    # statically in this case.
+    message(STATUS " RELEASE=${CMAKE_CXX_FLAGS_RELEASE}")
+    message(STATUS " DEBUG=${CMAKE_CXX_FLAGS_DEBUG}")
+    foreach (flag_var
+        CMAKE_CXX_FLAGS
+        CMAKE_CXX_FLAGS_DEBUG
+        CMAKE_CXX_FLAGS_RELEASE
+        CMAKE_CXX_FLAGS_MINSIZEREL
+        CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+        if (${flag_var} MATCHES "/MD")
+            string(REGEX
+                REPLACE "/MD"
+                "/MT"
+                ${flag_var}
+                "${${flag_var}}")
+        endif ()
+    endforeach (flag_var)
+    message(STATUS " RELEASE=${CMAKE_CXX_FLAGS_RELEASE}")
+    message(STATUS " DEBUG=${CMAKE_CXX_FLAGS_DEBUG}")
+    message(STATUS " DEFAULT=${CMAKE_CXX_FLAGS}")
+endif ()
+
 # TODO(coryan) - refactor common (non-bigtable) protos to a library
 protobuf_generate_cpp(
     PROTO_SOURCES
