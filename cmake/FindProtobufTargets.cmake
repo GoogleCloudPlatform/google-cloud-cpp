@@ -118,6 +118,15 @@ else ()
                 APPEND
                 PROPERTY INTERFACE_LINK_LIBRARIES ${Protobuf_LITE_LIBRARY} Threads::Threads)
         endif ()
+
+        if (NOT TARGET protobuf::libprotoc)
+            add_library(protobuf::libprotoc INTERFACE IMPORTED)
+            set_property(TARGET protobuf::libprotoc
+                    PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${Protobuf_INCLUDE_DIR})
+            set_property(TARGET protobuf::libprotoc
+                    APPEND
+                    PROPERTY INTERFACE_LINK_LIBRARIES ${Protobuf_PROTOC_LIBRARY} Threads::Threads)
+        endif ()
     endif ()
 endif ()
 
@@ -129,15 +138,26 @@ endif ()
 
 # We also should try to find the protobuf C++ plugin for the protocol buffers
 # compiler.
-if (protobuf_FOUND AND NOT TARGET protobuf::protoc)
+if (ProtobufTargets_FOUND AND NOT TARGET protobuf::protoc)
+    add_executable(protobuf::protoc IMPORTED)
+
     # Discover the protoc compiler location.
     find_program(
         _protobuf_PROTOC_EXECUTABLE
         NAMES protoc
         DOC "The Google Protocol Buffers Compiler")
-    add_executable(protobuf::protoc IMPORTED)
+    if (protobuf_DEBUG)
+        message(STATUS "[ ${CMAKE_CURRENT_LIST_FILE}:${CMAKE_CURRENT_LIST_LINE} ] "
+                "ProtobufTargets_FOUND = ${ProtobufTargets_FOUND}"
+                " ProtobufTargets_VERSION = ${ProtobufTargets_VERSION}"
+                " EXE = ${_protobuf_PROTOC_EXECUTABLE}")
+    endif ()
     set_property(TARGET protobuf::protoc
-                 PROPERTY IMPORTED_LOCATION ${PROTOBUF_PROTOC_EXECUTABLE})
+                 PROPERTY IMPORTED_LOCATION ${_protobuf_PROTOC_EXECUTABLE})
+    set_property(TARGET protobuf::protoc
+            PROPERTY IMPORTED_LOCATION_DEBUG ${_protobuf_PROTOC_EXECUTABLE})
+    set_property(TARGET protobuf::protoc
+            PROPERTY IMPORTED_LOCATION_RELEASE ${_protobuf_PROTOC_EXECUTABLE})
     unset(_protobuf_PROTOC_EXECUTABLE)
 
     if (protobuf_DEBUG)
@@ -151,26 +171,17 @@ endif ()
 if (protobuf_DEBUG)
     message(STATUS "[ ${CMAKE_CURRENT_LIST_FILE}:${CMAKE_CURRENT_LIST_LINE} ] "
             "ProtobufTargets_FOUND = ${ProtobufTargets_FOUND}"
-            "ProtobufTargets_VERSION = ${ProtobufTargets_VERSION}")
+            " ProtobufTargets_VERSION = ${ProtobufTargets_VERSION}")
     if (ProtobufTargets_FOUND)
-        get_target_property(_p protobuf::protoc
-                IMPORTED_LOCATION)
-        message(STATUS "[ ${CMAKE_CURRENT_LIST_FILE}:${CMAKE_CURRENT_LIST_LINE} ] "
-                "target=protobuf::protoc location=${_loc}")
-        foreach (_target protobuf::libprotobuf protobuf::libprotobuf-lite)
-            get_target_property(_p ${_target}
-                    INTERFACE_LINK_LIBRARIES)
-            message(STATUS "[ ${CMAKE_CURRENT_LIST_FILE}:${CMAKE_CURRENT_LIST_LINE} ] "
-                    "target=${_target} link_libraries=${_p}")
-            get_target_property(_p ${_target}
-                    INTERFACE_INCLUDE_DIRECTORIES)
-            message(STATUS "[ ${CMAKE_CURRENT_LIST_FILE}:${CMAKE_CURRENT_LIST_LINE} ] "
-                    "target=${_target} include_directories=${_p}")
+        foreach (_target protobuf::libprotobuf protobuf::libprotobuf-lite protobuf::libprotoc)
+            if (NOT TARGET ${_target})
+                message(STATUS "[ ${CMAKE_CURRENT_LIST_FILE}:${CMAKE_CURRENT_LIST_LINE} ] "
+                        "target=${_target} is NOT a target")
+            endif ()
         endforeach ()
         unset(_target)
-        unset(_p)
     endif ()
 endif ()
 
 find_package_handle_standard_args(ProtobufTargets
-        REQUIRED_VARS Protobuf_FOUND)
+        REQUIRED_VARS ProtobufTargets_FOUND ProtobufTargets_VERSION)
