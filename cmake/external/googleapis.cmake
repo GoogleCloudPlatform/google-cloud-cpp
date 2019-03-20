@@ -68,8 +68,6 @@ if (NOT TARGET googleapis_project)
             "-DVCPKG_TARGET_TRIPLET=${VCPKG_TARGET_TRIPLET}")
     endif ()
 
-    message(STATUS " CXX_FLAGS=${CMAKE_CXX_FLAGS} USE_LIBCXX=${GOOGLE_CLOUD_CPP_USE_LIBCXX}")
-
     include(ExternalProject)
     externalproject_add(
         googleapis_project
