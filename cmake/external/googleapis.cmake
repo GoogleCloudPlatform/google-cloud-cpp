@@ -68,6 +68,8 @@ if (NOT TARGET googleapis_project)
             "-DVCPKG_TARGET_TRIPLET=${VCPKG_TARGET_TRIPLET}")
     endif ()
 
+    message(STATUS " CXX_FLAGS=${CMAKE_CXX_FLAGS} USE_LIBCXX=${GOOGLE_CLOUD_CPP_USE_LIBCXX}")
+
     include(ExternalProject)
     externalproject_add(
         googleapis_project
@@ -104,12 +106,9 @@ if (NOT TARGET googleapis_project)
                    -DCMAKE_INSTALL_RPATH=${GOOGLE_CLOUD_CPP_INSTALL_RPATH}
                    -DgRPC_DEBUG=ON
                    -Dprotobuf_DEBUG=ON
+                   -DGOOGLE_CLOUD_CPP_USE_LIBCXX=${GOOGLE_CLOUD_CPP_USE_LIBCXX}
                    ${_googleapis_toolchain_flag}
                    ${_googleapis_triplet_flag}
-                    $<$<BOOL:${GOOGLE_CLOUD_CPP_USE_LIBCXX}>:
-                    -DCMAKE_CXX_FLAGS=-stdlib=libc++
-                    -DCMAKE_SHARED_LINKER_FLAGS=-Wl,-lc++abi
-                    >
         BUILD_COMMAND ${CMAKE_COMMAND}
                       --build
                       <BINARY_DIR>

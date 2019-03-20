@@ -48,6 +48,13 @@ endif ()
 # Include the functions to compile proto files.
 include(CompileProtos)
 
+message(STATUS " CXX_FLAGS=${CMAKE_CXX_FLAGS} USE_LIBCXX=${GOOGLE_CLOUD_CPP_USE_LIBCXX}")
+add_library(googleapis_cpp_common INTERFACE)
+if (GOOGLE_CLOUD_CPP_USE_LIBCXX)
+    target_compile_options(googleapis_cpp_common INTERFACE "-stdlib=libc++")
+    target_link_libraries(googleapis_cpp_common INTERFACE "-stdlib=libc++" "c++abi")
+endif ()
+
 # TODO(coryan) - refactor common (non-bigtable) protos to a library
 protobuf_generate_cpp(
     PROTO_SOURCES
@@ -84,7 +91,8 @@ add_library(googleapis_cpp_bigtable
             ${GRPCPP_SOURCES}
             ${GRPCPP_HDRS})
 target_link_libraries(googleapis_cpp_bigtable
-                      PUBLIC gRPC::grpc++ gRPC::grpc protobuf::libprotobuf)
+                      PUBLIC gRPC::grpc++ gRPC::grpc protobuf::libprotobuf
+                      PRIVATE googleapis_cpp_common)
 target_include_directories(googleapis_cpp_bigtable
                            PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
                                   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
@@ -102,7 +110,7 @@ add_library(googleapis-c++::bigtable ALIAS googleapis_cpp_bigtable)
 # GNUInstallDirs
 include(GNUInstallDirs)
 
-install(TARGETS googleapis_cpp_bigtable
+install(TARGETS googleapis_cpp_bigtable googleapis_cpp_common
         EXPORT googleapis-targets
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
