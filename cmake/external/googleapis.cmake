@@ -106,6 +106,10 @@ if (NOT TARGET googleapis_project)
                    -Dprotobuf_DEBUG=ON
                    ${_googleapis_toolchain_flag}
                    ${_googleapis_triplet_flag}
+                    $<$<BOOL:${GOOGLE_CLOUD_CPP_USE_LIBCXX}>:
+                    -DCMAKE_CXX_FLAGS=-stdlib=libc++
+                    -DCMAKE_SHARED_LINKER_FLAGS=-Wl,-lc++abi
+                    >
         BUILD_COMMAND ${CMAKE_COMMAND}
                       --build
                       <BINARY_DIR>
