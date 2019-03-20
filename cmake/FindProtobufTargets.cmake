@@ -76,26 +76,27 @@ find_package(Threads REQUIRED)
 
 # First try to use the ``protobufConfig.cmake`` or ``protobuf-config.cmake``
 # file if it was installed. This is common on systems (or package managers)
-# where protobuf was compiled and installed with `CMake`.
-# Note that on Linux this *must* be all lowercase ``protobuf``, while on Windows
-# it does not matter.
+# where protobuf was compiled and installed with `CMake`. Note that on Linux
+# this *must* be all lowercase ``protobuf``, while on Windows it does not
+# matter.
 find_package(protobuf CONFIG)
 
 if (protobuf_DEBUG)
     message(STATUS "[ ${CMAKE_CURRENT_LIST_FILE}:${CMAKE_CURRENT_LIST_LINE} ] "
-            "protobuf_FOUND = ${protobuf_FOUND}"
-            " protobuf_VERSION = ${protobuf_VERSION}")
+                   "protobuf_FOUND = ${protobuf_FOUND}"
+                   " protobuf_VERSION = ${protobuf_VERSION}")
 endif ()
 
 if (protobuf_FOUND)
     set(ProtobufTargets_FOUND 1)
     set(ProtobufTargets_VERSION ${protobuf_VERSION})
     if (protobuf_DEBUG)
-        message(STATUS "[ ${CMAKE_CURRENT_LIST_FILE}:${CMAKE_CURRENT_LIST_LINE} ] "
-                "ProtobufTargets_FOUND = ${ProtobufTargets_FOUND}"
-                " ProtobufTargets_VERSION = ${ProtobufTargets_VERSION}")
+        message(
+            STATUS "[ ${CMAKE_CURRENT_LIST_FILE}:${CMAKE_CURRENT_LIST_LINE} ] "
+                   "ProtobufTargets_FOUND = ${ProtobufTargets_FOUND}"
+                   " ProtobufTargets_VERSION = ${ProtobufTargets_VERSION}")
     endif ()
-else ()
+else()
     find_package(Protobuf QUIET)
     if (Protobuf_FOUND)
         set(ProtobufTargets_FOUND 1)
@@ -104,28 +105,34 @@ else ()
         if (NOT TARGET protobuf::libprotobuf)
             add_library(protobuf::libprotobuf INTERFACE IMPORTED)
             set_property(TARGET protobuf::libprotobuf
-                PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${Protobuf_INCLUDE_DIR})
+                         PROPERTY INTERFACE_INCLUDE_DIRECTORIES
+                                  ${Protobuf_INCLUDE_DIR})
             set_property(TARGET protobuf::libprotobuf
-                APPEND
-                PROPERTY INTERFACE_LINK_LIBRARIES ${Protobuf_LIBRARY} Threads::Threads)
+                         APPEND
+                         PROPERTY INTERFACE_LINK_LIBRARIES ${Protobuf_LIBRARY}
+                                  Threads::Threads)
         endif ()
 
         if (NOT TARGET protobuf::libprotobuf-lite)
             add_library(protobuf::libprotobuf-lite INTERFACE IMPORTED)
             set_property(TARGET protobuf::libprotobuf-lite
-                PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${Protobuf_INCLUDE_DIR})
+                         PROPERTY INTERFACE_INCLUDE_DIRECTORIES
+                                  ${Protobuf_INCLUDE_DIR})
             set_property(TARGET protobuf::libprotobuf-lite
-                APPEND
-                PROPERTY INTERFACE_LINK_LIBRARIES ${Protobuf_LITE_LIBRARY} Threads::Threads)
+                         APPEND
+                         PROPERTY INTERFACE_LINK_LIBRARIES
+                                  ${Protobuf_LITE_LIBRARY} Threads::Threads)
         endif ()
 
         if (NOT TARGET protobuf::libprotoc)
             add_library(protobuf::libprotoc INTERFACE IMPORTED)
             set_property(TARGET protobuf::libprotoc
-                    PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${Protobuf_INCLUDE_DIR})
+                         PROPERTY INTERFACE_INCLUDE_DIRECTORIES
+                                  ${Protobuf_INCLUDE_DIR})
             set_property(TARGET protobuf::libprotoc
-                    APPEND
-                    PROPERTY INTERFACE_LINK_LIBRARIES ${Protobuf_PROTOC_LIBRARY} Threads::Threads)
+                         APPEND
+                         PROPERTY INTERFACE_LINK_LIBRARIES
+                                  ${Protobuf_PROTOC_LIBRARY} Threads::Threads)
         endif ()
     endif ()
 endif ()
@@ -142,40 +149,48 @@ if (ProtobufTargets_FOUND AND NOT TARGET protobuf::protoc)
     add_executable(protobuf::protoc IMPORTED)
 
     # Discover the protoc compiler location.
-    find_program(
-        _protobuf_PROTOC_EXECUTABLE
-        NAMES protoc
-        DOC "The Google Protocol Buffers Compiler")
+    find_program(_protobuf_PROTOC_EXECUTABLE
+                 NAMES protoc
+                 DOC "The Google Protocol Buffers Compiler")
     if (protobuf_DEBUG)
-        message(STATUS "[ ${CMAKE_CURRENT_LIST_FILE}:${CMAKE_CURRENT_LIST_LINE} ] "
-                "ProtobufTargets_FOUND = ${ProtobufTargets_FOUND}"
-                " ProtobufTargets_VERSION = ${ProtobufTargets_VERSION}"
-                " EXE = ${_protobuf_PROTOC_EXECUTABLE}")
+        message(
+            STATUS "[ ${CMAKE_CURRENT_LIST_FILE}:${CMAKE_CURRENT_LIST_LINE} ] "
+                   "ProtobufTargets_FOUND = ${ProtobufTargets_FOUND}"
+                   " ProtobufTargets_VERSION = ${ProtobufTargets_VERSION}"
+                   " EXE = ${_protobuf_PROTOC_EXECUTABLE}")
     endif ()
     set_property(TARGET protobuf::protoc
                  PROPERTY IMPORTED_LOCATION ${_protobuf_PROTOC_EXECUTABLE})
+    set_property(
+        TARGET protobuf::protoc
+        PROPERTY IMPORTED_LOCATION_DEBUG ${_protobuf_PROTOC_EXECUTABLE})
     set_property(TARGET protobuf::protoc
-            PROPERTY IMPORTED_LOCATION_DEBUG ${_protobuf_PROTOC_EXECUTABLE})
-    set_property(TARGET protobuf::protoc
-            PROPERTY IMPORTED_LOCATION_RELEASE ${_protobuf_PROTOC_EXECUTABLE})
+                 PROPERTY IMPORTED_LOCATION_RELEASE
+                          ${_protobuf_PROTOC_EXECUTABLE})
     unset(_protobuf_PROTOC_EXECUTABLE)
 
     if (protobuf_DEBUG)
         get_target_property(_protobuf_PROTOC_EXECUTABLE protobuf::protoc
                             IMPORTED_LOCATION)
-        message(STATUS "[ ${CMAKE_CURRENT_LIST_FILE}:${CMAKE_CURRENT_LIST_LINE} ] "
-                    "LOCATION=${_protobuf_PROTOC_EXECUTABLE}")
+        message(
+            STATUS "[ ${CMAKE_CURRENT_LIST_FILE}:${CMAKE_CURRENT_LIST_LINE} ] "
+                   "LOCATION=${_protobuf_PROTOC_EXECUTABLE}")
     endif ()
 endif ()
 
 if (protobuf_DEBUG)
     message(STATUS "[ ${CMAKE_CURRENT_LIST_FILE}:${CMAKE_CURRENT_LIST_LINE} ] "
-            "ProtobufTargets_FOUND = ${ProtobufTargets_FOUND}"
-            " ProtobufTargets_VERSION = ${ProtobufTargets_VERSION}")
+                   "ProtobufTargets_FOUND = ${ProtobufTargets_FOUND}"
+                   " ProtobufTargets_VERSION = ${ProtobufTargets_VERSION}")
     if (ProtobufTargets_FOUND)
-        foreach (_target protobuf::libprotobuf protobuf::libprotobuf-lite protobuf::libprotoc)
+        foreach (_target
+                 protobuf::libprotobuf
+                 protobuf::libprotobuf-lite
+                 protobuf::libprotoc)
             if (NOT TARGET ${_target})
-                message(STATUS "[ ${CMAKE_CURRENT_LIST_FILE}:${CMAKE_CURRENT_LIST_LINE} ] "
+                message(
+                    STATUS
+                        "[ ${CMAKE_CURRENT_LIST_FILE}:${CMAKE_CURRENT_LIST_LINE} ] "
                         "target=${_target} is NOT a target")
             endif ()
         endforeach ()
@@ -184,4 +199,6 @@ if (protobuf_DEBUG)
 endif ()
 
 find_package_handle_standard_args(ProtobufTargets
-        REQUIRED_VARS ProtobufTargets_FOUND ProtobufTargets_VERSION)
+                                  REQUIRED_VARS
+                                  ProtobufTargets_FOUND
+                                  ProtobufTargets_VERSION)

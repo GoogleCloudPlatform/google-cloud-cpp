@@ -60,9 +60,10 @@ if (NOT TARGET googleapis_project)
     set(EXTRA_GOOGLEAPIS_FLAGS "")
     if (NOT "${CMAKE_TOOLCHAIN_FILE}" STREQUAL "")
         set(EXTRA_GOOGLEAPIS_FLAGS
-                "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}")
+            "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}")
     endif ()
     if (NOT "${VCPKG_TARGET_TRIPLET}" STREQUAL "")
+
     endif ()
 
     include(ExternalProject)
