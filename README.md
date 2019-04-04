@@ -324,32 +324,32 @@ after cloning this repo:
 
 ```bash
 # Add -DBUILD_TESTING=OFF to disable tests
-cmake -H. -Bbuild-output
+cmake -H. -B.build
 
 # Adjust the number of threads used by modifying parameter for `-j 4`
-cmake --build build-output -- -j 4
+cmake --build .build -- -j 4
 
 # Verify build by running tests
-(cd build-output && ctest --output-on-failure)
+(cd .build && ctest --output-on-failure)
 ```
 
-You will find compiled binaries in `build-output/` respective to their source paths.
+You will find compiled binaries in `.build/` respective to their source paths.
 
 #### macOS
 
 ```bash
 export OPENSSL_ROOT_DIR=/usr/local/opt/libressl
 # Add -DBUILD_TESTING=OFF to disable tests
-cmake -H. -Bbuild-output
+cmake -H. -B.build
 
 # Adjust the number of threads used by modifying parameter for `-j 4`
-cmake --build build-output -- -j 4
+cmake --build .build -- -j 4
 
 # Verify build by running tests
-(cd build-output && ctest --output-on-failure)
+(cd .build && ctest --output-on-failure)
 ```
 
-You will find compiled binaries in `build-output/` respective to their source paths.
+You will find compiled binaries in `.build/` respective to their source paths.
 
 #### Windows
 
@@ -414,7 +414,7 @@ call "c:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary
 Use CMake to create the build files:
 
 ```console
-cmake -H. -Bbuild-output -GNinja ^
+cmake -H. -B.build -GNinja ^
     -DCMAKE_BUILD_TYPE=Release ^
     -DCMAKE_TOOLCHAIN_FILE="%SOURCE%\vcpkg\scripts\buildsystems\vcpkg.cmake" ^
     -DVCPKG_TARGET_TRIPLET=x64-windows-static ^
@@ -427,17 +427,17 @@ cmake -H. -Bbuild-output -GNinja ^
 And compile the code:
 
 ```console
-cmake --build build-output
+cmake --build .build
 ```
 
 Finally, verify the unit tests pass:
 
 ```console
-cd build-output
+cd .build
 ctest --output-on-failure
 ```
 
-You will find compiled binaries in `build-output\` respective to their
+You will find compiled binaries in `.build\` respective to their
 source directories.
 
 ### Install
