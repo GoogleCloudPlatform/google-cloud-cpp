@@ -188,6 +188,13 @@ if [[ "${TEST_INSTALL:-}" = "yes" ]]; then
   cp -r "${TEST_INSTALL_DIR}"/* "${TEST_INSTALL_SUBMODULE_OUTPUT_DIR}"
   git -C "${TEST_INSTALL_SUBMODULE_OUTPUT_DIR}/submodule" init
   git -C "${TEST_INSTALL_SUBMODULE_OUTPUT_DIR}/submodule" submodule add https://github.com/googleapis/google-cloud-cpp
+  find "${PROJECT_ROOT}" \( -path ./.git \
+          -o -path ./third_party \
+          -o -path './cmake-build-*' \
+          -o -path ./build-output \
+          -o -path ./.build \
+          -o -path ./_build \
+       \) -prune -exec cp '{}' "${TEST_INSTALL_SUBMODULE_OUTPUT_DIR}/submodule/google-cloud-cpp"'{}' \;
   cmake -H"${TEST_INSTALL_SUBMODULE_OUTPUT_DIR}/submodule" -B"${TEST_INSTALL_SUBMODULE_OUTPUT_DIR}" -DCMAKE_CXX_COMPILER=${CXX}
   cmake --build "${TEST_INSTALL_SUBMODULE_OUTPUT_DIR}"
 
