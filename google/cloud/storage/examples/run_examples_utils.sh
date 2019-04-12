@@ -670,7 +670,7 @@ run_resume_rewrite_example() {
       "${target_bucket_name}" "${target_object_name}")
 
   if echo "${msg}" | grep -q "Rewrite in progress"; then
-    local token=$(echo ${msg} | awk '{print $5}')
+    local token=$(echo "${msg}" | awk '{print $5}')
     run_example ./storage_object_samples rewrite-object-resume \
         "${source_bucket_name}" "${source_object_name}" \
         "${target_bucket_name}" "${target_object_name}" "${token}"
