@@ -49,9 +49,9 @@ run_example() {
   local example=$2
   shift 2
   local arguments=$*
-  local program_name=$(basename ${program_path})
+  local program_name="$(basename "${program_path}")"
 
-  if [ ! -x ${program_path} ]; then
+  if [ ! -x "${program_path}" ]; then
     echo "${COLOR_YELLOW}[  SKIPPED ]${COLOR_RESET}" \
         " ${program_name} is not compiled"
     return
@@ -59,9 +59,11 @@ run_example() {
   log="$(mktemp -t "run_example.XXXXXX")"
   echo    "${COLOR_GREEN}[ RUN      ]${COLOR_RESET}" \
       " ${program_name} ${example} running"
-  echo ${program_path} ${example} ${arguments} >"${log}"
+  # shellcheck disable=SC2086
+  echo "${program_path}" "${example}" ${arguments} >"${log}"
   set +e
-  ${program_path} ${example} ${arguments} >>"${log}" 2>&1 </dev/null
+  # shellcheck disable=SC2086
+  ${program_path} "${example}" ${arguments} >>"${log}" 2>&1 </dev/null
   if [ $? = 0 ]; then
     echo  "${COLOR_GREEN}[       OK ]${COLOR_RESET}" \
         " ${program_name} ${example}"
@@ -96,11 +98,11 @@ run_example_usage() {
     exit 1
   fi
 
-  local program_path=$1
+  local program_path="$1"
   shift 1
-  local program_name=$(basename ${program_path})
+  local program_name="$(basename "${program_path}")"
 
-  if [ ! -x ${program_path} ]; then
+  if [ ! -x "${program_path}" ]; then
     echo "${COLOR_YELLOW}[  SKIPPED ]${COLOR_RESET}" \
         " ${program_name} is not compiled"
     return
@@ -108,7 +110,7 @@ run_example_usage() {
   log="$(mktemp -t "run_example.XXXXXX")"
   echo    "${COLOR_GREEN}[ RUN      ]${COLOR_RESET}" \
       " ${program_name} running"
-  echo ${program_path} >"${log}"
+  echo "${program_path}" >"${log}"
   set +e
   ${program_path} >>"${log}" 2>&1 </dev/null
   if [ $? != 0 ] && grep -q 'Usage' "${log}"; then
@@ -119,7 +121,7 @@ run_example_usage() {
     echo    "${COLOR_RED}[    ERROR ]${COLOR_RESET}" \
         " ${program_name}"
     echo
-    dump_log ${log}
+    dump_log "${log}"
     if [ -f "${EMULATOR_LOG}" ]; then
       dump_log "${EMULATOR_LOG}"
     fi
