@@ -40,7 +40,7 @@ void PrintUsage(std::string const& cmd, std::string const& msg) {
 void AsyncCreateCluster(cbt::InstanceAdmin instance_admin,
                         cbt::CompletionQueue cq,
                         std::vector<std::string> argv) {
-  if (argv.size() != 2U) {
+  if (argv.size() != 4U) {
     throw Usage{
         "async-create-cluster <project-id> <instance-id> <cluster-id> <zone>"};
   }
