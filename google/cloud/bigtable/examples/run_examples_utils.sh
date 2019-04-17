@@ -173,6 +173,8 @@ function run_all_instance_admin_async_examples {
 
   run_example ./bigtable_instance_admin_snippets create-instance \
       "${project_id}" "${INSTANCE}" "${zone_id}"
+  run_example ./instance_admin_async_snippets async-update-instance \
+      "${project_id}" "${INSTANCE}"
   run_example ./instance_admin_async_snippets async-get-instance \
       "${project_id}" "${INSTANCE}"
   run_example ./instance_admin_async_snippets async-list-instances \
