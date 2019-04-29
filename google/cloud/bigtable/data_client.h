@@ -97,6 +97,7 @@ class DataClient {
   friend class internal::AsyncSampleRowKeys;
   friend class internal::BulkMutator;
   friend class RowReader;
+  friend class AsyncRowReader;
   template <typename ReadRowCallback,
             typename std::enable_if<google::cloud::internal::is_invocable<
                                         ReadRowCallback, CompletionQueue&, Row,
@@ -143,6 +144,11 @@ class DataClient {
   AsyncReadRows(grpc::ClientContext* context,
                 const google::bigtable::v2::ReadRowsRequest& request,
                 grpc::CompletionQueue* cq, void* tag) = 0;
+  virtual std::unique_ptr<::grpc::ClientAsyncReaderInterface<
+      ::google::bigtable::v2::ReadRowsResponse>>
+  PrepareAsyncReadRows(::grpc::ClientContext* context,
+                       const ::google::bigtable::v2::ReadRowsRequest& request,
+                       ::grpc::CompletionQueue* cq) = 0;
   virtual std::unique_ptr<
       grpc::ClientReaderInterface<google::bigtable::v2::SampleRowKeysResponse>>
   SampleRowKeys(grpc::ClientContext* context,
