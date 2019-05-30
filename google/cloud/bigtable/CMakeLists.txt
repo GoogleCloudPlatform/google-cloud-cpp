@@ -101,7 +101,7 @@ add_library(bigtable_client
             app_profile_config.h
             app_profile_config.cc
             async_operation.h
-    ${CMAKE_CURRENT_BINARY_DIR}/version_info.h
+            ${CMAKE_CURRENT_BINARY_DIR}/version_info.h
             cell.h
             client_options.h
             client_options.cc
@@ -153,7 +153,7 @@ add_library(bigtable_client
             internal/rpc_policy_parameters.h
             internal/rowreaderiterator.h
             internal/rowreaderiterator.cc
-    internal/unary_client_utils.h
+            internal/unary_client_utils.h
             idempotent_mutation_policy.h
             idempotent_mutation_policy.cc
             mutation_batcher.h
@@ -183,7 +183,7 @@ add_library(bigtable_client
             table_admin.cc
             table_config.h
             table_config.cc
-    version.h
+            version.h
             version.cc)
 target_link_libraries(bigtable_client
                       PUBLIC bigtable_protos
