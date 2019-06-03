@@ -505,3 +505,8 @@ if ("${GOOGLE_CLOUD_CPP_STORAGE_ENABLE_INSTALL}")
               DESTINATION
               "${CMAKE_INSTALL_LIBDIR}/cmake/storage_client")
 endif ()
+
+if (BUILD_TESTING)
+    install(FILES testing/mock_client.h DESTINATION
+                  include/google/cloud/storage/testing)
+endif ()
