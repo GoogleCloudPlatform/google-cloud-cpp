@@ -1,4 +1,4 @@
-// Copyright 2018 Google Inc.
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,16 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "google/cloud/bigtable/internal/grpc_error_delegate.h"
-#include "google/cloud/terminate_handler.h"
-#include <sstream>
+#include "google/cloud/grpc_wrappers/grpc_error_delegate.h"
 
 namespace google {
 namespace cloud {
-namespace bigtable {
-inline namespace BIGTABLE_CLIENT_NS {
-namespace internal {
-
+namespace grpc_wrappers {
+inline namespace GRPC_WRAPPERS_NS {
 namespace {
 StatusCode MapStatusCode(grpc::StatusCode const& code) {
   switch (code) {
@@ -76,8 +72,7 @@ google::cloud::Status MakeStatusFromRpcError(grpc::StatusCode code,
   return google::cloud::Status(MapStatusCode(code), std::move(what));
 }
 
-}  // namespace internal
-}  // namespace BIGTABLE_CLIENT_NS
-}  // namespace bigtable
+}  // namespace GRPC_WRAPPERS_NS
+}  // namespace grpc_wrappers
 }  // namespace cloud
 }  // namespace google

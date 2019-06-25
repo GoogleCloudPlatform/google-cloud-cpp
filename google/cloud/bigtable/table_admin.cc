@@ -15,9 +15,9 @@
 #include "google/cloud/bigtable/table_admin.h"
 #include "google/cloud/bigtable/internal/async_retry_multi_page.h"
 #include "google/cloud/bigtable/internal/async_retry_unary_rpc.h"
-#include "google/cloud/bigtable/internal/grpc_error_delegate.h"
 #include "google/cloud/bigtable/internal/poll_longrunning_operation.h"
 #include "google/cloud/bigtable/internal/unary_client_utils.h"
+#include "google/cloud/grpc_wrappers/grpc_error_delegate.h"
 #include <google/protobuf/duration.pb.h>
 #include <sstream>
 
@@ -56,7 +56,7 @@ StatusOr<btadmin::Table> TableAdmin::CreateTable(std::string table_id,
       &AdminClient::CreateTable, request, "CreateTable", status);
 
   if (!status.ok()) {
-    return internal::MakeStatusFromRpcError(status);
+    return grpc_wrappers::MakeStatusFromRpcError(status);
   }
   return result;
 }
@@ -122,7 +122,7 @@ StatusOr<std::vector<btadmin::Table>> TableAdmin::ListTables(
         &AdminClient::ListTables, request, "TableAdmin", status, true);
 
     if (!status.ok()) {
-      return internal::MakeStatusFromRpcError(status);
+      return grpc_wrappers::MakeStatusFromRpcError(status);
     }
 
     for (auto& x : *response.mutable_tables()) {
@@ -173,7 +173,7 @@ StatusOr<btadmin::Table> TableAdmin::GetTable(std::string const& table_id,
       metadata_update_policy, &AdminClient::GetTable, request, "GetTable",
       status, true);
   if (!status.ok()) {
-    return internal::MakeStatusFromRpcError(status);
+    return grpc_wrappers::MakeStatusFromRpcError(status);
   }
 
   return result;
@@ -193,7 +193,7 @@ Status TableAdmin::DeleteTable(std::string const& table_id) {
       *client_, clone_rpc_retry_policy(), metadata_update_policy,
       &AdminClient::DeleteTable, request, "DeleteTable", status);
 
-  return internal::MakeStatusFromRpcError(status);
+  return grpc_wrappers::MakeStatusFromRpcError(status);
 }
 
 future<Status> TableAdmin::AsyncDeleteTable(CompletionQueue& cq,
@@ -240,7 +240,7 @@ StatusOr<btadmin::Table> TableAdmin::ModifyColumnFamilies(
       status);
 
   if (!status.ok()) {
-    return internal::MakeStatusFromRpcError(status);
+    return grpc_wrappers::MakeStatusFromRpcError(status);
   }
   return result;
 }
@@ -280,7 +280,7 @@ Status TableAdmin::DropRowsByPrefix(std::string const& table_id,
       *client_, clone_rpc_retry_policy(), metadata_update_policy,
       &AdminClient::DropRowRange, request, "DropRowByPrefix", status);
 
-  return internal::MakeStatusFromRpcError(status);
+  return grpc_wrappers::MakeStatusFromRpcError(status);
 }
 
 future<Status> TableAdmin::AsyncDropRowsByPrefix(CompletionQueue& cq,
@@ -397,7 +397,7 @@ Status TableAdmin::DropAllRows(std::string const& table_id) {
       *client_, clone_rpc_retry_policy(), metadata_update_policy,
       &AdminClient::DropRowRange, request, "DropAllRows", status);
 
-  return internal::MakeStatusFromRpcError(status);
+  return grpc_wrappers::MakeStatusFromRpcError(status);
 }
 
 future<Status> TableAdmin::AsyncDropAllRows(CompletionQueue& cq,
@@ -436,7 +436,7 @@ StatusOr<std::string> TableAdmin::GenerateConsistencyToken(
       "GenerateConsistencyToken", status, true);
 
   if (!status.ok()) {
-    return internal::MakeStatusFromRpcError(status);
+    return grpc_wrappers::MakeStatusFromRpcError(status);
   }
   return std::move(*response.mutable_consistency_token());
 }
@@ -483,7 +483,7 @@ StatusOr<Consistency> TableAdmin::CheckConsistency(
       "CheckConsistency", status, true);
 
   if (!status.ok()) {
-    return internal::MakeStatusFromRpcError(status);
+    return grpc_wrappers::MakeStatusFromRpcError(status);
   }
 
   return response.consistent() ? Consistency::kConsistent
