@@ -69,6 +69,10 @@ if (MSVC)
     target_compile_options(bigtable_common_options INTERFACE /wd4996 /wd4244)
 endif ()
 
+# Things which link against bigtable_common_options, like the examples and
+# benchmarks depend upon grpc_wrappers.
+target_link_libraries(bigtable_common_options INTERFACE grpc_wrappers)
+
 # Configure the location of proto files, particulary the googleapis protos.
 list(APPEND PROTOBUF_IMPORT_DIRS "${PROJECT_THIRD_PARTY_DIR}/googleapis"
             "${PROJECT_SOURCE_DIR}")
@@ -139,8 +143,6 @@ add_library(bigtable_client
             internal/conjunction.h
             internal/google_bytes_traits.h
             internal/google_bytes_traits.cc
-            internal/grpc_error_delegate.h
-            internal/grpc_error_delegate.cc
             internal/prefix_range_end.h
             internal/prefix_range_end.cc
             internal/readrowsparser.h
@@ -186,6 +188,7 @@ add_library(bigtable_client
 target_link_libraries(bigtable_client
                       PUBLIC bigtable_protos
                              google_cloud_cpp_common
+                             grpc_wrappers
                              gRPC::grpc++
                              gRPC::grpc
                              protobuf::libprotobuf
@@ -232,6 +235,7 @@ if (BUILD_TESTING)
     target_link_libraries(bigtable_client_testing
                           PUBLIC bigtable_client
                                  bigtable_protos
+                                 grpc_wrappers
                                  GTest::gmock_main
                                  GTest::gmock
                                  GTest::gtest
@@ -270,7 +274,6 @@ if (BUILD_TESTING)
         internal/async_retry_unary_rpc_test.cc
         internal/bulk_mutator_test.cc
         internal/google_bytes_traits_test.cc
-        internal/grpc_error_delegate_test.cc
         internal/prefix_range_end_test.cc
         mutation_batcher_test.cc
         mutations_test.cc
@@ -318,6 +321,7 @@ if (BUILD_TESTING)
                                       bigtable_protos
                                       google_cloud_cpp_testing
                                       google_cloud_cpp_common
+                                      grpc_wrappers
                                       GTest::gmock_main
                                       GTest::gmock
                                       GTest::gtest
@@ -401,7 +405,8 @@ if ("${GOOGLE_CLOUD_CPP_BIGTABLE_ENABLE_INSTALL}")
     set(GOOGLE_CLOUD_CPP_PC_NAME "The Google Cloud Bigtable C++ Client Library")
     set(GOOGLE_CLOUD_CPP_PC_DESCRIPTION
         "Provides C++ APIs to access Google Cloud Bigtable.")
-    set(GOOGLE_CLOUD_CPP_PC_REQUIRES "google_cloud_cpp_common googleapis")
+    set(GOOGLE_CLOUD_CPP_PC_REQUIRES
+        "grpc_wrappers google_cloud_cpp_common googleapis")
     set(GOOGLE_CLOUD_CPP_PC_LIBS "-lbigtable_client")
 
     # Create and install the pkg-config files.
