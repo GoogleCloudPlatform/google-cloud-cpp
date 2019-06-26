@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "google/cloud/grpc_wrappers/version.h"
+#include "google/cloud/gax/version.h"
 #include "google/cloud/internal/build_info.h"
 #include <sstream>
 
 namespace google {
-namespace cloud {
-namespace grpc_wrappers {
-inline namespace GRPC_WRAPPERS_NS {
+namespace gax {
+inline namespace GAX_CPP_NS {
 // NOLINTNEXTLINE(readability-identifier-naming)
 std::string version_string() {
   static std::string const version = [] {
@@ -33,7 +32,6 @@ std::string version_string() {
   }();
   return version;
 }
-}  // namespace GRPC_WRAPPERS_NS
-}  // namespace grpc_wrappers
-}  // namespace cloud
+}  // namespace GAX_CPP_NS
+}  // namespace gax
 }  // namespace google

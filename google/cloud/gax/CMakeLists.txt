@@ -15,44 +15,44 @@
 # ~~~
 
 # This should be included from the top level CMakeLists file
-set(GRPC_WRAPPERS_VERSION_MAJOR 0)
-set(GRPC_WRAPPERS_VERSION_MINOR 1)
-set(GRPC_WRAPPERS_VERSION_PATCH 0)
+set(GAX_CPP_VERSION_MAJOR 0)
+set(GAX_CPP_VERSION_MINOR 1)
+set(GAX_CPP_VERSION_PATCH 0)
 
-set(DOXYGEN_PROJECT_NAME "Google Cloud C++ gRPC Wrappers")
+set(DOXYGEN_PROJECT_NAME "Google Cloud C++ API Extensions")
 set(DOXYGEN_PROJECT_BRIEF
-    "gRPC wrappers for the Google Cloud C++ Client Library")
+    "API Extensions for the Google Cloud C++ Client Library")
 set(
     DOXYGEN_PROJECT_NUMBER
-    "${GRPC_WRAPPERS_VERSION_MAJOR}.${GRPC_WRAPPERS_VERSION_MINOR}.${GRPC_WRAPPERS_VERSION_PATCH}"
+    "${GAX_CPP_VERSION_MAJOR}.${GAX_CPP_VERSION_MINOR}.${GAX_CPP_VERSION_PATCH}"
     )
 set(DOXYGEN_EXAMPLE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/examples)
-set(DOXYGEN_PREDEFINED "GRPC_WRAPPERS_NS=v${GRPC_WRAPPERS_VERSION_MAJOR}")
+set(DOXYGEN_PREDEFINED "GAX_CPP_NS=v${GAX_CPP_VERSION_MAJOR}")
 set(DOXYGEN_EXCLUDE_PATTERNS
-    "*/google/cloud/grpc_wrappers/README.md"
-    "*/google/cloud/grpc_wrappers/ci/*"
-    "*/google/cloud/grpc_wrappers/internal/*"
-    "*/google/cloud/grpc_wrappers/testing/*"
-    "*/google/cloud/grpc_wrappers/tests/*"
-    "*/google/cloud/grpc_wrappers/*_test.cc")
+    "*/google/cloud/gax/README.md"
+    "*/google/cloud/gax/ci/*"
+    "*/google/cloud/gax/internal/*"
+    "*/google/cloud/gax/testing/*"
+    "*/google/cloud/gax/tests/*"
+    "*/google/cloud/gax/*_test.cc")
 set(DOXYGEN_EXCLUDE_SYMBOLS "internal")
 set(DOXYGEN_TAGFILES "${PROJECT_BINARY_DIR}/google/cloud/cloud.tag=../common")
 google_cloud_cpp_set_doxygen_tagfiles()
 
 include(GoogleCloudCppCommon)
-if (TARGET grpc_wrappers-docs AND TARGET cloud-docs)
-    add_dependencies(grpc_wrappers-docs cloud-docs)
+if (TARGET gax-docs AND TARGET cloud-docs)
+    add_dependencies(gax-docs cloud-docs)
 endif ()
 
 # Define an interface library, i.e., a library that really has no sources, and
 # add public target options to it.  The targets then use the library via
-# target_link_libraries(target PRIVATE grpc_wrappers_common_options), which
-# implicitly adds the options to those targets, but does *not* add the options
-# to any targets that depend on them.  This is a CMake idiom to add options to
-# targets without having to painfully set special variables, it also allows
-# users to add more common options without having to touch the code.
-add_library(grpc_wrappers_common_options INTERFACE)
-google_cloud_cpp_add_common_options(grpc_wrappers_common_options)
+# target_link_libraries(target PRIVATE gax_common_options), which implicitly
+# adds the options to those targets, but does *not* add the options to any
+# targets that depend on them.  This is a CMake idiom to add options to targets
+# without having to painfully set special variables, it also allows users to add
+# more common options without having to touch the code.
+add_library(gax_common_options INTERFACE)
+google_cloud_cpp_add_common_options(gax_common_options)
 
 # Enable unit tests
 include(CTest)
@@ -64,44 +64,46 @@ configure_file(version_info.h.in ${CMAKE_CURRENT_SOURCE_DIR}/version_info.h)
 include(CreateBazelConfig)
 
 # the library
-add_library(grpc_wrappers
+add_library(gax_cpp
             grpc_error_delegate.h
             grpc_error_delegate.cc
             version.h
             version.cc
             version_info.h)
-target_link_libraries(grpc_wrappers
+target_link_libraries(gax_cpp
                       PUBLIC google_cloud_cpp_common gRPC::grpc++ gRPC::grpc
-                      PRIVATE grpc_wrappers_common_options)
-target_include_directories(grpc_wrappers
+                      PRIVATE gax_common_options)
+target_include_directories(gax_cpp
                            PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
                                   $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
                                   $<INSTALL_INTERFACE:include>)
-target_compile_options(grpc_wrappers PUBLIC ${GOOGLE_CLOUD_CPP_EXCEPTIONS_FLAG})
+target_compile_options(gax_cpp PUBLIC ${GOOGLE_CLOUD_CPP_EXCEPTIONS_FLAG})
 set_target_properties(
-    grpc_wrappers
+    gax_cpp
     PROPERTIES
         VERSION
-        ${GRPC_WRAPPERS_VERSION_MAJOR}.${GRPC_WRAPPERS_VERSION_MINOR}.${GRPC_WRAPPERS_VERSION_PATCH}
+        ${GAX_CPP_VERSION_MAJOR}.${GAX_CPP_VERSION_MINOR}.${GAX_CPP_VERSION_PATCH}
         SOVERSION
-        ${GRPC_WRAPPERS_VERSION_MAJOR})
+        ${GAX_CPP_VERSION_MAJOR})
+add_library(googleapis-c++::gax ALIAS gax_cpp)
 
 include(CreateBazelConfig)
-create_bazel_config(grpc_wrappers YEAR 2019)
-google_cloud_cpp_add_clang_tidy(grpc_wrappers)
+create_bazel_config(gax_cpp YEAR 2019)
+google_cloud_cpp_add_clang_tidy(gax_cpp)
 
 if (BUILD_TESTING)
-    # TODO: add grpc_wrappers_testing if necessary.
+    # TODO: add gax_cpp_testing if necessary.
 
     # List the unit tests, then setup the targets and dependencies.
-    set(grpc_wrappers_unit_tests grpc_error_delegate_test.cc)
+    set(gax_cpp_unit_tests grpc_error_delegate_test.cc)
 
     # Export the list of unit tests so the Bazel BUILD file can pick it up.
-    export_list_to_bazel("grpc_wrappers_unit_tests.bzl"
-                         "grpc_wrappers_unit_tests"
-                         YEAR 2019)
+    export_list_to_bazel("gax_cpp_unit_tests.bzl"
+                         "gax_cpp_unit_tests"
+                         YEAR
+                         2019)
 
-    foreach (fname ${grpc_wrappers_unit_tests})
+    foreach (fname ${gax_cpp_unit_tests})
         string(REPLACE "/"
                        "_"
                        target
@@ -112,7 +114,7 @@ if (BUILD_TESTING)
                        ${target})
         add_executable(${target} ${fname})
         target_link_libraries(${target}
-                              PRIVATE grpc_wrappers
+                              PRIVATE gax_cpp
                                       google_cloud_cpp_testing
                                       google_cloud_cpp_common
                                       GTest::gmock_main
@@ -120,7 +122,7 @@ if (BUILD_TESTING)
                                       GTest::gtest
                                       gRPC::grpc++
                                       gRPC::grpc
-                                      grpc_wrappers_common_options)
+                                      gax_common_options)
         if (MSVC)
             target_compile_options(${target} PRIVATE "/bigobj")
         endif ()
@@ -133,18 +135,17 @@ option(GOOGLE_CLOUD_CPP_FORCE_STATIC_ANALYZER_ERRORS
        "")
 mark_as_advanced(GOOGLE_CLOUD_CPP_FORCE_STATIC_ANALYZER_ERRORS)
 if (GOOGLE_CLOUD_CPP_FORCE_STATIC_ANALYZER_ERRORS)
-    target_compile_definitions(grpc_wrappers_force_sanitizer_failures_test
-                               PRIVATE
-                               -DGRPC_WRAPPERS_FORCE_STATIC_ANALYZER_ERRORS)
+    target_compile_definitions(gax_cpp_force_sanitizer_failures_test PRIVATE
+                               -DGAX_CPP_FORCE_STATIC_ANALYZER_ERRORS)
 endif ()
 
 # TODO: add_subdirectory(tests) if necessary.
 
 if ("${GOOGLE_CLOUD_CPP_GRPC_PROVIDER}" STREQUAL "external")
-    set(GOOGLE_CLOUD_CPP_GRPC_WRAPPERS_ENABLE_INSTALL "OFF")
+    set(GOOGLE_CLOUD_CPP_GAX_ENABLE_INSTALL "OFF")
     message(
         WARNING
-            "The install target has been disabled for the grpc_wrappers"
+            "The install target has been disabled for the gax_cpp"
             " library because one of the dependencies is set to use external"
             " projects. When building against external projects the resulting"
             " libraries are not installable. The necessary dependencies may"
@@ -158,54 +159,54 @@ if ("${GOOGLE_CLOUD_CPP_GRPC_PROVIDER}" STREQUAL "external")
 GPRC     PROVIDER = ${GOOGLE_CLOUD_CPP_GRPC_PROVIDER}
 PROTOBUF PROVIDER = ${GOOGLE_CLOUD_CPP_PROTOBUF_PROVIDER}")
 else()
-    set(GOOGLE_CLOUD_CPP_GRPC_WRAPPERS_ENABLE_INSTALL "ON")
+    set(GOOGLE_CLOUD_CPP_GAX_ENABLE_INSTALL "ON")
 endif ()
 
-if ("${GOOGLE_CLOUD_CPP_GRPC_WRAPPERS_ENABLE_INSTALL}")
+if ("${GOOGLE_CLOUD_CPP_GAX_ENABLE_INSTALL}")
     # Install the libraries and headers in the locations determined by
     # GNUInstallDirs
-    install(TARGETS grpc_wrappers_common_options
-            EXPORT grpc_wrappers-targets
+    install(TARGETS gax_common_options
+            EXPORT gax-targets
             RUNTIME DESTINATION bin
             LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
             ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
     # Export the CMake targets to make it easy to create configuration files.
-    install(EXPORT grpc_wrappers-targets
-            DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/grpc_wrappers")
+    install(EXPORT gax-targets
+            DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/gax_cpp")
 
-    install(TARGETS grpc_wrappers
-            EXPORT grpc_wrappers-targets
+    install(TARGETS gax_cpp
+            EXPORT gax-targets
             RUNTIME DESTINATION bin
             LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
             ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
-    google_cloud_cpp_install_headers(grpc_wrappers
-                                     include/google/cloud/grpc_wrappers)
+    google_cloud_cpp_install_headers(gax_cpp include/google/cloud/gax)
 
     # Setup global variables used in the following *.in files.
-    set(GOOGLE_CLOUD_CPP_CONFIG_VERSION_MAJOR ${GRPC_WRAPPERS_VERSION_MAJOR})
-    set(GOOGLE_CLOUD_CPP_CONFIG_VERSION_MINOR ${GRPC_WRAPPERS_VERSION_MINOR})
-    set(GOOGLE_CLOUD_CPP_CONFIG_VERSION_PATCH ${GRPC_WRAPPERS_VERSION_PATCH})
+    set(GOOGLE_CLOUD_CPP_CONFIG_VERSION_MAJOR ${GAX_CPP_VERSION_MAJOR})
+    set(GOOGLE_CLOUD_CPP_CONFIG_VERSION_MINOR ${GAX_CPP_VERSION_MINOR})
+    set(GOOGLE_CLOUD_CPP_CONFIG_VERSION_PATCH ${GAX_CPP_VERSION_PATCH})
     set(GOOGLE_CLOUD_CPP_PC_NAME
-        "gRPC wrappers for the Google Cloud C++ Client Library")
-    set(GOOGLE_CLOUD_CPP_PC_DESCRIPTION
-        "Provides gRPC wrappers for the Google Cloud C++ Client Library.")
+        "Google API Extensions for the Google Cloud C++ Client Library")
+    set(
+        GOOGLE_CLOUD_CPP_PC_DESCRIPTION
+        "Provides Google API extensions for the Google Cloud C++ Client Library."
+        )
     set(GOOGLE_CLOUD_CPP_PC_REQUIRES "google_cloud_cpp_common")
-    set(GOOGLE_CLOUD_CPP_PC_LIBS "-lgrpc_wrappers")
+    set(GOOGLE_CLOUD_CPP_PC_LIBS "-lgax_cpp")
 
     # Create and install the pkg-config files.
     configure_file("${PROJECT_SOURCE_DIR}/google/cloud/config.pc.in"
-                   "grpc_wrappers.pc" @ONLY)
-    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/grpc_wrappers.pc" DESTINATION
+                   "gax_cpp.pc" @ONLY)
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/gax_cpp.pc" DESTINATION
                   "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
 
     # Create and install the CMake configuration files.
-    configure_file("config.cmake.in" "grpc_wrappers-config.cmake" @ONLY)
+    configure_file("config.cmake.in" "gax_cpp-config.cmake" @ONLY)
     configure_file("${PROJECT_SOURCE_DIR}/google/cloud/config-version.cmake.in"
-                   "grpc_wrappers-config-version.cmake" @ONLY)
-    install(
-        FILES "${CMAKE_CURRENT_BINARY_DIR}/grpc_wrappers-config.cmake"
-              "${CMAKE_CURRENT_BINARY_DIR}/grpc_wrappers-config-version.cmake"
-              DESTINATION
-              "${CMAKE_INSTALL_LIBDIR}/cmake/grpc_wrappers")
+                   "gax_cpp-config-version.cmake" @ONLY)
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/gax_cpp-config.cmake"
+                  "${CMAKE_CURRENT_BINARY_DIR}/gax_cpp-config-version.cmake"
+                  DESTINATION
+                  "${CMAKE_INSTALL_LIBDIR}/cmake/gax_cpp")
 endif ()

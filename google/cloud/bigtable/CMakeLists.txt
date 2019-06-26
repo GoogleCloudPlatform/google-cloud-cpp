@@ -184,7 +184,7 @@ add_library(bigtable_client
 target_link_libraries(bigtable_client
                       PUBLIC bigtable_protos
                              google_cloud_cpp_common
-                             grpc_wrappers
+                             gax_cpp
                              gRPC::grpc++
                              gRPC::grpc
                              protobuf::libprotobuf
@@ -232,7 +232,7 @@ if (BUILD_TESTING)
                           PUBLIC bigtable_client
                                  bigtable_protos
                                  google_cloud_cpp_common
-                                 grpc_wrappers
+                                 gax_cpp
                                  GTest::gmock_main
                                  GTest::gmock
                                  GTest::gtest
@@ -318,7 +318,7 @@ if (BUILD_TESTING)
                                       bigtable_protos
                                       google_cloud_cpp_testing
                                       google_cloud_cpp_common
-                                      grpc_wrappers
+                                      gax_cpp
                                       GTest::gmock_main
                                       GTest::gmock
                                       GTest::gtest
@@ -403,7 +403,7 @@ if ("${GOOGLE_CLOUD_CPP_BIGTABLE_ENABLE_INSTALL}")
     set(GOOGLE_CLOUD_CPP_PC_DESCRIPTION
         "Provides C++ APIs to access Google Cloud Bigtable.")
     set(GOOGLE_CLOUD_CPP_PC_REQUIRES
-        "grpc_wrappers google_cloud_cpp_common googleapis")
+        "gax_cpp google_cloud_cpp_common googleapis")
     set(GOOGLE_CLOUD_CPP_PC_LIBS "-lbigtable_client")
 
     # Create and install the pkg-config files.

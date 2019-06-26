@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #include "google/cloud/bigtable/rpc_retry_policy.h"
-#include "google/cloud/grpc_wrappers/grpc_error_delegate.h"
+#include "google/cloud/gax/grpc_error_delegate.h"
 #include <sstream>
 
 namespace google {
@@ -39,7 +39,7 @@ bool LimitedErrorCountRetryPolicy::OnFailure(
 }
 
 bool LimitedErrorCountRetryPolicy::OnFailure(grpc::Status const& status) {
-  return impl_.OnFailure(grpc_wrappers::MakeStatusFromRpcError(status));
+  return impl_.OnFailure(gax::MakeStatusFromRpcError(status));
 }
 
 LimitedTimeRetryPolicy::LimitedTimeRetryPolicy(
@@ -61,7 +61,7 @@ bool LimitedTimeRetryPolicy::OnFailure(google::cloud::Status const& status) {
 }
 
 bool LimitedTimeRetryPolicy::OnFailure(grpc::Status const& status) {
-  return impl_.OnFailure(grpc_wrappers::MakeStatusFromRpcError(status));
+  return impl_.OnFailure(gax::MakeStatusFromRpcError(status));
 }
 
 }  // namespace BIGTABLE_CLIENT_NS

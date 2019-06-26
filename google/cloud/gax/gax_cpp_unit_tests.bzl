@@ -16,6 +16,6 @@
 
 """Automatically generated unit tests list - DO NOT EDIT."""
 
-grpc_wrappers_unit_tests = [
+gax_cpp_unit_tests = [
     "grpc_error_delegate_test.cc",
 ]

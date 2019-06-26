@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "google/cloud/grpc_wrappers/grpc_error_delegate.h"
+#include "google/cloud/gax/grpc_error_delegate.h"
 #include <gtest/gtest.h>
 
-using namespace google::cloud::grpc_wrappers;
+using namespace google::gax;
 
 TEST(MakeStatusFromRpcError, AllCodes) {
   using google::cloud::StatusCode;

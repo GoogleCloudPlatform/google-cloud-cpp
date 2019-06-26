@@ -12,51 +12,50 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "google/cloud/grpc_wrappers/grpc_error_delegate.h"
+#include "google/cloud/gax/grpc_error_delegate.h"
 
 namespace google {
-namespace cloud {
-namespace grpc_wrappers {
-inline namespace GRPC_WRAPPERS_NS {
+namespace gax {
+inline namespace GAX_CPP_NS {
 namespace {
-StatusCode MapStatusCode(grpc::StatusCode const& code) {
+google::cloud::StatusCode MapStatusCode(grpc::StatusCode const& code) {
   switch (code) {
     case grpc::StatusCode::OK:
-      return StatusCode::kOk;
+      return google::cloud::StatusCode::kOk;
     case grpc::StatusCode::CANCELLED:
-      return StatusCode::kCancelled;
+      return google::cloud::StatusCode::kCancelled;
     case grpc::StatusCode::UNKNOWN:
-      return StatusCode::kUnknown;
+      return google::cloud::StatusCode::kUnknown;
     case grpc::StatusCode::INVALID_ARGUMENT:
-      return StatusCode::kInvalidArgument;
+      return google::cloud::StatusCode::kInvalidArgument;
     case grpc::StatusCode::DEADLINE_EXCEEDED:
-      return StatusCode::kDeadlineExceeded;
+      return google::cloud::StatusCode::kDeadlineExceeded;
     case grpc::StatusCode::NOT_FOUND:
-      return StatusCode::kNotFound;
+      return google::cloud::StatusCode::kNotFound;
     case grpc::StatusCode::ALREADY_EXISTS:
-      return StatusCode::kAlreadyExists;
+      return google::cloud::StatusCode::kAlreadyExists;
     case grpc::StatusCode::PERMISSION_DENIED:
-      return StatusCode::kPermissionDenied;
+      return google::cloud::StatusCode::kPermissionDenied;
     case grpc::StatusCode::UNAUTHENTICATED:
-      return StatusCode::kUnauthenticated;
+      return google::cloud::StatusCode::kUnauthenticated;
     case grpc::StatusCode::RESOURCE_EXHAUSTED:
-      return StatusCode::kResourceExhausted;
+      return google::cloud::StatusCode::kResourceExhausted;
     case grpc::StatusCode::FAILED_PRECONDITION:
-      return StatusCode::kFailedPrecondition;
+      return google::cloud::StatusCode::kFailedPrecondition;
     case grpc::StatusCode::ABORTED:
-      return StatusCode::kAborted;
+      return google::cloud::StatusCode::kAborted;
     case grpc::StatusCode::OUT_OF_RANGE:
-      return StatusCode::kOutOfRange;
+      return google::cloud::StatusCode::kOutOfRange;
     case grpc::StatusCode::UNIMPLEMENTED:
-      return StatusCode::kUnimplemented;
+      return google::cloud::StatusCode::kUnimplemented;
     case grpc::StatusCode::INTERNAL:
-      return StatusCode::kInternal;
+      return google::cloud::StatusCode::kInternal;
     case grpc::StatusCode::UNAVAILABLE:
-      return StatusCode::kUnavailable;
+      return google::cloud::StatusCode::kUnavailable;
     case grpc::StatusCode::DATA_LOSS:
-      return StatusCode::kDataLoss;
+      return google::cloud::StatusCode::kDataLoss;
     default:
-      return StatusCode::kUnknown;
+      return google::cloud::StatusCode::kUnknown;
   }
 }
 }  // namespace
@@ -72,7 +71,6 @@ google::cloud::Status MakeStatusFromRpcError(grpc::StatusCode code,
   return google::cloud::Status(MapStatusCode(code), std::move(what));
 }
 
-}  // namespace GRPC_WRAPPERS_NS
-}  // namespace grpc_wrappers
-}  // namespace cloud
+}  // namespace GAX_CPP_NS
+}  // namespace gax
 }  // namespace google
