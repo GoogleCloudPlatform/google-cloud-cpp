@@ -87,7 +87,7 @@ set_target_properties(
         ${GRPC_WRAPPERS_VERSION_MAJOR})
 
 include(CreateBazelConfig)
-create_bazel_config(grpc_wrappers)
+create_bazel_config(grpc_wrappers YEAR 2019)
 google_cloud_cpp_add_clang_tidy(grpc_wrappers)
 
 if (BUILD_TESTING)
