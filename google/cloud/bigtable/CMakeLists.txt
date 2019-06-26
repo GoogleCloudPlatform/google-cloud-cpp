@@ -69,10 +69,6 @@ if (MSVC)
     target_compile_options(bigtable_common_options INTERFACE /wd4996 /wd4244)
 endif ()
 
-# Things which link against bigtable_common_options, like the examples and
-# benchmarks depend upon grpc_wrappers.
-target_link_libraries(bigtable_common_options INTERFACE grpc_wrappers)
-
 # Configure the location of proto files, particulary the googleapis protos.
 list(APPEND PROTOBUF_IMPORT_DIRS "${PROJECT_THIRD_PARTY_DIR}/googleapis"
             "${PROJECT_SOURCE_DIR}")
@@ -238,6 +234,7 @@ if (BUILD_TESTING)
     target_link_libraries(bigtable_client_testing
                           PUBLIC bigtable_client
                                  bigtable_protos
+                                 google_cloud_cpp_common
                                  grpc_wrappers
                                  GTest::gmock_main
                                  GTest::gmock
