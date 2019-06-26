@@ -98,7 +98,8 @@ if (BUILD_TESTING)
 
     # Export the list of unit tests so the Bazel BUILD file can pick it up.
     export_list_to_bazel("grpc_wrappers_unit_tests.bzl"
-                         "grpc_wrappers_unit_tests")
+                         "grpc_wrappers_unit_tests"
+                         YEAR 2019)
 
     foreach (fname ${grpc_wrappers_unit_tests})
         string(REPLACE "/"
