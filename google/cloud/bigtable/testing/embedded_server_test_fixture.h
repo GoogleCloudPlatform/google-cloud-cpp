@@ -77,8 +77,8 @@ class TableAdminImpl final
     return ::grpc::Status::OK;
   }
   ::grpc::Status GetTable(::grpc::ServerContext* context,
-                        google::bigtable::admin::v2::GetTableRequest const*,
-                        google::bigtable::admin::v2::Table*) override {
+                          google::bigtable::admin::v2::GetTableRequest const*,
+                          google::bigtable::admin::v2::Table*) override {
     GetClientMetadata(context, client_metadata_);
     return ::grpc::Status::OK;
   }

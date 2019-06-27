@@ -43,8 +43,8 @@ auto const kLimitedTimeTolerance = 10_ms;
 void CheckLimitedTime(bigtable::RPCRetryPolicy& tested) {
   google::cloud::testing_util::CheckPredicateBecomesFalse(
       [&tested] {
-        return tested.OnFailure(
-            ::grpc::Status(::grpc::StatusCode::UNAVAILABLE, "please try again"));
+        return tested.OnFailure(::grpc::Status(::grpc::StatusCode::UNAVAILABLE,
+                                               "please try again"));
       },
       std::chrono::system_clock::now() + kLimitedTimeTestPeriod,
       kLimitedTimeTolerance);

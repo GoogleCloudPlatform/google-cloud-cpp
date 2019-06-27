@@ -69,7 +69,8 @@ TEST_P(AsyncLongrunningOpFutureTest, EndToEnd) {
         if (success) {
           OperationFinishedSuccessfully(*response, *status);
         } else {
-          *status = ::grpc::Status(::grpc::StatusCode::PERMISSION_DENIED, "oh no");
+          *status =
+              ::grpc::Status(::grpc::StatusCode::PERMISSION_DENIED, "oh no");
         }
       }));
 

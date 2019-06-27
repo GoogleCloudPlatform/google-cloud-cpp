@@ -76,8 +76,8 @@ auto create_list_instances_lambda =
     [](std::string returned_token, std::vector<std::string> instance_names,
        std::vector<std::string> failed_locations) {
       return [returned_token, instance_names, failed_locations](
-                 btproto::ListInstancesResponse* response, ::grpc::Status* status,
-                 void*) {
+                 btproto::ListInstancesResponse* response,
+                 ::grpc::Status* status, void*) {
         for (auto const& instance_name : instance_names) {
           auto& instance = *response->add_instances();
           instance.set_name(instance_name);

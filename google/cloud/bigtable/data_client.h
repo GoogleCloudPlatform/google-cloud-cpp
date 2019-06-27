@@ -33,10 +33,10 @@ class AsyncRetryBulkApply;
 class AsyncSampleRowKeys;
 class BulkMutator;
 template <typename ReadRowCallback,
-          typename std::enable_if<
-              google::cloud::internal::is_invocable<
-                  ReadRowCallback, CompletionQueue&, Row, ::grpc::Status&>::value,
-              int>::type>
+          typename std::enable_if<google::cloud::internal::is_invocable<
+                                      ReadRowCallback, CompletionQueue&, Row,
+                                      ::grpc::Status&>::value,
+                                  int>::type>
 class AsyncRowReader;
 }  // namespace internal
 
@@ -136,8 +136,8 @@ class DataClient {
       ::grpc::ClientReaderInterface<google::bigtable::v2::ReadRowsResponse>>
   ReadRows(::grpc::ClientContext* context,
            google::bigtable::v2::ReadRowsRequest const& request) = 0;
-  virtual std::unique_ptr<
-      ::grpc::ClientAsyncReaderInterface<google::bigtable::v2::ReadRowsResponse>>
+  virtual std::unique_ptr<::grpc::ClientAsyncReaderInterface<
+      google::bigtable::v2::ReadRowsResponse>>
   AsyncReadRows(::grpc::ClientContext* context,
                 const google::bigtable::v2::ReadRowsRequest& request,
                 ::grpc::CompletionQueue* cq, void* tag) = 0;
@@ -146,8 +146,8 @@ class DataClient {
   PrepareAsyncReadRows(::grpc::ClientContext* context,
                        const ::google::bigtable::v2::ReadRowsRequest& request,
                        ::grpc::CompletionQueue* cq) = 0;
-  virtual std::unique_ptr<
-      ::grpc::ClientReaderInterface<google::bigtable::v2::SampleRowKeysResponse>>
+  virtual std::unique_ptr<::grpc::ClientReaderInterface<
+      google::bigtable::v2::SampleRowKeysResponse>>
   SampleRowKeys(::grpc::ClientContext* context,
                 google::bigtable::v2::SampleRowKeysRequest const& request) = 0;
   virtual std::unique_ptr<::grpc::ClientAsyncReaderInterface<

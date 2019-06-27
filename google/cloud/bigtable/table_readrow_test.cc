@@ -97,8 +97,8 @@ TEST_F(TableReadRowTest, UnrecoverableFailure) {
   auto stream = google::cloud::internal::make_unique<MockReadRowsReader>();
   EXPECT_CALL(*stream, Read(_)).WillRepeatedly(Return(false));
   EXPECT_CALL(*stream, Finish())
-      .WillRepeatedly(
-          Return(::grpc::Status(::grpc::StatusCode::PERMISSION_DENIED, "uh oh")));
+      .WillRepeatedly(Return(
+          ::grpc::Status(::grpc::StatusCode::PERMISSION_DENIED, "uh oh")));
 
   EXPECT_CALL(*client_, ReadRows(_, _))
       .WillRepeatedly(Invoke(

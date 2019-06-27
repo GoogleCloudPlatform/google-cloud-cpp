@@ -270,7 +270,7 @@ TEST_F(TableBulkApplyTest, FailedRPC) {
   EXPECT_CALL(*reader, Read(_)).WillOnce(Return(false));
   EXPECT_CALL(*reader, Finish())
       .WillOnce(Return(::grpc::Status(::grpc::StatusCode::FAILED_PRECONDITION,
-                                    "no such table")));
+                                      "no such table")));
 
   EXPECT_CALL(*client_, MutateRows(_, _))
       .WillOnce(Invoke(reader.release()->MakeMockReturner()));

@@ -126,8 +126,8 @@ TEST_F(TableReadRowsTest, ReadRowsThrowsWhenTooManyErrors) {
         auto stream = new MockReadRowsReader;
         EXPECT_CALL(*stream, Read(_)).WillOnce(Return(false));
         EXPECT_CALL(*stream, Finish())
-            .WillOnce(
-                Return(::grpc::Status(::grpc::StatusCode::UNAVAILABLE, "broken")));
+            .WillOnce(Return(
+                ::grpc::Status(::grpc::StatusCode::UNAVAILABLE, "broken")));
         return stream->AsUniqueMocked();
       })));
 

@@ -38,7 +38,7 @@ Mutation DeleteFromRow() {
     details = "error [could not print details as string]";
   }
   return ::grpc::Status(static_cast<::grpc::StatusCode>(status.code()),
-                      status.message(), details);
+                        status.message(), details);
 }
 
 google::cloud::Status FailedMutation::ToGCStatus(

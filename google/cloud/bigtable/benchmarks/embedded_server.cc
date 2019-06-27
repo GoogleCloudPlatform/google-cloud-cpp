@@ -51,8 +51,9 @@ class BigtableImpl final : public btproto::Bigtable::Service {
                   [&generator]() { return MakeRandomValue(generator); });
   }
 
-  ::grpc::Status MutateRow(::grpc::ServerContext*, btproto::MutateRowRequest const*,
-                         btproto::MutateRowResponse*) override {
+  ::grpc::Status MutateRow(::grpc::ServerContext*,
+                           btproto::MutateRowRequest const*,
+                           btproto::MutateRowResponse*) override {
     ++mutate_row_count_;
     return ::grpc::Status::OK;
   }
@@ -135,16 +136,16 @@ class TableAdminImpl final : public btadmin::BigtableTableAdmin::Service {
   TableAdminImpl() : create_table_count_(0), delete_table_count_(0) {}
 
   ::grpc::Status CreateTable(::grpc::ServerContext*,
-                           btadmin::CreateTableRequest const* request,
-                           btadmin::Table* response) override {
+                             btadmin::CreateTableRequest const* request,
+                             btadmin::Table* response) override {
     ++create_table_count_;
     response->set_name(request->parent() + "/tables/" + request->table_id());
     return ::grpc::Status::OK;
   }
 
   ::grpc::Status DeleteTable(::grpc::ServerContext*,
-                           btadmin::DeleteTableRequest const*,
-                           ::google::protobuf::Empty*) override {
+                             btadmin::DeleteTableRequest const*,
+                             ::google::protobuf::Empty*) override {
     ++delete_table_count_;
     return ::grpc::Status::OK;
   }
@@ -163,8 +164,8 @@ class DefaultEmbeddedServer : public EmbeddedServer {
   explicit DefaultEmbeddedServer() {
     int port;
     std::string server_address("[::]:0");
-    builder_.AddListeningPort(server_address, ::grpc::InsecureServerCredentials(),
-                              &port);
+    builder_.AddListeningPort(server_address,
+                              ::grpc::InsecureServerCredentials(), &port);
     builder_.RegisterService(&bigtable_service_);
     builder_.RegisterService(&admin_service_);
     server_ = builder_.BuildAndStart();

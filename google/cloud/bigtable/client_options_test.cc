@@ -140,8 +140,8 @@ TEST(ClientOptionsTest, EditAdminEndpoint) {
 
 TEST(ClientOptionsTest, EditCredentials) {
   bigtable::ClientOptions client_options_object;
-  client_options_object =
-      client_options_object.SetCredentials(::grpc::InsecureChannelCredentials());
+  client_options_object = client_options_object.SetCredentials(
+      ::grpc::InsecureChannelCredentials());
   EXPECT_EQ(typeid(::grpc::InsecureChannelCredentials()),
             typeid(client_options_object.credentials()));
 }

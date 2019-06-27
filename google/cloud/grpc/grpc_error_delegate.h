@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_CPP_COMMON_GRPC_GRPC_ERROR_DELEGATE_H_
-#define GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_CPP_COMMON_GRPC_GRPC_ERROR_DELEGATE_H_
+#ifndef GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_GRPC_GRPC_ERROR_DELEGATE_H_
+#define GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_GRPC_GRPC_ERROR_DELEGATE_H_
 
 #include "google/cloud/grpc/version.h"
 #include "google/cloud/status.h"
@@ -39,4 +39,4 @@ google::cloud::Status MakeStatusFromRpcError(::grpc::StatusCode code,
 }  // namespace cloud
 }  // namespace google
 
-#endif  // GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_CPP_COMMON_GRPC_GRPC_ERROR_DELEGATE_H_
+#endif  // GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_GRPC_GRPC_ERROR_DELEGATE_H_

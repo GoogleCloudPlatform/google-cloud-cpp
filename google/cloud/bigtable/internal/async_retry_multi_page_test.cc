@@ -145,9 +145,8 @@ class AsyncMultipageFutureTest : public ::testing::Test {
                                ::grpc::CompletionQueue*) {
             EXPECT_EQ(expected_token, request.page_token());
             // This is safe, see comments in MockAsyncResponseReader.
-            return std::unique_ptr<
-                ::grpc::ClientAsyncResponseReaderInterface<ListClustersResponse>>(
-                cluster_reader);
+            return std::unique_ptr<::grpc::ClientAsyncResponseReaderInterface<
+                ListClustersResponse>>(cluster_reader);
           }))
           .RetiresOnSaturation();
       EXPECT_CALL(*cluster_reader, Finish(_, _, _))
@@ -169,7 +168,8 @@ class AsyncMultipageFutureTest : public ::testing::Test {
         __func__, std::move(rpc_retry_policy_),
         shared_backoff_policy_mock_->clone(),
         std::move(metadata_update_policy_),
-        [this](::grpc::ClientContext* context, ListClustersRequest const& request,
+        [this](::grpc::ClientContext* context,
+               ListClustersRequest const& request,
                ::grpc::CompletionQueue* cq) {
           return client_->AsyncListClusters(context, request, cq);
         },

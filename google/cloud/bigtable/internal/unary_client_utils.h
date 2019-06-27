@@ -48,7 +48,8 @@ namespace internal {
  * signature of the gRPC functions look like this:
  *
  * @code
- * ::grpc::Status (StubType::*)(::grpc::ClientContext*, Request const&, Response*);
+ * ::grpc::Status (StubType::*)(::grpc::ClientContext*, Request const&,
+ * Response*);
  * @endcode
  *
  * Where `Request` and `Response` are the protos in the gRPC call.
@@ -70,7 +71,7 @@ struct UnaryClientUtils {
   // Partial specialization for the `Signature` metafunction.
   template <typename Request, typename Response>
   struct Signature<::grpc::Status (ClientType::*)(::grpc::ClientContext*,
-                                                Request const&, Response*)> {
+                                                  Request const&, Response*)> {
     using RequestType = Request;
     using ResponseType = Response;
   };
@@ -102,7 +103,8 @@ struct UnaryClientUtils {
       bigtable::MetadataUpdatePolicy const& metadata_update_policy,
       MemberFunction function,
       typename Signature<MemberFunction>::RequestType const& request,
-      char const* error_message, ::grpc::Status& status, bool retry_on_failure) {
+      char const* error_message, ::grpc::Status& status,
+      bool retry_on_failure) {
     return MakeCall(client, *rpc_policy, *backoff_policy,
                     metadata_update_policy, function, request, error_message,
                     status, retry_on_failure);
@@ -136,7 +138,8 @@ struct UnaryClientUtils {
       bigtable::MetadataUpdatePolicy const& metadata_update_policy,
       MemberFunction function,
       typename Signature<MemberFunction>::RequestType const& request,
-      char const* error_message, ::grpc::Status& status, bool retry_on_failure) {
+      char const* error_message, ::grpc::Status& status,
+      bool retry_on_failure) {
     typename Signature<MemberFunction>::ResponseType response;
     do {
       ::grpc::ClientContext client_context;
@@ -153,7 +156,7 @@ struct UnaryClientUtils {
         full_message += "(" + metadata_update_policy.value() + ") ";
         full_message += status.error_message();
         status = ::grpc::Status(status.error_code(), full_message,
-                              status.error_details());
+                                status.error_details());
         break;
       }
       auto delay = backoff_policy.OnCompletion(status);
@@ -202,7 +205,7 @@ struct UnaryClientUtils {
       full_message += "(" + metadata_update_policy.value() + ") ";
       full_message += status.error_message();
       status = ::grpc::Status(status.error_code(), full_message,
-                            status.error_details());
+                              status.error_details());
     }
     return response;
   }

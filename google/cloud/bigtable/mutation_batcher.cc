@@ -106,7 +106,7 @@ MutationBatcher::PendingSingleRowMutation::PendingSingleRowMutation(
   }
   if (mut.num_mutations == 0) {
     return ::grpc::Status(::grpc::StatusCode::INVALID_ARGUMENT,
-                        "Supplied SingleRowMutations has no entries");
+                          "Supplied SingleRowMutations has no entries");
   }
   if (mut.request_size > options_.max_size_per_batch) {
     std::stringstream stream;

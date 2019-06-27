@@ -174,15 +174,17 @@ class DefaultInstanceAdminClient : public InstanceAdminClient {
     return impl_.Stub()->DeleteAppProfile(context, request, response);
   }
 
-  ::grpc::Status GetIamPolicy(::grpc::ClientContext* context,
-                            google::iam::v1::GetIamPolicyRequest const& request,
-                            google::iam::v1::Policy* response) override {
+  ::grpc::Status GetIamPolicy(
+      ::grpc::ClientContext* context,
+      google::iam::v1::GetIamPolicyRequest const& request,
+      google::iam::v1::Policy* response) override {
     return impl_.Stub()->GetIamPolicy(context, request, response);
   }
 
-  ::grpc::Status SetIamPolicy(::grpc::ClientContext* context,
-                            google::iam::v1::SetIamPolicyRequest const& request,
-                            google::iam::v1::Policy* response) override {
+  ::grpc::Status SetIamPolicy(
+      ::grpc::ClientContext* context,
+      google::iam::v1::SetIamPolicyRequest const& request,
+      google::iam::v1::Policy* response) override {
     return impl_.Stub()->SetIamPolicy(context, request, response);
   }
 
@@ -228,8 +230,8 @@ class DefaultInstanceAdminClient : public InstanceAdminClient {
     return impl_.Stub()->AsyncDeleteCluster(context, request, cq);
   }
 
-  std::unique_ptr<
-      ::grpc::ClientAsyncResponseReaderInterface<google::longrunning::Operation>>
+  std::unique_ptr<::grpc::ClientAsyncResponseReaderInterface<
+      google::longrunning::Operation>>
   AsyncCreateCluster(
       ::grpc::ClientContext* context,
       const google::bigtable::admin::v2::CreateClusterRequest& request,
@@ -237,8 +239,8 @@ class DefaultInstanceAdminClient : public InstanceAdminClient {
     return impl_.Stub()->AsyncCreateCluster(context, request, cq);
   }
 
-  std::unique_ptr<
-      ::grpc::ClientAsyncResponseReaderInterface<google::longrunning::Operation>>
+  std::unique_ptr<::grpc::ClientAsyncResponseReaderInterface<
+      google::longrunning::Operation>>
   AsyncCreateInstance(
       ::grpc::ClientContext* context,
       const google::bigtable::admin::v2::CreateInstanceRequest& request,
@@ -246,8 +248,8 @@ class DefaultInstanceAdminClient : public InstanceAdminClient {
     return impl_.Stub()->AsyncCreateInstance(context, request, cq);
   }
 
-  std::unique_ptr<
-      ::grpc::ClientAsyncResponseReaderInterface<google::longrunning::Operation>>
+  std::unique_ptr<::grpc::ClientAsyncResponseReaderInterface<
+      google::longrunning::Operation>>
   AsyncUpdateInstance(
       ::grpc::ClientContext* context,
       const google::bigtable::admin::v2::PartialUpdateInstanceRequest& request,
@@ -255,8 +257,8 @@ class DefaultInstanceAdminClient : public InstanceAdminClient {
     return impl_.Stub()->AsyncPartialUpdateInstance(context, request, cq);
   }
 
-  std::unique_ptr<
-      ::grpc::ClientAsyncResponseReaderInterface<google::longrunning::Operation>>
+  std::unique_ptr<::grpc::ClientAsyncResponseReaderInterface<
+      google::longrunning::Operation>>
   AsyncUpdateCluster(::grpc::ClientContext* context,
                      const google::bigtable::admin::v2::Cluster& request,
                      ::grpc::CompletionQueue* cq) override {
@@ -308,8 +310,8 @@ class DefaultInstanceAdminClient : public InstanceAdminClient {
     return impl_.Stub()->AsyncCreateAppProfile(context, request, cq);
   }
 
-  std::unique_ptr<
-      ::grpc::ClientAsyncResponseReaderInterface<google::longrunning::Operation>>
+  std::unique_ptr<::grpc::ClientAsyncResponseReaderInterface<
+      google::longrunning::Operation>>
   AsyncUpdateAppProfile(
       ::grpc::ClientContext* context,
       const google::bigtable::admin::v2::UpdateAppProfileRequest& request,
@@ -351,8 +353,8 @@ class DefaultInstanceAdminClient : public InstanceAdminClient {
     return impl_.Stub()->AsyncTestIamPermissions(context, request, cq);
   }
 
-  std::unique_ptr<
-      ::grpc::ClientAsyncResponseReaderInterface<google::longrunning::Operation>>
+  std::unique_ptr<::grpc::ClientAsyncResponseReaderInterface<
+      google::longrunning::Operation>>
   AsyncGetOperation(::grpc::ClientContext* context,
                     const google::longrunning::GetOperationRequest& request,
                     ::grpc::CompletionQueue* cq) override {

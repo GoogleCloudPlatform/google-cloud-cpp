@@ -114,7 +114,8 @@ class AsyncUnaryRpcFuture : public AsyncGrpcOperation {
     }
     if (!status_.ok()) {
       // Convert the error to a `google::cloud::Status` and satisfy the future.
-      promise_.set_value(::google::cloud::grpc::MakeStatusFromRpcError(status_));
+      promise_.set_value(
+          ::google::cloud::grpc::MakeStatusFromRpcError(status_));
       return true;
     }
     // Success, use `response_` to satisfy the future.
@@ -154,8 +155,8 @@ using CheckUnaryStreamRpcDataCallback = google::cloud::internal::is_invocable<
  */
 template <typename Functor, typename Response>
 using CheckUnaryStreamRpcFinishedCallback =
-    google::cloud::internal::is_invocable<Functor, CompletionQueue&,
-                                          ::grpc::ClientContext&, ::grpc::Status&>;
+    google::cloud::internal::is_invocable<
+        Functor, CompletionQueue&, ::grpc::ClientContext&, ::grpc::Status&>;
 
 /**
  * Tests if @p Functor meets the requirements for a RunAsync callback.

@@ -33,8 +33,8 @@ class MockDataClient : public bigtable::DataClient {
   MOCK_METHOD3(
       MutateRow,
       ::grpc::Status(::grpc::ClientContext* context,
-                   google::bigtable::v2::MutateRowRequest const& request,
-                   google::bigtable::v2::MutateRowResponse* response));
+                     google::bigtable::v2::MutateRowRequest const& request,
+                     google::bigtable::v2::MutateRowResponse* response));
   MOCK_METHOD3(AsyncMutateRow,
                std::unique_ptr<::grpc::ClientAsyncResponseReaderInterface<
                    google::bigtable::v2::MutateRowResponse>>(
@@ -67,17 +67,17 @@ class MockDataClient : public bigtable::DataClient {
           ::grpc::ClientContext* context,
           google::bigtable::v2::ReadModifyWriteRowRequest const& request,
           ::grpc::CompletionQueue* cq));
-  MOCK_METHOD2(
-      ReadRows,
-      std::unique_ptr<
-          ::grpc::ClientReaderInterface<google::bigtable::v2::ReadRowsResponse>>(
-          ::grpc::ClientContext* context,
-          google::bigtable::v2::ReadRowsRequest const& request));
-  MOCK_METHOD4(AsyncReadRows, std::unique_ptr<::grpc::ClientAsyncReaderInterface<
-                                  google::bigtable::v2::ReadRowsResponse>>(
-                                  ::grpc::ClientContext*,
-                                  const google::bigtable::v2::ReadRowsRequest&,
-                                  ::grpc::CompletionQueue*, void*));
+  MOCK_METHOD2(ReadRows,
+               std::unique_ptr<::grpc::ClientReaderInterface<
+                   google::bigtable::v2::ReadRowsResponse>>(
+                   ::grpc::ClientContext* context,
+                   google::bigtable::v2::ReadRowsRequest const& request));
+  MOCK_METHOD4(AsyncReadRows,
+               std::unique_ptr<::grpc::ClientAsyncReaderInterface<
+                   google::bigtable::v2::ReadRowsResponse>>(
+                   ::grpc::ClientContext*,
+                   const google::bigtable::v2::ReadRowsRequest&,
+                   ::grpc::CompletionQueue*, void*));
   MOCK_METHOD3(PrepareAsyncReadRows,
                std::unique_ptr<::grpc::ClientAsyncReaderInterface<
                    ::google::bigtable::v2::ReadRowsResponse>>(

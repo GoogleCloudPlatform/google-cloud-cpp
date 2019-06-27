@@ -220,11 +220,11 @@ TEST_F(RowReaderTest, ReadOneRow_AppProfileId) {
     testing::InSequence s;
     std::string expected_id = "test-id";
     EXPECT_CALL(*client_, ReadRows(_, _))
-        .WillOnce(Invoke(
-            [expected_id, &stream](::grpc::ClientContext*, ReadRowsRequest req) {
-              EXPECT_EQ(expected_id, req.app_profile_id());
-              return stream->AsUniqueMocked();
-            }));
+        .WillOnce(Invoke([expected_id, &stream](::grpc::ClientContext*,
+                                                ReadRowsRequest req) {
+          EXPECT_EQ(expected_id, req.app_profile_id());
+          return stream->AsUniqueMocked();
+        }));
     EXPECT_CALL(*stream, Read(_)).WillOnce(Return(true));
     EXPECT_CALL(*stream, Read(_)).WillOnce(Return(false));
     EXPECT_CALL(*stream, Finish()).WillOnce(Return(::grpc::Status::OK));
@@ -315,7 +315,8 @@ TEST_F(RowReaderTest, FailedStreamIsRetried) {
         .WillOnce(Invoke(stream->MakeMockReturner()));
     EXPECT_CALL(*stream, Read(_)).WillOnce(Return(false));
     EXPECT_CALL(*stream, Finish())
-        .WillOnce(Return(::grpc::Status(::grpc::StatusCode::INTERNAL, "retry")));
+        .WillOnce(
+            Return(::grpc::Status(::grpc::StatusCode::INTERNAL, "retry")));
 
     EXPECT_CALL(*retry_policy_, OnFailureHook(_)).WillOnce(Return(true));
     EXPECT_CALL(*backoff_policy_, OnCompletionHook(_))
@@ -352,7 +353,8 @@ TEST_F(RowReaderTest, FailedStreamWithNoRetryThrowsNoExcept) {
         .WillOnce(Invoke(stream->MakeMockReturner()));
     EXPECT_CALL(*stream, Read(_)).WillOnce(Return(false));
     EXPECT_CALL(*stream, Finish())
-        .WillOnce(Return(::grpc::Status(::grpc::StatusCode::INTERNAL, "retry")));
+        .WillOnce(
+            Return(::grpc::Status(::grpc::StatusCode::INTERNAL, "retry")));
 
     EXPECT_CALL(*retry_policy_, OnFailureHook(_)).WillOnce(Return(false));
     EXPECT_CALL(*backoff_policy_, OnCompletionHook(_)).Times(0);
@@ -383,7 +385,8 @@ TEST_F(RowReaderTest, FailedStreamRetriesSkipAlreadyReadRows) {
     EXPECT_CALL(*stream, Read(_)).WillOnce(Return(true));
     EXPECT_CALL(*stream, Read(_)).WillOnce(Return(false));
     EXPECT_CALL(*stream, Finish())
-        .WillOnce(Return(::grpc::Status(::grpc::StatusCode::INTERNAL, "retry")));
+        .WillOnce(
+            Return(::grpc::Status(::grpc::StatusCode::INTERNAL, "retry")));
 
     EXPECT_CALL(*retry_policy_, OnFailureHook(_)).WillOnce(Return(true));
     EXPECT_CALL(*backoff_policy_, OnCompletionHook(_))
@@ -539,7 +542,7 @@ TEST_F(RowReaderTest, FailedStreamWithAllRequiedRowsSeenShouldNotRetry) {
     EXPECT_CALL(*stream, Read(_)).WillOnce(Return(false));
     EXPECT_CALL(*stream, Finish())
         .WillOnce(Return(::grpc::Status(::grpc::StatusCode::INTERNAL,
-                                      "this exception must be ignored")));
+                                        "this exception must be ignored")));
 
     // Note there is no expectation of a new connection, because the
     // set of rows to read should become empty after reading "r2" and
@@ -589,7 +592,8 @@ TEST_F(RowReaderTest, RowLimitIsDecreasedOnRetry) {
     EXPECT_CALL(*stream, Read(_)).WillOnce(Return(true));
     EXPECT_CALL(*stream, Read(_)).WillOnce(Return(false));
     EXPECT_CALL(*stream, Finish())
-        .WillOnce(Return(::grpc::Status(::grpc::StatusCode::INTERNAL, "retry")));
+        .WillOnce(
+            Return(::grpc::Status(::grpc::StatusCode::INTERNAL, "retry")));
 
     EXPECT_CALL(*retry_policy_, OnFailureHook(_)).WillOnce(Return(true));
     EXPECT_CALL(*backoff_policy_, OnCompletionHook(_))
@@ -629,7 +633,7 @@ TEST_F(RowReaderTest, RowLimitIsNotDecreasedToZero) {
     EXPECT_CALL(*stream, Read(_)).WillOnce(Return(false));
     EXPECT_CALL(*stream, Finish())
         .WillOnce(Return(::grpc::Status(::grpc::StatusCode::INTERNAL,
-                                      "this exception must be ignored")));
+                                        "this exception must be ignored")));
 
     // Note there is no expectation of a new connection, because the
     // row limit reaches zero.
@@ -741,12 +745,13 @@ TEST_F(RowReaderTest, FailedStreamRetryNewContext) {
   void* previous_context = nullptr;
   EXPECT_CALL(*retry_policy_, SetupHook(_))
       .Times(2)
-      .WillRepeatedly(Invoke([&previous_context](::grpc::ClientContext& context) {
-        // This is a big hack, we want to make sure the context is new,
-        // but there is no easy way to check that, so we compare addresses.
-        EXPECT_NE(previous_context, &context);
-        previous_context = &context;
-      }));
+      .WillRepeatedly(
+          Invoke([&previous_context](::grpc::ClientContext& context) {
+            // This is a big hack, we want to make sure the context is new,
+            // but there is no easy way to check that, so we compare addresses.
+            EXPECT_NE(previous_context, &context);
+            previous_context = &context;
+          }));
 
   {
     testing::InSequence s;
@@ -754,7 +759,8 @@ TEST_F(RowReaderTest, FailedStreamRetryNewContext) {
         .WillOnce(Invoke(stream->MakeMockReturner()));
     EXPECT_CALL(*stream, Read(_)).WillOnce(Return(false));
     EXPECT_CALL(*stream, Finish())
-        .WillOnce(Return(::grpc::Status(::grpc::StatusCode::INTERNAL, "retry")));
+        .WillOnce(
+            Return(::grpc::Status(::grpc::StatusCode::INTERNAL, "retry")));
 
     EXPECT_CALL(*retry_policy_, OnFailureHook(_)).WillOnce(Return(true));
     EXPECT_CALL(*backoff_policy_, OnCompletionHook(_))

@@ -48,9 +48,9 @@ class MockAdminClient : public bigtable::AdminClient {
           ::grpc::ClientContext* context,
           google::bigtable::admin::v2::ListTablesRequest const& request,
           google::bigtable::admin::v2::ListTablesResponse* response));
-  MOCK_METHOD3(
-      GetTable,
-      ::grpc::Status(::grpc::ClientContext* context,
+  MOCK_METHOD3(GetTable,
+               ::grpc::Status(
+                   ::grpc::ClientContext* context,
                    google::bigtable::admin::v2::GetTableRequest const& request,
                    google::bigtable::admin::v2::Table* response));
   MOCK_METHOD3(AsyncGetTable,
@@ -74,9 +74,9 @@ class MockAdminClient : public bigtable::AdminClient {
           ::grpc::CompletionQueue* cq));
   MOCK_METHOD3(ModifyColumnFamilies,
                ::grpc::Status(::grpc::ClientContext* context,
-                            google::bigtable::admin::v2::
-                                ModifyColumnFamiliesRequest const& request,
-                            google::bigtable::admin::v2::Table* response));
+                              google::bigtable::admin::v2::
+                                  ModifyColumnFamiliesRequest const& request,
+                              google::bigtable::admin::v2::Table* response));
   MOCK_METHOD3(
       DropRowRange,
       ::grpc::Status(
@@ -100,8 +100,8 @@ class MockAdminClient : public bigtable::AdminClient {
   MOCK_METHOD3(
       GetOperation,
       ::grpc::Status(::grpc::ClientContext* context,
-                   google::longrunning::GetOperationRequest const& request,
-                   google::longrunning::Operation* response));
+                     google::longrunning::GetOperationRequest const& request,
+                     google::longrunning::Operation* response));
   MOCK_METHOD3(
       AsyncModifyColumnFamilies,
       std::unique_ptr<::grpc::ClientAsyncResponseReaderInterface<

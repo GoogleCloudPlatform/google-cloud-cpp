@@ -62,15 +62,15 @@ class TableAsyncReadRowsTest : public bigtable::testing::TableTestFixture {
             std::move(request_expectations));
 
     EXPECT_CALL(*client_, PrepareAsyncReadRows(_, _, _))
-        .WillOnce(
-            Invoke([&reader, request_expectations_ptr](
-                       ::grpc::ClientContext*, btproto::ReadRowsRequest const& r,
-                       ::grpc::CompletionQueue*) {
-              (*request_expectations_ptr)(r);
-              return std::unique_ptr<
-                  MockClientAsyncReaderInterface<btproto::ReadRowsResponse>>(
-                  &reader);
-            }))
+        .WillOnce(Invoke([&reader, request_expectations_ptr](
+                             ::grpc::ClientContext*,
+                             btproto::ReadRowsRequest const& r,
+                             ::grpc::CompletionQueue*) {
+          (*request_expectations_ptr)(r);
+          return std::unique_ptr<
+              MockClientAsyncReaderInterface<btproto::ReadRowsResponse>>(
+              &reader);
+        }))
         .RetiresOnSaturation();
 
     EXPECT_CALL(reader, StartCall(_)).WillOnce(Invoke([idx, this](void*) {
@@ -540,7 +540,8 @@ TEST_F(TableAsyncReadRowsTest, PermanentFailure) {
 
   EXPECT_CALL(stream, Finish(_, _))
       .WillOnce(Invoke([](::grpc::Status* status, void*) {
-        *status = ::grpc::Status(::grpc::StatusCode::PERMISSION_DENIED, "noooo");
+        *status =
+            ::grpc::Status(::grpc::StatusCode::PERMISSION_DENIED, "noooo");
       }));
 
   ReadRows();

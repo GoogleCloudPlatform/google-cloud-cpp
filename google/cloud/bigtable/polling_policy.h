@@ -51,7 +51,8 @@ class PollingPolicy {
    * TODO(#2344): remove ::grpc::Status version.
    */
   virtual bool IsPermanentError(::grpc::Status const& status) {
-    return IsPermanentError(::google::cloud::grpc::MakeStatusFromRpcError(status));
+    return IsPermanentError(
+        ::google::cloud::grpc::MakeStatusFromRpcError(status));
   }
 
   /**

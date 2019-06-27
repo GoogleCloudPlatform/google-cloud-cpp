@@ -440,7 +440,8 @@ TEST(MultipleRowsMutatorTest, UnconfirmedAreFailed) {
       }))
       .WillOnce(Return(false));
   EXPECT_CALL(*r1, Finish())
-      .WillOnce(Return(::grpc::Status(::grpc::StatusCode::PERMISSION_DENIED, "")));
+      .WillOnce(
+          Return(::grpc::Status(::grpc::StatusCode::PERMISSION_DENIED, "")));
 
   // The BulkMutator should not issue a second request because the error is
   // PERMISSION_DENIED (not retriable).

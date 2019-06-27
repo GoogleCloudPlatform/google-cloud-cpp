@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_CPP_COMMON_GRPC_VERSION_H_
-#define GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_CPP_COMMON_GRPC_VERSION_H_
+#ifndef GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_GRPC_VERSION_H_
+#define GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_GRPC_VERSION_H_
 
 #include "google/cloud/grpc/version_info.h"
 #include "google/cloud/version.h"
@@ -47,21 +47,27 @@ inline namespace GOOGLE_CLOUD_CPP_COMMON_GRPC_NS {
  *
  * @see https://semver.org/spec/v2.0.0.html for details.
  */
-int constexpr version_major() { return GOOGLE_CLOUD_CPP_COMMON_GRPC_VERSION_MAJOR; }
+int constexpr version_major() {
+  return GOOGLE_CLOUD_CPP_COMMON_GRPC_VERSION_MAJOR;
+}
 
 /**
  * The Cloud C++ gRPC Wrappers minor version.
  *
  * @see https://semver.org/spec/v2.0.0.html for details.
  */
-int constexpr version_minor() { return GOOGLE_CLOUD_CPP_COMMON_GRPC_VERSION_MINOR; }
+int constexpr version_minor() {
+  return GOOGLE_CLOUD_CPP_COMMON_GRPC_VERSION_MINOR;
+}
 
 /**
  * The Cloud C++ gRPC Wrappers patch version.
  *
  * @see https://semver.org/spec/v2.0.0.html for details.
  */
-int constexpr version_patch() { return GOOGLE_CLOUD_CPP_COMMON_GRPC_VERSION_PATCH; }
+int constexpr version_patch() {
+  return GOOGLE_CLOUD_CPP_COMMON_GRPC_VERSION_PATCH;
+}
 
 /// A single integer representing the Major/Minor/Patch version.
 int constexpr version() {
@@ -76,4 +82,4 @@ std::string version_string();
 }  // namespace cloud
 }  // namespace google
 
-#endif  // GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_CPP_COMMON_GRPC_VERSION_H_
+#endif  // GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_GRPC_VERSION_H_

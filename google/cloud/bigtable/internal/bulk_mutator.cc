@@ -185,8 +185,8 @@ BulkMutator::BulkMutator(std::string const& app_profile_id,
                          BulkMutation mut)
     : state_(app_profile_id, table_name, idempotent_policy, std::move(mut)) {}
 
-::grpc::Status BulkMutator::MakeOneRequest(bigtable::DataClient& client,
-                                         ::grpc::ClientContext& client_context) {
+::grpc::Status BulkMutator::MakeOneRequest(
+    bigtable::DataClient& client, ::grpc::ClientContext& client_context) {
   // Send the request to the server.
   auto const& mutations = state_.BeforeStart();
   auto stream = client.MutateRows(&client_context, mutations);

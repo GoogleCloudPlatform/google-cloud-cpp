@@ -60,11 +60,11 @@ class MockClient {
  public:
   // Use an operation with simple request / response parameters, so it is easy
   // to test them.
-  MOCK_METHOD3(
-      AsyncGetTable,
-      std::unique_ptr<::grpc::ClientAsyncResponseReaderInterface<btadmin::Table>>(
-          ::grpc::ClientContext*, btadmin::GetTableRequest const&,
-          ::grpc::CompletionQueue* cq));
+  MOCK_METHOD3(AsyncGetTable,
+               std::unique_ptr<
+                   ::grpc::ClientAsyncResponseReaderInterface<btadmin::Table>>(
+                   ::grpc::ClientContext*, btadmin::GetTableRequest const&,
+                   ::grpc::CompletionQueue* cq));
 
   MOCK_METHOD4(
       AsyncMutateRows,
@@ -85,12 +85,13 @@ TEST(CompletionQueueTest, AsyncRpcSimpleFuture) {
           btadmin::Table>;
   auto reader = google::cloud::internal::make_unique<ReaderType>();
   EXPECT_CALL(*reader, Finish(_, _, _))
-      .WillOnce(Invoke([](btadmin::Table* table, ::grpc::Status* status, void*) {
-        // Initialize a value to make sure it is carried all the way back to
-        // the caller.
-        table->set_name("fake/table/name/response");
-        *status = ::grpc::Status::OK;
-      }));
+      .WillOnce(
+          Invoke([](btadmin::Table* table, ::grpc::Status* status, void*) {
+            // Initialize a value to make sure it is carried all the way back to
+            // the caller.
+            table->set_name("fake/table/name/response");
+            *status = ::grpc::Status::OK;
+          }));
 
   EXPECT_CALL(client, AsyncGetTable(_, _, _))
       .WillOnce(Invoke([&reader](::grpc::ClientContext*,

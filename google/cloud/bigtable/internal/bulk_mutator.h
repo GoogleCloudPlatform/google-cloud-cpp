@@ -122,7 +122,7 @@ class BulkMutator {
 
   /// Synchronously send one batch request to the given stub.
   ::grpc::Status MakeOneRequest(bigtable::DataClient& client,
-                              ::grpc::ClientContext& client_context);
+                                ::grpc::ClientContext& client_context);
 
   /// Give up on any pending mutations, move them to the failures array.
   std::vector<FailedMutation> OnRetryDone() &&;

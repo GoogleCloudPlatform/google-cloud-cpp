@@ -410,8 +410,8 @@ class PermanentMutationFailure : public std::runtime_error {
   /**
    * The ::grpc::Status of the request.
    *
-   * Notice that it can return ::grpc::Status::OK when there are partial failures
-   * in a BulkApply() operation.
+   * Notice that it can return ::grpc::Status::OK when there are partial
+   * failures in a BulkApply() operation.
    */
   ::grpc::Status const& status() const { return status_; }
 

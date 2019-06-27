@@ -31,8 +31,8 @@ class MockInstanceAdminClient : public bigtable::InstanceAdminClient {
   MOCK_METHOD3(
       ListInstances,
       ::grpc::Status(::grpc::ClientContext*,
-                   google::bigtable::admin::v2::ListInstancesRequest const&,
-                   google::bigtable::admin::v2::ListInstancesResponse*));
+                     google::bigtable::admin::v2::ListInstancesRequest const&,
+                     google::bigtable::admin::v2::ListInstancesResponse*));
 
   MOCK_METHOD3(
       AsyncListInstances,
@@ -45,8 +45,8 @@ class MockInstanceAdminClient : public bigtable::InstanceAdminClient {
   MOCK_METHOD3(
       CreateInstance,
       ::grpc::Status(::grpc::ClientContext*,
-                   google::bigtable::admin::v2::CreateInstanceRequest const&,
-                   google::longrunning::Operation*));
+                     google::bigtable::admin::v2::CreateInstanceRequest const&,
+                     google::longrunning::Operation*));
 
   MOCK_METHOD3(
       AsyncCreateInstance,
@@ -74,14 +74,14 @@ class MockInstanceAdminClient : public bigtable::InstanceAdminClient {
 
   MOCK_METHOD3(GetOperation,
                ::grpc::Status(::grpc::ClientContext*,
-                            google::longrunning::GetOperationRequest const&,
-                            google::longrunning::Operation*));
+                              google::longrunning::GetOperationRequest const&,
+                              google::longrunning::Operation*));
 
   MOCK_METHOD3(
       GetInstance,
       ::grpc::Status(::grpc::ClientContext*,
-                   google::bigtable::admin::v2::GetInstanceRequest const&,
-                   google::bigtable::admin::v2::Instance*));
+                     google::bigtable::admin::v2::GetInstanceRequest const&,
+                     google::bigtable::admin::v2::Instance*));
 
   MOCK_METHOD3(
       AsyncGetInstance,
@@ -94,8 +94,8 @@ class MockInstanceAdminClient : public bigtable::InstanceAdminClient {
   MOCK_METHOD3(
       DeleteInstance,
       ::grpc::Status(::grpc::ClientContext*,
-                   google::bigtable::admin::v2::DeleteInstanceRequest const&,
-                   google::protobuf::Empty*));
+                     google::bigtable::admin::v2::DeleteInstanceRequest const&,
+                     google::protobuf::Empty*));
 
   MOCK_METHOD3(
       AsyncDeleteInstance,
@@ -108,8 +108,8 @@ class MockInstanceAdminClient : public bigtable::InstanceAdminClient {
   MOCK_METHOD3(
       ListClusters,
       ::grpc::Status(::grpc::ClientContext*,
-                   google::bigtable::admin::v2::ListClustersRequest const&,
-                   google::bigtable::admin::v2::ListClustersResponse*));
+                     google::bigtable::admin::v2::ListClustersRequest const&,
+                     google::bigtable::admin::v2::ListClustersResponse*));
 
   MOCK_METHOD3(AsyncListClusters,
                std::unique_ptr<::grpc::ClientAsyncResponseReaderInterface<
@@ -121,8 +121,8 @@ class MockInstanceAdminClient : public bigtable::InstanceAdminClient {
   MOCK_METHOD3(
       GetCluster,
       ::grpc::Status(::grpc::ClientContext*,
-                   google::bigtable::admin::v2::GetClusterRequest const&,
-                   google::bigtable::admin::v2::Cluster*));
+                     google::bigtable::admin::v2::GetClusterRequest const&,
+                     google::bigtable::admin::v2::Cluster*));
 
   MOCK_METHOD3(
       AsyncGetCluster,
@@ -135,8 +135,8 @@ class MockInstanceAdminClient : public bigtable::InstanceAdminClient {
   MOCK_METHOD3(
       DeleteCluster,
       ::grpc::Status(::grpc::ClientContext*,
-                   google::bigtable::admin::v2::DeleteClusterRequest const&,
-                   google::protobuf::Empty*));
+                     google::bigtable::admin::v2::DeleteClusterRequest const&,
+                     google::protobuf::Empty*));
 
   MOCK_METHOD3(
       AsyncDeleteCluster,
@@ -157,13 +157,13 @@ class MockInstanceAdminClient : public bigtable::InstanceAdminClient {
   MOCK_METHOD3(
       CreateCluster,
       ::grpc::Status(::grpc::ClientContext*,
-                   google::bigtable::admin::v2::CreateClusterRequest const&,
-                   google::longrunning::Operation*));
+                     google::bigtable::admin::v2::CreateClusterRequest const&,
+                     google::longrunning::Operation*));
 
   MOCK_METHOD3(UpdateCluster,
                ::grpc::Status(::grpc::ClientContext*,
-                            google::bigtable::admin::v2::Cluster const&,
-                            google::longrunning::Operation*));
+                              google::bigtable::admin::v2::Cluster const&,
+                              google::longrunning::Operation*));
 
   MOCK_METHOD3(AsyncUpdateCluster,
                std::unique_ptr<::grpc::ClientAsyncResponseReaderInterface<
@@ -172,9 +172,9 @@ class MockInstanceAdminClient : public bigtable::InstanceAdminClient {
                    const google::bigtable::admin::v2::Cluster& request,
                    ::grpc::CompletionQueue* cq));
 
-  MOCK_METHOD3(
-      CreateAppProfile,
-      ::grpc::Status(::grpc::ClientContext*,
+  MOCK_METHOD3(CreateAppProfile,
+               ::grpc::Status(
+                   ::grpc::ClientContext*,
                    google::bigtable::admin::v2::CreateAppProfileRequest const&,
                    google::bigtable::admin::v2::AppProfile*));
 
@@ -189,8 +189,8 @@ class MockInstanceAdminClient : public bigtable::InstanceAdminClient {
   MOCK_METHOD3(
       GetAppProfile,
       ::grpc::Status(::grpc::ClientContext*,
-                   google::bigtable::admin::v2::GetAppProfileRequest const&,
-                   google::bigtable::admin::v2::AppProfile*));
+                     google::bigtable::admin::v2::GetAppProfileRequest const&,
+                     google::bigtable::admin::v2::AppProfile*));
 
   MOCK_METHOD3(
       AsyncGetAppProfile,
@@ -203,8 +203,8 @@ class MockInstanceAdminClient : public bigtable::InstanceAdminClient {
   MOCK_METHOD3(
       ListAppProfiles,
       ::grpc::Status(::grpc::ClientContext*,
-                   google::bigtable::admin::v2::ListAppProfilesRequest const&,
-                   google::bigtable::admin::v2::ListAppProfilesResponse*));
+                     google::bigtable::admin::v2::ListAppProfilesRequest const&,
+                     google::bigtable::admin::v2::ListAppProfilesResponse*));
 
   MOCK_METHOD3(AsyncListAppProfiles,
                std::unique_ptr<::grpc::ClientAsyncResponseReaderInterface<
@@ -213,15 +213,15 @@ class MockInstanceAdminClient : public bigtable::InstanceAdminClient {
                    const google::bigtable::admin::v2::ListAppProfilesRequest&,
                    ::grpc::CompletionQueue*));
 
-  MOCK_METHOD3(
-      UpdateAppProfile,
-      ::grpc::Status(::grpc::ClientContext*,
+  MOCK_METHOD3(UpdateAppProfile,
+               ::grpc::Status(
+                   ::grpc::ClientContext*,
                    google::bigtable::admin::v2::UpdateAppProfileRequest const&,
                    google::longrunning::Operation*));
 
-  MOCK_METHOD3(
-      DeleteAppProfile,
-      ::grpc::Status(::grpc::ClientContext*,
+  MOCK_METHOD3(DeleteAppProfile,
+               ::grpc::Status(
+                   ::grpc::ClientContext*,
                    google::bigtable::admin::v2::DeleteAppProfileRequest const&,
                    google::protobuf::Empty*));
 
@@ -243,8 +243,8 @@ class MockInstanceAdminClient : public bigtable::InstanceAdminClient {
 
   MOCK_METHOD3(GetIamPolicy,
                ::grpc::Status(::grpc::ClientContext*,
-                            google::iam::v1::GetIamPolicyRequest const&,
-                            google::iam::v1::Policy*));
+                              google::iam::v1::GetIamPolicyRequest const&,
+                              google::iam::v1::Policy*));
 
   MOCK_METHOD3(
       AsyncGetIamPolicy,
@@ -256,8 +256,8 @@ class MockInstanceAdminClient : public bigtable::InstanceAdminClient {
 
   MOCK_METHOD3(SetIamPolicy,
                ::grpc::Status(::grpc::ClientContext*,
-                            google::iam::v1::SetIamPolicyRequest const&,
-                            google::iam::v1::Policy*));
+                              google::iam::v1::SetIamPolicyRequest const&,
+                              google::iam::v1::Policy*));
 
   MOCK_METHOD3(
       AsyncSetIamPolicy,
@@ -269,8 +269,8 @@ class MockInstanceAdminClient : public bigtable::InstanceAdminClient {
 
   MOCK_METHOD3(TestIamPermissions,
                ::grpc::Status(::grpc::ClientContext*,
-                            google::iam::v1::TestIamPermissionsRequest const&,
-                            google::iam::v1::TestIamPermissionsResponse*));
+                              google::iam::v1::TestIamPermissionsRequest const&,
+                              google::iam::v1::TestIamPermissionsResponse*));
   MOCK_METHOD3(AsyncTestIamPermissions,
                std::unique_ptr<::grpc::ClientAsyncResponseReaderInterface<
                    google::iam::v1::TestIamPermissionsResponse>>(

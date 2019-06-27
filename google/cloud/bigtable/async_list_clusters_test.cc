@@ -78,8 +78,8 @@ auto create_list_clusters_lambda =
     [](std::string returned_token, std::vector<std::string> cluster_names,
        std::vector<std::string> failed_locations) {
       return [returned_token, cluster_names, failed_locations](
-                 btproto::ListClustersResponse* response, ::grpc::Status* status,
-                 void*) {
+                 btproto::ListClustersResponse* response,
+                 ::grpc::Status* status, void*) {
         for (auto const& cluster_name : cluster_names) {
           auto& cluster = *response->add_clusters();
           cluster.set_name(cluster_name);

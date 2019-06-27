@@ -67,12 +67,13 @@ class InstanceAdminEmulator final
 
       return ::grpc::Status::OK;
     }
-    return ::grpc::Status(::grpc::StatusCode::ALREADY_EXISTS, "duplicate instance");
+    return ::grpc::Status(::grpc::StatusCode::ALREADY_EXISTS,
+                          "duplicate instance");
   }
 
   ::grpc::Status GetInstance(::grpc::ServerContext*,
-                           btadmin::GetInstanceRequest const* request,
-                           btadmin::Instance* response) override {
+                             btadmin::GetInstanceRequest const* request,
+                             btadmin::Instance* response) override {
     std::unique_lock<std::mutex> lk(mu_);
     std::string request_text;
     google::protobuf::TextFormat::PrintToString(*request, &request_text);
@@ -104,8 +105,8 @@ class InstanceAdminEmulator final
   }
 
   ::grpc::Status UpdateInstance(::grpc::ServerContext*,
-                              btadmin::Instance const* request,
-                              btadmin::Instance*) override {
+                                btadmin::Instance const* request,
+                                btadmin::Instance*) override {
     std::unique_lock<std::mutex> lk(mu_);
     std::string request_text;
     google::protobuf::TextFormat::PrintToString(*request, &request_text);
@@ -126,7 +127,8 @@ class InstanceAdminEmulator final
     std::string name = request->instance().name();
     auto it = instances_.find(name);
     if (it == instances_.end()) {
-      return ::grpc::Status(::grpc::StatusCode::NOT_FOUND, "instance not found");
+      return ::grpc::Status(::grpc::StatusCode::NOT_FOUND,
+                            "instance not found");
     }
 
     auto& stored_instance = it->second;
@@ -136,7 +138,7 @@ class InstanceAdminEmulator final
         auto size = request->instance().display_name().size();
         if (size < 4 || size > 30) {
           return ::grpc::Status(::grpc::StatusCode::INVALID_ARGUMENT,
-                              "display name size must be in range [4,30]");
+                                "display name size must be in range [4,30]");
         }
         stored_instance.set_display_name(request->instance().display_name());
       }
@@ -167,8 +169,8 @@ class InstanceAdminEmulator final
   }
 
   ::grpc::Status DeleteInstance(::grpc::ServerContext*,
-                              btadmin::DeleteInstanceRequest const* request,
-                              google::protobuf::Empty*) override {
+                                btadmin::DeleteInstanceRequest const* request,
+                                google::protobuf::Empty*) override {
     std::unique_lock<std::mutex> lk(mu_);
     std::string request_text;
     google::protobuf::TextFormat::PrintToString(*request, &request_text);
@@ -211,12 +213,13 @@ class InstanceAdminEmulator final
       response->set_allocated_response(contents.release());
       return ::grpc::Status::OK;
     }
-    return ::grpc::Status(::grpc::StatusCode::ALREADY_EXISTS, "duplicate cluster");
+    return ::grpc::Status(::grpc::StatusCode::ALREADY_EXISTS,
+                          "duplicate cluster");
   }
 
   ::grpc::Status GetCluster(::grpc::ServerContext*,
-                          btadmin::GetClusterRequest const* request,
-                          btadmin::Cluster* response) override {
+                            btadmin::GetClusterRequest const* request,
+                            btadmin::Cluster* response) override {
     std::unique_lock<std::mutex> lk(mu_);
     std::string request_text;
     google::protobuf::TextFormat::PrintToString(*request, &request_text);
@@ -230,9 +233,9 @@ class InstanceAdminEmulator final
     return ::grpc::Status::OK;
   }
 
-  ::grpc::Status ListClusters(::grpc::ServerContext*,
-                            btadmin::ListClustersRequest const* request,
-                            btadmin::ListClustersResponse* response) override {
+  ::grpc::Status ListClusters(
+      ::grpc::ServerContext*, btadmin::ListClustersRequest const* request,
+      btadmin::ListClustersResponse* response) override {
     std::unique_lock<std::mutex> lk(mu_);
     std::string request_text;
     google::protobuf::TextFormat::PrintToString(*request, &request_text);
@@ -297,8 +300,8 @@ class InstanceAdminEmulator final
   }
 
   ::grpc::Status DeleteCluster(::grpc::ServerContext*,
-                             btadmin::DeleteClusterRequest const* request,
-                             google::protobuf::Empty*) override {
+                               btadmin::DeleteClusterRequest const* request,
+                               google::protobuf::Empty*) override {
     std::unique_lock<std::mutex> lk(mu_);
     std::string request_text;
     google::protobuf::TextFormat::PrintToString(*request, &request_text);
@@ -312,9 +315,9 @@ class InstanceAdminEmulator final
     return ::grpc::Status::OK;
   }
 
-  ::grpc::Status CreateAppProfile(::grpc::ServerContext*,
-                                btadmin::CreateAppProfileRequest const* request,
-                                btadmin::AppProfile* response) override {
+  ::grpc::Status CreateAppProfile(
+      ::grpc::ServerContext*, btadmin::CreateAppProfileRequest const* request,
+      btadmin::AppProfile* response) override {
     std::unique_lock<std::mutex> lk(mu_);
     std::string request_text;
     google::protobuf::TextFormat::PrintToString(*request, &request_text);
@@ -330,12 +333,12 @@ class InstanceAdminEmulator final
       return ::grpc::Status::OK;
     }
     return ::grpc::Status(::grpc::StatusCode::ALREADY_EXISTS,
-                        "duplicate app profile");
+                          "duplicate app profile");
   }
 
   ::grpc::Status GetAppProfile(::grpc::ServerContext*,
-                             btadmin::GetAppProfileRequest const* request,
-                             btadmin::AppProfile* response) override {
+                               btadmin::GetAppProfileRequest const* request,
+                               btadmin::AppProfile* response) override {
     std::unique_lock<std::mutex> lk(mu_);
     std::string request_text;
     google::protobuf::TextFormat::PrintToString(*request, &request_text);
@@ -343,7 +346,8 @@ class InstanceAdminEmulator final
 
     auto i = app_profiles_.find(request->name());
     if (i == app_profiles_.end()) {
-      return ::grpc::Status(::grpc::StatusCode::NOT_FOUND, "app profile not found");
+      return ::grpc::Status(::grpc::StatusCode::NOT_FOUND,
+                            "app profile not found");
     }
     *response = i->second;
     return ::grpc::Status::OK;
@@ -378,7 +382,8 @@ class InstanceAdminEmulator final
     std::string name = request->app_profile().name();
     auto it = app_profiles_.find(name);
     if (it == app_profiles_.end()) {
-      return ::grpc::Status(::grpc::StatusCode::NOT_FOUND, "app profile not found");
+      return ::grpc::Status(::grpc::StatusCode::NOT_FOUND,
+                            "app profile not found");
     }
 
     btadmin::AppProfile& stored_app_profile = it->second;
@@ -407,9 +412,9 @@ class InstanceAdminEmulator final
     return ::grpc::Status::OK;
   }
 
-  ::grpc::Status DeleteAppProfile(::grpc::ServerContext*,
-                                btadmin::DeleteAppProfileRequest const* request,
-                                google::protobuf::Empty*) override {
+  ::grpc::Status DeleteAppProfile(
+      ::grpc::ServerContext*, btadmin::DeleteAppProfileRequest const* request,
+      google::protobuf::Empty*) override {
     std::unique_lock<std::mutex> lk(mu_);
     std::string request_text;
     google::protobuf::TextFormat::PrintToString(*request, &request_text);
@@ -417,15 +422,17 @@ class InstanceAdminEmulator final
 
     auto i = app_profiles_.find(request->name());
     if (i == app_profiles_.end()) {
-      return ::grpc::Status(::grpc::StatusCode::NOT_FOUND, "app profile not found");
+      return ::grpc::Status(::grpc::StatusCode::NOT_FOUND,
+                            "app profile not found");
     }
     app_profiles_.erase(i);
     return ::grpc::Status::OK;
   }
 
-  ::grpc::Status GetIamPolicy(::grpc::ServerContext*,
-                            google::iam::v1::GetIamPolicyRequest const* request,
-                            google::iam::v1::Policy* response) override {
+  ::grpc::Status GetIamPolicy(
+      ::grpc::ServerContext*,
+      google::iam::v1::GetIamPolicyRequest const* request,
+      google::iam::v1::Policy* response) override {
     std::unique_lock<std::mutex> lk(mu_);
     std::string request_text;
     google::protobuf::TextFormat::PrintToString(*request, &request_text);
@@ -441,9 +448,10 @@ class InstanceAdminEmulator final
     return ::grpc::Status::OK;
   }
 
-  ::grpc::Status SetIamPolicy(::grpc::ServerContext*,
-                            google::iam::v1::SetIamPolicyRequest const* request,
-                            google::iam::v1::Policy* response) override {
+  ::grpc::Status SetIamPolicy(
+      ::grpc::ServerContext*,
+      google::iam::v1::SetIamPolicyRequest const* request,
+      google::iam::v1::Policy* response) override {
     std::unique_lock<std::mutex> lk(mu_);
     std::string request_text;
     google::protobuf::TextFormat::PrintToString(*request, &request_text);
@@ -473,7 +481,8 @@ class InstanceAdminEmulator final
       return ::grpc::Status::OK;
     }
 
-    return ::grpc::Status(::grpc::StatusCode::NOT_FOUND, "resource doesn't exists");
+    return ::grpc::Status(::grpc::StatusCode::NOT_FOUND,
+                          "resource doesn't exists");
   }
 
  private:
@@ -498,19 +507,21 @@ class LongRunningEmulator final
   }
 
   ::grpc::Status GetOperation(::grpc::ServerContext*,
-                            google::longrunning::GetOperationRequest const*,
-                            google::longrunning::Operation*) override {
+                              google::longrunning::GetOperationRequest const*,
+                              google::longrunning::Operation*) override {
     return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "not implemented");
   }
 
   ::grpc::Status DeleteOperation(
-      ::grpc::ServerContext*, google::longrunning::DeleteOperationRequest const*,
+      ::grpc::ServerContext*,
+      google::longrunning::DeleteOperationRequest const*,
       google::protobuf::Empty*) override {
     return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "not implemented");
   }
 
   ::grpc::Status CancelOperation(
-      ::grpc::ServerContext*, google::longrunning::CancelOperationRequest const*,
+      ::grpc::ServerContext*,
+      google::longrunning::CancelOperationRequest const*,
       google::protobuf::Empty*) override {
     return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "not implemented");
   }
@@ -521,8 +532,8 @@ class DefaultEmbeddedServer {
  public:
   explicit DefaultEmbeddedServer(std::string server_address) {
     int port;
-    builder_.AddListeningPort(server_address, ::grpc::InsecureServerCredentials(),
-                              &port);
+    builder_.AddListeningPort(server_address,
+                              ::grpc::InsecureServerCredentials(), &port);
     builder_.RegisterService(&instance_admin_);
     builder_.RegisterService(&long_running_);
     server_ = builder_.BuildAndStart();

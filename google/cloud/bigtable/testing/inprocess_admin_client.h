@@ -135,8 +135,8 @@ class InProcessAdminClient : public bigtable::AdminClient {
   AsyncListTables(::grpc::ClientContext* context,
                   google::bigtable::admin::v2::ListTablesRequest const& request,
                   ::grpc::CompletionQueue* cq) override;
-  std::unique_ptr<
-      ::grpc::ClientAsyncResponseReaderInterface<google::longrunning::Operation>>
+  std::unique_ptr<::grpc::ClientAsyncResponseReaderInterface<
+      google::longrunning::Operation>>
   AsyncGetOperation(::grpc::ClientContext* context,
                     const google::longrunning::GetOperationRequest& request,
                     ::grpc::CompletionQueue* cq) override;

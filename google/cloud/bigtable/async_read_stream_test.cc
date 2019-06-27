@@ -80,15 +80,15 @@ class AsyncReadStreamTest : public ::testing::Test {
   void SetUp() override {
     int port;
     std::string server_address("[::]:0");
-    builder_.AddListeningPort(server_address, ::grpc::InsecureServerCredentials(),
-                              &port);
+    builder_.AddListeningPort(server_address,
+                              ::grpc::InsecureServerCredentials(), &port);
     builder_.RegisterService(&impl_);
     server_ = builder_.BuildAndStart();
     server_thread_ = std::thread([this]() { server_->Wait(); });
 
     std::shared_ptr<::grpc::Channel> channel =
         ::grpc::CreateChannel("localhost:" + std::to_string(port),
-                            ::grpc::InsecureChannelCredentials());
+                              ::grpc::InsecureChannelCredentials());
     stub_ = google::bigtable::v2::Bigtable::NewStub(channel);
 
     cq_thread_ = std::thread([this] { cq_.Run(); });
@@ -122,8 +122,9 @@ class AsyncReadStreamTest : public ::testing::Test {
       int index) {
     google::bigtable::v2::MutateRowsResponse response;
     response.add_entries()->set_index(index);
-    writer->Write(response,
-                  ::grpc::WriteOptions().set_write_through().set_last_message());
+    writer->Write(
+        response,
+        ::grpc::WriteOptions().set_write_through().set_last_message());
   }
 
   BulkApplyImpl impl_;
@@ -173,8 +174,8 @@ TEST_F(AsyncReadStreamTest, MetaFunctions) {
 
 /// @test Verify that AsyncReadStream works even if the server does not exist.
 TEST_F(AsyncReadStreamTest, CannotConnect) {
-  std::shared_ptr<::grpc::Channel> channel =
-      ::grpc::CreateChannel("localhost:1", ::grpc::InsecureChannelCredentials());
+  std::shared_ptr<::grpc::Channel> channel = ::grpc::CreateChannel(
+      "localhost:1", ::grpc::InsecureChannelCredentials());
   std::unique_ptr<google::bigtable::v2::Bigtable::StubInterface> stub =
       google::bigtable::v2::Bigtable::NewStub(channel);
 
@@ -311,7 +312,8 @@ TEST_F(AsyncReadStreamTest, Return3ThenFail) {
   SimpleBarrier server_barrier;
   impl_.SetCallback(
       [this, &server_barrier](
-          ::grpc::ServerContext*, google::bigtable::v2::MutateRowsRequest const*,
+          ::grpc::ServerContext*,
+          google::bigtable::v2::MutateRowsRequest const*,
           ::grpc::ServerWriter<google::bigtable::v2::MutateRowsResponse>*
               writer) {
         WriteOne(writer, 0);
@@ -407,7 +409,8 @@ TEST_F(AsyncReadStreamTest, Return3LastIsBlocked) {
   SimpleBarrier server_barrier;
   impl_.SetCallback(
       [this, &client_barrier, &server_barrier](
-          ::grpc::ServerContext*, google::bigtable::v2::MutateRowsRequest const*,
+          ::grpc::ServerContext*,
+          google::bigtable::v2::MutateRowsRequest const*,
           ::grpc::ServerWriter<google::bigtable::v2::MutateRowsResponse>*
               writer) {
         WriteOne(writer, 0);
@@ -459,7 +462,8 @@ TEST_F(AsyncReadStreamTest, CancelWhileBlocked) {
   SimpleBarrier server_barrier;
   impl_.SetCallback(
       [this, &client_barrier, &server_barrier](
-          ::grpc::ServerContext*, google::bigtable::v2::MutateRowsRequest const*,
+          ::grpc::ServerContext*,
+          google::bigtable::v2::MutateRowsRequest const*,
           ::grpc::ServerWriter<google::bigtable::v2::MutateRowsResponse>*
               writer) {
         WriteOne(writer, 0);
@@ -519,7 +523,8 @@ TEST_F(AsyncReadStreamTest, DoubleCancel) {
   SimpleBarrier cancel_done_server_barrier;
   impl_.SetCallback(
       [this, &server_sent_responses_barrier, &cancel_done_server_barrier](
-          ::grpc::ServerContext*, google::bigtable::v2::MutateRowsRequest const*,
+          ::grpc::ServerContext*,
+          google::bigtable::v2::MutateRowsRequest const*,
           ::grpc::ServerWriter<google::bigtable::v2::MutateRowsResponse>*
               writer) {
         WriteOne(writer, 0);
@@ -587,7 +592,8 @@ TEST_F(AsyncReadStreamTest, CancelBeforeRead) {
   SimpleBarrier cancel_done_server_barrier;
   impl_.SetCallback(
       [this, &server_started_barrier, &cancel_done_server_barrier](
-          ::grpc::ServerContext*, google::bigtable::v2::MutateRowsRequest const*,
+          ::grpc::ServerContext*,
+          google::bigtable::v2::MutateRowsRequest const*,
           ::grpc::ServerWriter<google::bigtable::v2::MutateRowsResponse>*
               writer) {
         server_started_barrier.Lift();

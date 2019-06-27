@@ -152,8 +152,9 @@ class MutationBatcherTest : public bigtable::testing::TableTestFixture {
       }
 
       EXPECT_CALL(*reader, Finish(_, _))
-          .WillOnce(Invoke(
-              [](::grpc::Status* status, void*) { *status = ::grpc::Status::OK; }));
+          .WillOnce(Invoke([](::grpc::Status* status, void*) {
+            *status = ::grpc::Status::OK;
+          }));
       EXPECT_CALL(*reader, StartCall(_)).Times(1);
 
       EXPECT_CALL(*client_, PrepareAsyncMutateRows(_, _, _))

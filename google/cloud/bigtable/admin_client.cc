@@ -54,18 +54,20 @@ class DefaultAdminClient : public google::cloud::bigtable::AdminClient {
       : project_(std::move(project)), impl_(std::move(options)) {}
 
   std::string const& project() const override { return project_; }
-  std::shared_ptr<::grpc::Channel> Channel() override { return impl_.Channel(); }
+  std::shared_ptr<::grpc::Channel> Channel() override {
+    return impl_.Channel();
+  }
   void reset() override { return impl_.reset(); }
 
   ::grpc::Status CreateTable(::grpc::ClientContext* context,
-                           btadmin::CreateTableRequest const& request,
-                           btadmin::Table* response) override {
+                             btadmin::CreateTableRequest const& request,
+                             btadmin::Table* response) override {
     return impl_.Stub()->CreateTable(context, request, response);
   }
 
   ::grpc::Status ListTables(::grpc::ClientContext* context,
-                          btadmin::ListTablesRequest const& request,
-                          btadmin::ListTablesResponse* response) override {
+                            btadmin::ListTablesRequest const& request,
+                            btadmin::ListTablesResponse* response) override {
     return impl_.Stub()->ListTables(context, request, response);
   }
 
@@ -78,8 +80,8 @@ class DefaultAdminClient : public google::cloud::bigtable::AdminClient {
   }
 
   ::grpc::Status GetTable(::grpc::ClientContext* context,
-                        btadmin::GetTableRequest const& request,
-                        btadmin::Table* response) override {
+                          btadmin::GetTableRequest const& request,
+                          btadmin::Table* response) override {
     return impl_.Stub()->GetTable(context, request, response);
   }
 
@@ -92,8 +94,8 @@ class DefaultAdminClient : public google::cloud::bigtable::AdminClient {
   }
 
   ::grpc::Status DeleteTable(::grpc::ClientContext* context,
-                           btadmin::DeleteTableRequest const& request,
-                           google::protobuf::Empty* response) override {
+                             btadmin::DeleteTableRequest const& request,
+                             google::protobuf::Empty* response) override {
     return impl_.Stub()->DeleteTable(context, request, response);
   }
 
@@ -105,8 +107,8 @@ class DefaultAdminClient : public google::cloud::bigtable::AdminClient {
   }
 
   ::grpc::Status DropRowRange(::grpc::ClientContext* context,
-                            btadmin::DropRowRangeRequest const& request,
-                            google::protobuf::Empty* response) override {
+                              btadmin::DropRowRangeRequest const& request,
+                              google::protobuf::Empty* response) override {
     return impl_.Stub()->DropRowRange(context, request, response);
   }
 
@@ -187,8 +189,8 @@ class DefaultAdminClient : public google::cloud::bigtable::AdminClient {
     return impl_.Stub()->AsyncCheckConsistency(context, request, cq);
   }
 
-  std::unique_ptr<
-      ::grpc::ClientAsyncResponseReaderInterface<google::longrunning::Operation>>
+  std::unique_ptr<::grpc::ClientAsyncResponseReaderInterface<
+      google::longrunning::Operation>>
   AsyncGetOperation(::grpc::ClientContext* context,
                     const google::longrunning::GetOperationRequest& request,
                     ::grpc::CompletionQueue* cq) override {

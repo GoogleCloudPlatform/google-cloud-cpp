@@ -259,8 +259,8 @@ TEST_F(TableReadModifyWriteTest, UnrecoverableFailureTest) {
   std::string const column_id1 = "colid1";
 
   EXPECT_CALL(*client_, ReadModifyWriteRow(_, _, _))
-      .WillRepeatedly(
-          Return(::grpc::Status(::grpc::StatusCode::PERMISSION_DENIED, "uh oh")));
+      .WillRepeatedly(Return(
+          ::grpc::Status(::grpc::StatusCode::PERMISSION_DENIED, "uh oh")));
 
   EXPECT_FALSE(table_.ReadModifyWriteRow(
       row_key,

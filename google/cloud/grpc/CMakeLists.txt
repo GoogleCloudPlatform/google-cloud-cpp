@@ -27,7 +27,10 @@ set(
     "${GOOGLE_CLOUD_CPP_COMMON_GRPC_VERSION_MAJOR}.${GOOGLE_CLOUD_CPP_COMMON_GRPC_VERSION_MINOR}.${GOOGLE_CLOUD_CPP_COMMON_GRPC_VERSION_PATCH}"
     )
 set(DOXYGEN_EXAMPLE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/examples)
-set(DOXYGEN_PREDEFINED "GOOGLE_CLOUD_CPP_COMMON_GRPC_NS=v${GOOGLE_CLOUD_CPP_COMMON_GRPC_VERSION_MAJOR}")
+set(
+    DOXYGEN_PREDEFINED
+    "GOOGLE_CLOUD_CPP_COMMON_GRPC_NS=v${GOOGLE_CLOUD_CPP_COMMON_GRPC_VERSION_MAJOR}"
+    )
 set(DOXYGEN_EXCLUDE_PATTERNS
     "*/google/cloud/grpc/README.md"
     "*/google/cloud/grpc/ci/*"
@@ -46,11 +49,12 @@ endif ()
 
 # Define an interface library, i.e., a library that really has no sources, and
 # add public target options to it.  The targets then use the library via
-# target_link_libraries(target PRIVATE google_cloud_cpp_common_grpc_common_options), which
-# implicitly adds the options to those targets, but does *not* add the options
-# to any targets that depend on them.  This is a CMake idiom to add options to
-# targets without having to painfully set special variables, it also allows
-# users to add more common options without having to touch the code.
+# target_link_libraries(target PRIVATE
+# google_cloud_cpp_common_grpc_common_options), which implicitly adds the
+# options to those targets, but does *not* add the options to any targets that
+# depend on them.  This is a CMake idiom to add options to targets without
+# having to painfully set special variables, it also allows users to add more
+# common options without having to touch the code.
 add_library(google_cloud_cpp_common_grpc_common_options INTERFACE)
 google_cloud_cpp_add_common_options(google_cloud_cpp_common_grpc_common_options)
 
@@ -77,7 +81,8 @@ target_include_directories(google_cloud_cpp_common_grpc
                            PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
                                   $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
                                   $<INSTALL_INTERFACE:include>)
-target_compile_options(google_cloud_cpp_common_grpc PUBLIC ${GOOGLE_CLOUD_CPP_EXCEPTIONS_FLAG})
+target_compile_options(google_cloud_cpp_common_grpc
+                       PUBLIC ${GOOGLE_CLOUD_CPP_EXCEPTIONS_FLAG})
 set_target_properties(
     google_cloud_cpp_common_grpc
     PROPERTIES
@@ -99,7 +104,8 @@ if (BUILD_TESTING)
     # Export the list of unit tests so the Bazel BUILD file can pick it up.
     export_list_to_bazel("google_cloud_cpp_common_grpc_unit_tests.bzl"
                          "google_cloud_cpp_common_grpc_unit_tests"
-                         YEAR 2019)
+                         YEAR
+                         2019)
 
     foreach (fname ${google_cloud_cpp_common_grpc_unit_tests})
         string(REPLACE "/"
@@ -111,16 +117,17 @@ if (BUILD_TESTING)
                        target
                        ${target})
         add_executable(${target} ${fname})
-        target_link_libraries(${target}
-                              PRIVATE google_cloud_cpp_common_grpc
-                                      google_cloud_cpp_testing
-                                      google_cloud_cpp_common
-                                      GTest::gmock_main
-                                      GTest::gmock
-                                      GTest::gtest
-                                      gRPC::grpc++
-                                      gRPC::grpc
-                                      google_cloud_cpp_common_grpc_common_options)
+        target_link_libraries(
+            ${target}
+            PRIVATE google_cloud_cpp_common_grpc
+                    google_cloud_cpp_testing
+                    google_cloud_cpp_common
+                    GTest::gmock_main
+                    GTest::gmock
+                    GTest::gtest
+                    gRPC::grpc++
+                    gRPC::grpc
+                    google_cloud_cpp_common_grpc_common_options)
         if (MSVC)
             target_compile_options(${target} PRIVATE "/bigobj")
         endif ()
@@ -133,9 +140,9 @@ option(GOOGLE_CLOUD_CPP_FORCE_STATIC_ANALYZER_ERRORS
        "")
 mark_as_advanced(GOOGLE_CLOUD_CPP_FORCE_STATIC_ANALYZER_ERRORS)
 if (GOOGLE_CLOUD_CPP_FORCE_STATIC_ANALYZER_ERRORS)
-    target_compile_definitions(google_cloud_cpp_common_grpc_force_sanitizer_failures_test
-                               PRIVATE
-                               -DGOOGLE_CLOUD_CPP_COMMON_GRPC_FORCE_STATIC_ANALYZER_ERRORS)
+    target_compile_definitions(
+        google_cloud_cpp_common_grpc_force_sanitizer_failures_test PRIVATE
+        -DGOOGLE_CLOUD_CPP_COMMON_GRPC_FORCE_STATIC_ANALYZER_ERRORS)
 endif ()
 
 # TODO: add_subdirectory(tests) if necessary.
@@ -172,7 +179,8 @@ if ("${GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_CPP_COMMON_GRPC_ENABLE_INSTALL}")
 
     # Export the CMake targets to make it easy to create configuration files.
     install(EXPORT google_cloud_cpp_common_grpc-targets
-            DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/google_cloud_cpp_common_grpc")
+            DESTINATION
+            "${CMAKE_INSTALL_LIBDIR}/cmake/google_cloud_cpp_common_grpc")
 
     install(TARGETS google_cloud_cpp_common_grpc
             EXPORT google_cloud_cpp_common_grpc-targets
@@ -183,9 +191,12 @@ if ("${GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_CPP_COMMON_GRPC_ENABLE_INSTALL}")
                                      include/google/cloud/grpc)
 
     # Setup global variables used in the following *.in files.
-    set(GOOGLE_CLOUD_CPP_CONFIG_VERSION_MAJOR ${GOOGLE_CLOUD_CPP_COMMON_GRPC_VERSION_MAJOR})
-    set(GOOGLE_CLOUD_CPP_CONFIG_VERSION_MINOR ${GOOGLE_CLOUD_CPP_COMMON_GRPC_VERSION_MINOR})
-    set(GOOGLE_CLOUD_CPP_CONFIG_VERSION_PATCH ${GOOGLE_CLOUD_CPP_COMMON_GRPC_VERSION_PATCH})
+    set(GOOGLE_CLOUD_CPP_CONFIG_VERSION_MAJOR
+        ${GOOGLE_CLOUD_CPP_COMMON_GRPC_VERSION_MAJOR})
+    set(GOOGLE_CLOUD_CPP_CONFIG_VERSION_MINOR
+        ${GOOGLE_CLOUD_CPP_COMMON_GRPC_VERSION_MINOR})
+    set(GOOGLE_CLOUD_CPP_CONFIG_VERSION_PATCH
+        ${GOOGLE_CLOUD_CPP_COMMON_GRPC_VERSION_PATCH})
     set(GOOGLE_CLOUD_CPP_PC_NAME
         "gRPC wrappers for the Google Cloud C++ Client Library")
     set(GOOGLE_CLOUD_CPP_PC_DESCRIPTION
@@ -196,16 +207,18 @@ if ("${GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_CPP_COMMON_GRPC_ENABLE_INSTALL}")
     # Create and install the pkg-config files.
     configure_file("${PROJECT_SOURCE_DIR}/google/cloud/config.pc.in"
                    "google_cloud_cpp_common_grpc.pc" @ONLY)
-    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/google_cloud_cpp_common_grpc.pc" DESTINATION
-                  "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/google_cloud_cpp_common_grpc.pc"
+                  DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
 
     # Create and install the CMake configuration files.
-    configure_file("config.cmake.in" "google_cloud_cpp_common_grpc-config.cmake" @ONLY)
+    configure_file("config.cmake.in" "google_cloud_cpp_common_grpc-config.cmake"
+                   @ONLY)
     configure_file("${PROJECT_SOURCE_DIR}/google/cloud/config-version.cmake.in"
                    "google_cloud_cpp_common_grpc-config-version.cmake" @ONLY)
     install(
-        FILES "${CMAKE_CURRENT_BINARY_DIR}/google_cloud_cpp_common_grpc-config.cmake"
-              "${CMAKE_CURRENT_BINARY_DIR}/google_cloud_cpp_common_grpc-config-version.cmake"
-              DESTINATION
-              "${CMAKE_INSTALL_LIBDIR}/cmake/google_cloud_cpp_common_grpc")
+        FILES
+            "${CMAKE_CURRENT_BINARY_DIR}/google_cloud_cpp_common_grpc-config.cmake"
+            "${CMAKE_CURRENT_BINARY_DIR}/google_cloud_cpp_common_grpc-config-version.cmake"
+            DESTINATION
+            "${CMAKE_INSTALL_LIBDIR}/cmake/google_cloud_cpp_common_grpc")
 endif ()

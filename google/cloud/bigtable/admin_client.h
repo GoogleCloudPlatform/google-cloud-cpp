@@ -187,8 +187,8 @@ class AdminClient {
 
   //@{
   /// @name The `google.longrunning.Operations` async wrappers.
-  virtual std::unique_ptr<
-      ::grpc::ClientAsyncResponseReaderInterface<google::longrunning::Operation>>
+  virtual std::unique_ptr<::grpc::ClientAsyncResponseReaderInterface<
+      google::longrunning::Operation>>
   AsyncGetOperation(::grpc::ClientContext* context,
                     const google::longrunning::GetOperationRequest& request,
                     ::grpc::CompletionQueue* cq) = 0;

@@ -54,12 +54,14 @@ class DefaultDataClient : public DataClient {
   std::string const& project_id() const override;
   std::string const& instance_id() const override;
 
-  std::shared_ptr<::grpc::Channel> Channel() override { return impl_.Channel(); }
+  std::shared_ptr<::grpc::Channel> Channel() override {
+    return impl_.Channel();
+  }
   void reset() override { impl_.reset(); }
 
   ::grpc::Status MutateRow(::grpc::ClientContext* context,
-                         btproto::MutateRowRequest const& request,
-                         btproto::MutateRowResponse* response) override {
+                           btproto::MutateRowRequest const& request,
+                           btproto::MutateRowResponse* response) override {
     return impl_.Stub()->MutateRow(context, request, response);
   }
 
