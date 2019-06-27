@@ -16,6 +16,6 @@
 
 """Automatically generated unit tests list - DO NOT EDIT."""
 
-grpc_wrappers_unit_tests = [
+google_cloud_cpp_common_grpc_unit_tests = [
     "grpc_error_delegate_test.cc",
 ]

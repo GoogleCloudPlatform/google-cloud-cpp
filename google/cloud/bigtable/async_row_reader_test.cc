@@ -64,8 +64,8 @@ class TableAsyncReadRowsTest : public bigtable::testing::TableTestFixture {
     EXPECT_CALL(*client_, PrepareAsyncReadRows(_, _, _))
         .WillOnce(
             Invoke([&reader, request_expectations_ptr](
-                       grpc::ClientContext*, btproto::ReadRowsRequest const& r,
-                       grpc::CompletionQueue*) {
+                       ::grpc::ClientContext*, btproto::ReadRowsRequest const& r,
+                       ::grpc::CompletionQueue*) {
               (*request_expectations_ptr)(r);
               return std::unique_ptr<
                   MockClientAsyncReaderInterface<btproto::ReadRowsResponse>>(
@@ -165,7 +165,7 @@ TEST_F(TableAsyncReadRowsTest, SingleRow) {
       .RetiresOnSaturation();
   EXPECT_CALL(stream, Finish(_, _))
       .WillOnce(Invoke(
-          [](grpc::Status* status, void*) { *status = grpc::Status::OK; }));
+          [](::grpc::Status* status, void*) { *status = ::grpc::Status::OK; }));
 
   ExpectRow("r1");
   ReadRows();
@@ -216,7 +216,7 @@ TEST_F(TableAsyncReadRowsTest, SingleRowInstantFinish) {
       .RetiresOnSaturation();
   EXPECT_CALL(stream, Finish(_, _))
       .WillOnce(Invoke(
-          [](grpc::Status* status, void*) { *status = grpc::Status::OK; }));
+          [](::grpc::Status* status, void*) { *status = ::grpc::Status::OK; }));
 
   ExpectRow("r1");
   promises_from_user_cb_[0].set_value(true);
@@ -276,7 +276,7 @@ TEST_F(TableAsyncReadRowsTest, MultipleChunks) {
       .RetiresOnSaturation();
   EXPECT_CALL(stream, Finish(_, _))
       .WillOnce(Invoke(
-          [](grpc::Status* status, void*) { *status = grpc::Status::OK; }));
+          [](::grpc::Status* status, void*) { *status = ::grpc::Status::OK; }));
 
   ExpectRow("r1");
   ExpectRow("r2");
@@ -345,7 +345,7 @@ TEST_F(TableAsyncReadRowsTest, MultipleChunksImmediatelySatisfied) {
       .RetiresOnSaturation();
   EXPECT_CALL(stream, Finish(_, _))
       .WillOnce(Invoke(
-          [](grpc::Status* status, void*) { *status = grpc::Status::OK; }));
+          [](::grpc::Status* status, void*) { *status = ::grpc::Status::OK; }));
 
   ExpectRow("r1");
   ExpectRow("r2");
@@ -411,7 +411,7 @@ TEST_F(TableAsyncReadRowsTest, ResponseInMultipleChunks) {
       .RetiresOnSaturation();
   EXPECT_CALL(stream, Finish(_, _))
       .WillOnce(Invoke(
-          [](grpc::Status* status, void*) { *status = grpc::Status::OK; }));
+          [](::grpc::Status* status, void*) { *status = ::grpc::Status::OK; }));
 
   ExpectRow("r1");
   promises_from_user_cb_[0].set_value(true);
@@ -460,7 +460,7 @@ TEST_F(TableAsyncReadRowsTest, ParserEofFailsOnUnfinishedRow) {
       .RetiresOnSaturation();
   EXPECT_CALL(stream, Finish(_, _))
       .WillOnce(Invoke(
-          [](grpc::Status* status, void*) { *status = grpc::Status::OK; }));
+          [](::grpc::Status* status, void*) { *status = ::grpc::Status::OK; }));
 
   ReadRows();
 
@@ -508,7 +508,7 @@ TEST_F(TableAsyncReadRowsTest, ParserEofDoesntFailsOnUnfinishedRowIfRowLimit) {
       .RetiresOnSaturation();
   EXPECT_CALL(stream, Finish(_, _))
       .WillOnce(Invoke(
-          [](grpc::Status* status, void*) { *status = grpc::Status::OK; }));
+          [](::grpc::Status* status, void*) { *status = ::grpc::Status::OK; }));
 
   ExpectRow("r1");
   promises_from_user_cb_[0].set_value(true);
@@ -539,8 +539,8 @@ TEST_F(TableAsyncReadRowsTest, PermanentFailure) {
   auto& stream = AddReader([](btproto::ReadRowsRequest const&) {});
 
   EXPECT_CALL(stream, Finish(_, _))
-      .WillOnce(Invoke([](grpc::Status* status, void*) {
-        *status = grpc::Status(grpc::StatusCode::PERMISSION_DENIED, "noooo");
+      .WillOnce(Invoke([](::grpc::Status* status, void*) {
+        *status = ::grpc::Status(::grpc::StatusCode::PERMISSION_DENIED, "noooo");
       }));
 
   ReadRows();
@@ -595,8 +595,8 @@ TEST_F(TableAsyncReadRowsTest, TransientErrorIsRetried) {
       }))
       .RetiresOnSaturation();
   EXPECT_CALL(stream1, Finish(_, _))
-      .WillOnce(Invoke([](grpc::Status* status, void*) {
-        *status = grpc::Status(grpc::StatusCode::UNAVAILABLE, "oh no");
+      .WillOnce(Invoke([](::grpc::Status* status, void*) {
+        *status = ::grpc::Status(::grpc::StatusCode::UNAVAILABLE, "oh no");
       }));
 
   EXPECT_CALL(stream2, Read(_, _))
@@ -615,7 +615,7 @@ TEST_F(TableAsyncReadRowsTest, TransientErrorIsRetried) {
       .RetiresOnSaturation();
   EXPECT_CALL(stream2, Finish(_, _))
       .WillOnce(Invoke(
-          [](grpc::Status* status, void*) { *status = grpc::Status::OK; }));
+          [](::grpc::Status* status, void*) { *status = ::grpc::Status::OK; }));
 
   ExpectRows({"r1", "r2"});
   promises_from_user_cb_[0].set_value(true);
@@ -684,7 +684,7 @@ TEST_F(TableAsyncReadRowsTest, ParserFailure) {
       .RetiresOnSaturation();
   EXPECT_CALL(stream, Finish(_, _))
       .WillOnce(Invoke(
-          [](grpc::Status* status, void*) { *status = grpc::Status::OK; }));
+          [](::grpc::Status* status, void*) { *status = ::grpc::Status::OK; }));
 
   ExpectRow("r2");
   promises_from_user_cb_[0].set_value(true);
@@ -749,7 +749,7 @@ TEST_P(TableAsyncReadRowsCancelMidStreamTest, CancelMidStream) {
       .RetiresOnSaturation();
   EXPECT_CALL(stream, Finish(_, _))
       .WillOnce(Invoke(
-          [](grpc::Status* status, void*) { *status = grpc::Status::OK; }));
+          [](::grpc::Status* status, void*) { *status = ::grpc::Status::OK; }));
 
   ExpectRow("r1");
   ReadRows();
@@ -864,7 +864,7 @@ TEST_F(TableAsyncReadRowsTest, CancelAfterStreamFinish) {
       .RetiresOnSaturation();
   EXPECT_CALL(stream, Finish(_, _))
       .WillOnce(Invoke(
-          [](grpc::Status* status, void*) { *status = grpc::Status::OK; }));
+          [](::grpc::Status* status, void*) { *status = ::grpc::Status::OK; }));
 
   ExpectRow("r1");
   ReadRows();
@@ -930,7 +930,7 @@ TEST_F(TableAsyncReadRowsTest, DeepStack) {
       .RetiresOnSaturation();
   EXPECT_CALL(stream, Finish(_, _))
       .WillOnce(Invoke(
-          [](grpc::Status* status, void*) { *status = grpc::Status::OK; }));
+          [](::grpc::Status* status, void*) { *status = ::grpc::Status::OK; }));
 
   for (int i = 0; i < 101; ++i) {
     promises_from_user_cb_[i].set_value(true);
@@ -986,7 +986,7 @@ TEST_F(TableAsyncReadRowsTest, ReadRowSuccess) {
       .RetiresOnSaturation();
   EXPECT_CALL(stream, Finish(_, _))
       .WillOnce(Invoke(
-          [](grpc::Status* status, void*) { *status = grpc::Status::OK; }));
+          [](::grpc::Status* status, void*) { *status = ::grpc::Status::OK; }));
 
   auto row_future = table_.AsyncReadRow(cq_, "000", Filter::PassAllFilter());
 
@@ -1021,7 +1021,7 @@ TEST_F(TableAsyncReadRowsTest, ReadRowNotFound) {
 
   EXPECT_CALL(stream, Finish(_, _))
       .WillOnce(Invoke(
-          [](grpc::Status* status, void*) { *status = grpc::Status::OK; }));
+          [](::grpc::Status* status, void*) { *status = ::grpc::Status::OK; }));
 
   auto row_future = table_.AsyncReadRow(cq_, "000", Filter::PassAllFilter());
 
@@ -1046,8 +1046,8 @@ TEST_F(TableAsyncReadRowsTest, ReadRowError) {
   auto& stream = AddReader([](btproto::ReadRowsRequest const&) {});
 
   EXPECT_CALL(stream, Finish(_, _))
-      .WillOnce(Invoke([](grpc::Status* status, void*) {
-        *status = grpc::Status(grpc::StatusCode::PERMISSION_DENIED, "");
+      .WillOnce(Invoke([](::grpc::Status* status, void*) {
+        *status = ::grpc::Status(::grpc::StatusCode::PERMISSION_DENIED, "");
       }));
 
   auto row_future = table_.AsyncReadRow(cq_, "000", Filter::PassAllFilter());

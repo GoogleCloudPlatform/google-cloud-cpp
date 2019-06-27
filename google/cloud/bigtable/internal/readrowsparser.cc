@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #include "google/cloud/bigtable/internal/readrowsparser.h"
-#include "google/cloud/grpc_wrappers/grpc_error_delegate.h"
+#include "google/cloud/grpc/grpc_error_delegate.h"
 
 namespace google {
 namespace cloud {
@@ -23,21 +23,21 @@ namespace internal {
 using google::bigtable::v2::ReadRowsResponse_CellChunk;
 
 void ReadRowsParser::HandleChunk(ReadRowsResponse_CellChunk chunk,
-                                 grpc::Status& status) {
+                                 ::grpc::Status& status) {
   if (end_of_stream_) {
-    status = grpc::Status(grpc::StatusCode::INTERNAL,
+    status = ::grpc::Status(::grpc::StatusCode::INTERNAL,
                           "HandleChunk after end of stream");
     return;
   }
   if (HasNext()) {
-    status = grpc::Status(grpc::StatusCode::INTERNAL,
+    status = ::grpc::Status(::grpc::StatusCode::INTERNAL,
                           "HandleChunk called before taking the previous row");
     return;
   }
 
   if (!chunk.row_key().empty()) {
     if (CompareRowKey(last_seen_row_key_, chunk.row_key()) >= 0) {
-      status = grpc::Status(grpc::StatusCode::INTERNAL,
+      status = ::grpc::Status(::grpc::StatusCode::INTERNAL,
                             "Row keys are expected in increasing order");
       return;
     }
@@ -47,7 +47,7 @@ void ReadRowsParser::HandleChunk(ReadRowsResponse_CellChunk chunk,
 
   if (chunk.has_family_name()) {
     if (!chunk.has_qualifier()) {
-      status = grpc::Status(grpc::StatusCode::INTERNAL,
+      status = ::grpc::Status(::grpc::StatusCode::INTERNAL,
                             "New column family must specify qualifier");
       return;
     }
@@ -88,14 +88,14 @@ void ReadRowsParser::HandleChunk(ReadRowsResponse_CellChunk chunk,
   if (chunk.value_size() == 0) {
     if (cells_.empty()) {
       if (cell_.row.empty()) {
-        status = grpc::Status(grpc::StatusCode::INTERNAL,
+        status = ::grpc::Status(::grpc::StatusCode::INTERNAL,
                               "Missing row key at last chunk in cell");
         return;
       }
       row_key_ = cell_.row;
     } else {
       if (row_key_ != cell_.row) {
-        status = grpc::Status(grpc::StatusCode::INTERNAL,
+        status = ::grpc::Status(::grpc::StatusCode::INTERNAL,
                               "Different row key in cell chunk");
         return;
       }
@@ -108,18 +108,18 @@ void ReadRowsParser::HandleChunk(ReadRowsResponse_CellChunk chunk,
     cells_.clear();
     cell_ = {};
     if (!cell_first_chunk_) {
-      status = grpc::Status(grpc::StatusCode::INTERNAL,
+      status = ::grpc::Status(::grpc::StatusCode::INTERNAL,
                             "Reset row with an unfinished cell");
       return;
     }
   } else if (chunk.commit_row()) {
     if (!cell_first_chunk_) {
-      status = grpc::Status(grpc::StatusCode::INTERNAL,
+      status = ::grpc::Status(::grpc::StatusCode::INTERNAL,
                             "Commit row with an unfinished cell");
       return;
     }
     if (cells_.empty()) {
-      status = grpc::Status(grpc::StatusCode::INTERNAL,
+      status = ::grpc::Status(::grpc::StatusCode::INTERNAL,
                             "Commit row missing the row key");
       return;
     }
@@ -129,22 +129,22 @@ void ReadRowsParser::HandleChunk(ReadRowsResponse_CellChunk chunk,
   }
 }
 
-void ReadRowsParser::HandleEndOfStream(grpc::Status& status) {
+void ReadRowsParser::HandleEndOfStream(::grpc::Status& status) {
   if (end_of_stream_) {
-    status = grpc::Status(grpc::StatusCode::INTERNAL,
+    status = ::grpc::Status(::grpc::StatusCode::INTERNAL,
                           "HandleEndOfStream called twice");
     return;
   }
   end_of_stream_ = true;
 
   if (!cell_first_chunk_) {
-    status = grpc::Status(grpc::StatusCode::INTERNAL,
+    status = ::grpc::Status(::grpc::StatusCode::INTERNAL,
                           "end of stream with unfinished cell");
     return;
   }
 
   if (cells_.begin() != cells_.end() && !row_ready_) {
-    status = grpc::Status(grpc::StatusCode::INTERNAL,
+    status = ::grpc::Status(::grpc::StatusCode::INTERNAL,
                           "end of stream with unfinished row");
     return;
   }
@@ -152,10 +152,10 @@ void ReadRowsParser::HandleEndOfStream(grpc::Status& status) {
 
 bool ReadRowsParser::HasNext() const { return row_ready_; }
 
-Row ReadRowsParser::Next(grpc::Status& status) {
+Row ReadRowsParser::Next(::grpc::Status& status) {
   if (!row_ready_) {
     status =
-        grpc::Status(grpc::StatusCode::INTERNAL, "Next with row not ready");
+        ::grpc::Status(::grpc::StatusCode::INTERNAL, "Next with row not ready");
     return Row("", {});
   }
   row_ready_ = false;

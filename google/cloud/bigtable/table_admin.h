@@ -127,7 +127,7 @@ enum class Consistency {
 class TableAdmin {
  public:
   /**
-   * @param client the interface to create grpc stubs, report errors, etc.
+   * @param client the interface to create ::grpc stubs, report errors, etc.
    * @param instance_id the id of the instance, e.g., "my-instance", the full
    *   name (e.g. '/projects/my-project/instances/my-instance') is built using
    *   the project id in the @p client parameter.
@@ -147,7 +147,7 @@ class TableAdmin {
   /**
    * Create a new TableAdmin using explicit policies to handle RPC errors.
    *
-   * @param client the interface to create grpc stubs, report errors, etc.
+   * @param client the interface to create ::grpc stubs, report errors, etc.
    * @param instance_id the id of the instance, e.g., "my-instance", the full
    *   name (e.g. '/projects/my-project/instances/my-instance') is built using
    *   the project id in the @p client parameter.

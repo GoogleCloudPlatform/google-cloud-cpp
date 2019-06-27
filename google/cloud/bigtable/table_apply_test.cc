@@ -29,7 +29,7 @@ class TableApplyTest : public bigtable::testing::TableTestFixture {};
 TEST_F(TableApplyTest, Simple) {
   using namespace ::testing;
 
-  EXPECT_CALL(*client_, MutateRow(_, _, _)).WillOnce(Return(grpc::Status::OK));
+  EXPECT_CALL(*client_, MutateRow(_, _, _)).WillOnce(Return(::grpc::Status::OK));
 
   auto status = table_.Apply(bigtable::SingleRowMutation(
       "bar", {bigtable::SetCell("fam", "col", 0_ms, "val")}));
@@ -42,7 +42,7 @@ TEST_F(TableApplyTest, Failure) {
 
   EXPECT_CALL(*client_, MutateRow(_, _, _))
       .WillRepeatedly(
-          Return(grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "uh-oh")));
+          Return(::grpc::Status(::grpc::StatusCode::FAILED_PRECONDITION, "uh-oh")));
 
   auto status = table_.Apply(bigtable::SingleRowMutation(
       "bar", {bigtable::SetCell("fam", "col", 0_ms, "val")}));
@@ -56,12 +56,12 @@ TEST_F(TableApplyTest, Retry) {
 
   EXPECT_CALL(*client_, MutateRow(_, _, _))
       .WillOnce(
-          Return(grpc::Status(grpc::StatusCode::UNAVAILABLE, "try-again")))
+          Return(::grpc::Status(::grpc::StatusCode::UNAVAILABLE, "try-again")))
       .WillOnce(
-          Return(grpc::Status(grpc::StatusCode::UNAVAILABLE, "try-again")))
+          Return(::grpc::Status(::grpc::StatusCode::UNAVAILABLE, "try-again")))
       .WillOnce(
-          Return(grpc::Status(grpc::StatusCode::UNAVAILABLE, "try-again")))
-      .WillOnce(Return(grpc::Status::OK));
+          Return(::grpc::Status(::grpc::StatusCode::UNAVAILABLE, "try-again")))
+      .WillOnce(Return(::grpc::Status::OK));
 
   auto status = table_.Apply(bigtable::SingleRowMutation(
       "bar", {bigtable::SetCell("fam", "col", 0_ms, "val")}));
@@ -74,7 +74,7 @@ TEST_F(TableApplyTest, RetryIdempotent) {
 
   EXPECT_CALL(*client_, MutateRow(_, _, _))
       .WillRepeatedly(
-          Return(grpc::Status(grpc::StatusCode::UNAVAILABLE, "try-again")));
+          Return(::grpc::Status(::grpc::StatusCode::UNAVAILABLE, "try-again")));
 
   auto status = table_.Apply(bigtable::SingleRowMutation(
       "not-idempotent", {bigtable::SetCell("fam", "col", "val")}));

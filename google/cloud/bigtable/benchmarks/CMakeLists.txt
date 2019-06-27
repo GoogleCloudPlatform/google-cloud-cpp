@@ -28,7 +28,7 @@ target_link_libraries(bigtable_benchmark_common
                       bigtable_client
                       bigtable_protos
                       google_cloud_cpp_common
-                      grpc_wrappers
+                      google_cloud_cpp_common_grpc
                       gRPC::grpc++
                       gRPC::grpc
                       protobuf::libprotobuf
@@ -59,7 +59,7 @@ if (BUILD_TESTING)
                                       bigtable_common_options
                                       google_cloud_cpp_testing
                                       google_cloud_cpp_common
-                                      grpc_wrappers
+                                      google_cloud_cpp_common_grpc
                                       GTest::gmock_main
                                       GTest::gmock
                                       GTest::gtest
@@ -80,7 +80,7 @@ target_link_libraries(scan_throughput_benchmark
                               bigtable_client
                               bigtable_protos
                               bigtable_common_options
-                              grpc_wrappers
+                              google_cloud_cpp_common_grpc
                               gRPC::grpc++
                               gRPC::grpc
                               protobuf::libprotobuf)
@@ -92,7 +92,7 @@ target_link_libraries(apply_read_latency_benchmark
                               bigtable_client
                               bigtable_protos
                               bigtable_common_options
-                              grpc_wrappers
+                              google_cloud_cpp_common_grpc
                               gRPC::grpc++
                               gRPC::grpc
                               protobuf::libprotobuf)
@@ -104,7 +104,7 @@ target_link_libraries(endurance_benchmark
                               bigtable_client
                               bigtable_protos
                               bigtable_common_options
-                              grpc_wrappers
+                              google_cloud_cpp_common_grpc
                               gRPC::grpc++
                               gRPC::grpc
                               protobuf::libprotobuf)

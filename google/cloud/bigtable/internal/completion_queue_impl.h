@@ -18,7 +18,7 @@
 #include "google/cloud/bigtable/async_operation.h"
 #include "google/cloud/bigtable/version.h"
 #include "google/cloud/future.h"
-#include "google/cloud/grpc_wrappers/grpc_error_delegate.h"
+#include "google/cloud/grpc/grpc_error_delegate.h"
 #include "google/cloud/internal/invoke_result.h"
 #include "google/cloud/internal/throw_delegate.h"
 #include "google/cloud/status_or.h"
@@ -57,7 +57,7 @@ class AsyncGrpcOperation : public AsyncOperation {
    *
    * @param cq the completion queue sending the notification, this is useful in
    *   case the callback needs to retry the operation.
-   * @param ok opaque parameter returned by grpc::CompletionQueue.  The
+   * @param ok opaque parameter returned by ::grpc::CompletionQueue.  The
    *   semantics defined by gRPC depend on the type of operation, therefore the
    *   operation needs to interpret this parameter based on those semantics.
    * @return Whether the operation is completed (e.g. in case of streaming
@@ -72,7 +72,7 @@ class AsyncGrpcOperation : public AsyncOperation {
  * This class is used by the implementation of `CompletionQueue` to associate
  * a future with an asynchronous unary RPC call. gRPC requires applications to
  * provide a `grpc::ClientContext` object, an object of the response type, and a
- * `grpc::Status` object to make an asynchronous RPC. The lifetime of these
+ * `::grpc::Status` object to make an asynchronous RPC. The lifetime of these
  * objects must be at least as long as the duration of the asynchronous call.
  * Furthermore, the application must provide a unique `void*` that is associated
  * with the RPC.
@@ -94,8 +94,8 @@ class AsyncUnaryRpcFuture : public AsyncGrpcOperation {
   /// Prepare the operation to receive the response and start the RPC.
   template <typename AsyncFunctionType>
   void Start(AsyncFunctionType async_call,
-             std::unique_ptr<grpc::ClientContext> context,
-             Request const& request, grpc::CompletionQueue* cq, void* tag) {
+             std::unique_ptr<::grpc::ClientContext> context,
+             Request const& request, ::grpc::CompletionQueue* cq, void* tag) {
     context_ = std::move(context);
     auto rpc = async_call(context_.get(), request, cq);
     rpc->Finish(&response_, &status_, tag);
@@ -114,7 +114,7 @@ class AsyncUnaryRpcFuture : public AsyncGrpcOperation {
     }
     if (!status_.ok()) {
       // Convert the error to a `google::cloud::Status` and satisfy the future.
-      promise_.set_value(grpc_wrappers::MakeStatusFromRpcError(status_));
+      promise_.set_value(::google::cloud::grpc::MakeStatusFromRpcError(status_));
       return true;
     }
     // Success, use `response_` to satisfy the future.
@@ -127,8 +127,8 @@ class AsyncUnaryRpcFuture : public AsyncGrpcOperation {
   // as a parameter, otherwise the caller could not set timeouts, metadata, or
   // any other attributes, and (b) there is no move or assignment operator for
   // `grpc::ClientContext`.
-  std::unique_ptr<grpc::ClientContext> context_;
-  grpc::Status status_;
+  std::unique_ptr<::grpc::ClientContext> context_;
+  ::grpc::Status status_;
   Response response_;
 
   promise<StatusOr<Response>> promise_;
@@ -138,7 +138,7 @@ class AsyncUnaryRpcFuture : public AsyncGrpcOperation {
 template <typename Functor, typename Response>
 using CheckUnaryRpcCallback =
     google::cloud::internal::is_invocable<Functor, CompletionQueue&, Response&,
-                                          grpc::Status&>;
+                                          ::grpc::Status&>;
 
 /**
  * Verify that @p Functor meets the requirements for an AsyncUnaryStreamRpc
@@ -146,7 +146,7 @@ using CheckUnaryRpcCallback =
  */
 template <typename Functor, typename Response>
 using CheckUnaryStreamRpcDataCallback = google::cloud::internal::is_invocable<
-    Functor, CompletionQueue&, const grpc::ClientContext&, Response&>;
+    Functor, CompletionQueue&, const ::grpc::ClientContext&, Response&>;
 
 /**
  * Verify that @p Functor meets the requirements for an AsyncUnaryStreamRpc
@@ -155,7 +155,7 @@ using CheckUnaryStreamRpcDataCallback = google::cloud::internal::is_invocable<
 template <typename Functor, typename Response>
 using CheckUnaryStreamRpcFinishedCallback =
     google::cloud::internal::is_invocable<Functor, CompletionQueue&,
-                                          grpc::ClientContext&, grpc::Status&>;
+                                          ::grpc::ClientContext&, ::grpc::Status&>;
 
 /**
  * Tests if @p Functor meets the requirements for a RunAsync callback.
@@ -171,7 +171,7 @@ using CheckRunAsyncCallback =
  *
  * This meta function extracts, if possible, the response type from an
  * asynchronous RPC callable. These callables return a
- * `std::unique_ptr<grpc::ClientAsyncResponseReaderInterface<T>>` and we are
+ * `std::unique_ptr<::grpc::ClientAsyncResponseReaderInterface<T>>` and we are
  * interested in the `T` type.
  *
  * This is the generic version, implementing the "does not match the expected
@@ -187,7 +187,7 @@ struct AsyncCallResponseTypeUnwrap : public std::false_type {
  *
  * This meta function extracts, if possible, the response type from an
  * asynchronous RPC callable. These callables return a
- * `std::unique_ptr<grpc::ClientAsyncResponseReaderInterface<T>>` and we are
+ * `std::unique_ptr<::grpc::ClientAsyncResponseReaderInterface<T>>` and we are
  * interested in the `T` type.
  *
  * This is the specialization implementing the "matched with the expected type"
@@ -195,7 +195,7 @@ struct AsyncCallResponseTypeUnwrap : public std::false_type {
  */
 template <typename ResponseType>
 struct AsyncCallResponseTypeUnwrap<
-    std::unique_ptr<grpc::ClientAsyncResponseReaderInterface<ResponseType>>>
+    std::unique_ptr<::grpc::ClientAsyncResponseReaderInterface<ResponseType>>>
     : public std::true_type {
   using type = ResponseType;
 };
@@ -207,10 +207,10 @@ struct AsyncCallResponseTypeUnwrap<
  * Asynchronous calls have the form:
  *
  * @code
- *   std::unique_ptr<grpc::ClientAsyncResponseReaderInterface<ResponseType>>(
- *      grpc::ClientContext*,
+ *   std::unique_ptr<::grpc::ClientAsyncResponseReaderInterface<ResponseType>>(
+ *      ::grpc::ClientContext*,
  *      RequestType const&,
- *      grpc::CompletionQueue*
+ *      ::grpc::CompletionQueue*
  *   );
  * @endcode
  *
@@ -220,8 +220,8 @@ struct AsyncCallResponseTypeUnwrap<
 template <typename AsyncCallType, typename RequestType>
 using AsyncCallResponseType = AsyncCallResponseTypeUnwrap<
     typename google::cloud::internal::invoke_result_t<
-        AsyncCallType, grpc::ClientContext*, RequestType const&,
-        grpc::CompletionQueue*>>;
+        AsyncCallType, ::grpc::ClientContext*, RequestType const&,
+        ::grpc::CompletionQueue*>>;
 
 /**
  * The implementation details for `CompletionQueue`.
@@ -247,10 +247,10 @@ class CompletionQueueImpl {
   void Shutdown();
 
   /// Create a new alarm object.
-  virtual std::unique_ptr<grpc::Alarm> CreateAlarm() const;
+  virtual std::unique_ptr<::grpc::Alarm> CreateAlarm() const;
 
   /// The underlying gRPC completion queue.
-  grpc::CompletionQueue& cq() { return cq_; }
+  ::grpc::CompletionQueue& cq() { return cq_; }
 
   /// Add a new asynchronous operation to the completion queue.
   void* RegisterOperation(std::shared_ptr<AsyncGrpcOperation> op);
@@ -280,7 +280,7 @@ class CompletionQueueImpl {
   }
 
  private:
-  grpc::CompletionQueue cq_;
+  ::grpc::CompletionQueue cq_;
   std::atomic<bool> shutdown_;
   mutable std::mutex mu_;
   std::unordered_map<std::intptr_t, std::shared_ptr<AsyncGrpcOperation>>

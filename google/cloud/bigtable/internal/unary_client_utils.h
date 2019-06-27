@@ -19,7 +19,7 @@
 #include "google/cloud/bigtable/rpc_backoff_policy.h"
 #include "google/cloud/bigtable/rpc_retry_policy.h"
 #include "google/cloud/bigtable/version.h"
-#include "google/cloud/grpc_wrappers/grpc_error_delegate.h"
+#include "google/cloud/grpc/grpc_error_delegate.h"
 #include <thread>
 
 namespace google {
@@ -48,7 +48,7 @@ namespace internal {
  * signature of the gRPC functions look like this:
  *
  * @code
- * grpc::Status (StubType::*)(grpc::ClientContext*, Request const&, Response*);
+ * ::grpc::Status (StubType::*)(::grpc::ClientContext*, Request const&, Response*);
  * @endcode
  *
  * Where `Request` and `Response` are the protos in the gRPC call.
@@ -69,7 +69,7 @@ struct UnaryClientUtils {
 
   // Partial specialization for the `Signature` metafunction.
   template <typename Request, typename Response>
-  struct Signature<grpc::Status (ClientType::*)(grpc::ClientContext*,
+  struct Signature<::grpc::Status (ClientType::*)(::grpc::ClientContext*,
                                                 Request const&, Response*)> {
     using RequestType = Request;
     using ResponseType = Response;
@@ -78,7 +78,7 @@ struct UnaryClientUtils {
   /**
    * Call a simple unary RPC with retries.
    *
-   * Given a pointer to member function in the grpc StubInterface class this
+   * Given a pointer to member function in the ::grpc StubInterface class this
    * generic function calls it with retries until success or until the RPC
    * policies determine that this is an error.
    *
@@ -102,7 +102,7 @@ struct UnaryClientUtils {
       bigtable::MetadataUpdatePolicy const& metadata_update_policy,
       MemberFunction function,
       typename Signature<MemberFunction>::RequestType const& request,
-      char const* error_message, grpc::Status& status, bool retry_on_failure) {
+      char const* error_message, ::grpc::Status& status, bool retry_on_failure) {
     return MakeCall(client, *rpc_policy, *backoff_policy,
                     metadata_update_policy, function, request, error_message,
                     status, retry_on_failure);
@@ -136,10 +136,10 @@ struct UnaryClientUtils {
       bigtable::MetadataUpdatePolicy const& metadata_update_policy,
       MemberFunction function,
       typename Signature<MemberFunction>::RequestType const& request,
-      char const* error_message, grpc::Status& status, bool retry_on_failure) {
+      char const* error_message, ::grpc::Status& status, bool retry_on_failure) {
     typename Signature<MemberFunction>::ResponseType response;
     do {
-      grpc::ClientContext client_context;
+      ::grpc::ClientContext client_context;
       rpc_policy.Setup(client_context);
       backoff_policy.Setup(client_context);
       metadata_update_policy.Setup(client_context);
@@ -152,7 +152,7 @@ struct UnaryClientUtils {
         std::string full_message = error_message;
         full_message += "(" + metadata_update_policy.value() + ") ";
         full_message += status.error_message();
-        status = grpc::Status(status.error_code(), full_message,
+        status = ::grpc::Status(status.error_code(), full_message,
                               status.error_details());
         break;
       }
@@ -165,7 +165,7 @@ struct UnaryClientUtils {
   /**
    * Call a simple unary RPC with no retry.
    *
-   * Given a pointer to member function in the grpc StubInterface class this
+   * Given a pointer to member function in the ::grpc StubInterface class this
    * generic function calls it with retries until success or until the RPC
    * policies determine that this is an error.
    *
@@ -186,10 +186,10 @@ struct UnaryClientUtils {
       bigtable::MetadataUpdatePolicy const& metadata_update_policy,
       MemberFunction function,
       typename Signature<MemberFunction>::RequestType const& request,
-      char const* error_message, grpc::Status& status) {
+      char const* error_message, ::grpc::Status& status) {
     typename Signature<MemberFunction>::ResponseType response;
 
-    grpc::ClientContext client_context;
+    ::grpc::ClientContext client_context;
 
     // Policies can set timeouts so allowing them to update context
     rpc_policy->Setup(client_context);
@@ -201,7 +201,7 @@ struct UnaryClientUtils {
       std::string full_message = error_message;
       full_message += "(" + metadata_update_policy.value() + ") ";
       full_message += status.error_message();
-      status = grpc::Status(status.error_code(), full_message,
+      status = ::grpc::Status(status.error_code(), full_message,
                             status.error_details());
     }
     return response;

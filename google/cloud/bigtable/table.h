@@ -29,7 +29,7 @@
 #include "google/cloud/bigtable/rpc_retry_policy.h"
 #include "google/cloud/bigtable/version.h"
 #include "google/cloud/future.h"
-#include "google/cloud/grpc_wrappers/grpc_error_delegate.h"
+#include "google/cloud/grpc/grpc_error_delegate.h"
 #include "google/cloud/internal/disjunction.h"
 #include "google/cloud/status.h"
 #include "google/cloud/status_or.h"
@@ -590,7 +590,7 @@ class Table {
   StatusOr<Row> ReadModifyWriteRow(std::string row_key,
                                    bigtable::ReadModifyWriteRule rule,
                                    Args&&... rules) {
-    grpc::Status status;
+    ::grpc::Status status;
 
     ::google::bigtable::v2::ReadModifyWriteRowRequest request;
     request.set_row_key(std::move(row_key));

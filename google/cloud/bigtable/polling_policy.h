@@ -18,7 +18,7 @@
 #include "google/cloud/bigtable/rpc_backoff_policy.h"
 #include "google/cloud/bigtable/rpc_retry_policy.h"
 #include "google/cloud/bigtable/version.h"
-#include "google/cloud/grpc_wrappers/grpc_error_delegate.h"
+#include "google/cloud/grpc/grpc_error_delegate.h"
 #include <grpcpp/grpcpp.h>
 
 namespace google {
@@ -43,15 +43,15 @@ class PollingPolicy {
    */
   virtual std::unique_ptr<PollingPolicy> clone() = 0;
 
-  virtual void Setup(grpc::ClientContext& context) = 0;
+  virtual void Setup(::grpc::ClientContext& context) = 0;
 
   /**
    * Return true if `status` represents a permanent error that cannot be
    * retried.
-   * TODO(#2344): remove grpc::Status version.
+   * TODO(#2344): remove ::grpc::Status version.
    */
-  virtual bool IsPermanentError(grpc::Status const& status) {
-    return IsPermanentError(grpc_wrappers::MakeStatusFromRpcError(status));
+  virtual bool IsPermanentError(::grpc::Status const& status) {
+    return IsPermanentError(::google::cloud::grpc::MakeStatusFromRpcError(status));
   }
 
   /**
@@ -62,12 +62,12 @@ class PollingPolicy {
 
   /**
    * Handle an RPC failure.
-   * TODO(#2344): remove grpc::Status version.
+   * TODO(#2344): remove ::grpc::Status version.
    *
    * @return true if the RPC operation should be retried.
    */
-  virtual bool OnFailure(grpc::Status const& status) {
-    return OnFailure(grpc_wrappers::MakeStatusFromRpcError(status));
+  virtual bool OnFailure(::grpc::Status const& status) {
+    return OnFailure(::google::cloud::grpc::MakeStatusFromRpcError(status));
   }
 
   /**
@@ -118,7 +118,7 @@ class GenericPollingPolicy : public PollingPolicy {
     return std::unique_ptr<PollingPolicy>(new GenericPollingPolicy(*this));
   }
 
-  void Setup(grpc::ClientContext& context) override {
+  void Setup(::grpc::ClientContext& context) override {
     rpc_retry_policy_.Setup(context);
     rpc_backoff_policy_.Setup(context);
   }
@@ -134,7 +134,7 @@ class GenericPollingPolicy : public PollingPolicy {
   bool Exhausted() override { return !OnFailure(google::cloud::Status()); }
 
   std::chrono::milliseconds WaitPeriod() override {
-    return rpc_backoff_policy_.OnCompletion(grpc::Status::OK);
+    return rpc_backoff_policy_.OnCompletion(::grpc::Status::OK);
   }
 
  private:

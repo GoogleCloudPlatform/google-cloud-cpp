@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "google/cloud/grpc_wrappers/version.h"
+#include "google/cloud/grpc/version.h"
 #include "google/cloud/internal/build_info.h"
 #include <sstream>
 
 namespace google {
 namespace cloud {
-namespace grpc_wrappers {
-inline namespace GRPC_WRAPPERS_NS {
+namespace grpc {
+inline namespace GOOGLE_CLOUD_CPP_COMMON_GRPC_NS {
 // NOLINTNEXTLINE(readability-identifier-naming)
 std::string version_string() {
   static std::string const version = [] {
@@ -33,7 +33,7 @@ std::string version_string() {
   }();
   return version;
 }
-}  // namespace GRPC_WRAPPERS_NS
-}  // namespace grpc_wrappers
+}  // namespace GOOGLE_CLOUD_CPP_COMMON_GRPC_NS
+}  // namespace grpc
 }  // namespace cloud
 }  // namespace google

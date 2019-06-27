@@ -12,56 +12,56 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_GRPC_WRAPPERS_VERSION_H_
-#define GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_GRPC_WRAPPERS_VERSION_H_
+#ifndef GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_CPP_COMMON_GRPC_VERSION_H_
+#define GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_CPP_COMMON_GRPC_VERSION_H_
 
-#include "google/cloud/grpc_wrappers/version_info.h"
+#include "google/cloud/grpc/version_info.h"
 #include "google/cloud/version.h"
 #include <string>
 
-#define GRPC_WRAPPERS_NS                              \
-  GOOGLE_CLOUD_CPP_VEVAL(GRPC_WRAPPERS_VERSION_MAJOR, \
-                         GRPC_WRAPPERS_VERSION_MINOR)
+#define GOOGLE_CLOUD_CPP_COMMON_GRPC_NS                              \
+  GOOGLE_CLOUD_CPP_VEVAL(GOOGLE_CLOUD_CPP_COMMON_GRPC_VERSION_MAJOR, \
+                         GOOGLE_CLOUD_CPP_COMMON_GRPC_VERSION_MINOR)
 
 namespace google {
 namespace cloud {
 /**
  * Contains all the Cloud C++ gRPC Wrappers APIs.
  */
-namespace grpc_wrappers {
+namespace grpc {
 /**
  * The inlined, versioned namespace for the Cloud C++ gRPC Wrappers APIs.
  *
  * Applications may need to link multiple versions of the Cloud C++ gRPC
  * Wrappers for example, if they link a library that uses an older version of
  * the client than they do.  This namespace is inlined, so applications can use
- * `grpc_wrappers::Foo` in their source, but the symbols are versioned, i.e.,
- * the symbol becomes `grpc_wrappers::v1::Foo`.
+ * `grpc::Foo` in their source, but the symbols are versioned, i.e.,
+ * the symbol becomes `grpc::v1::Foo`.
  *
  * Note that, consistent with the semver.org guidelines, the v0 version makes
  * no guarantees with respect to backwards compatibility.
  */
-inline namespace GRPC_WRAPPERS_NS {
+inline namespace GOOGLE_CLOUD_CPP_COMMON_GRPC_NS {
 /**
  * The Cloud C++ gRPC Wrappers major version.
  *
  * @see https://semver.org/spec/v2.0.0.html for details.
  */
-int constexpr version_major() { return GRPC_WRAPPERS_VERSION_MAJOR; }
+int constexpr version_major() { return GOOGLE_CLOUD_CPP_COMMON_GRPC_VERSION_MAJOR; }
 
 /**
  * The Cloud C++ gRPC Wrappers minor version.
  *
  * @see https://semver.org/spec/v2.0.0.html for details.
  */
-int constexpr version_minor() { return GRPC_WRAPPERS_VERSION_MINOR; }
+int constexpr version_minor() { return GOOGLE_CLOUD_CPP_COMMON_GRPC_VERSION_MINOR; }
 
 /**
  * The Cloud C++ gRPC Wrappers patch version.
  *
  * @see https://semver.org/spec/v2.0.0.html for details.
  */
-int constexpr version_patch() { return GRPC_WRAPPERS_VERSION_PATCH; }
+int constexpr version_patch() { return GOOGLE_CLOUD_CPP_COMMON_GRPC_VERSION_PATCH; }
 
 /// A single integer representing the Major/Minor/Patch version.
 int constexpr version() {
@@ -71,9 +71,9 @@ int constexpr version() {
 /// The version as a string, in MAJOR.MINOR.PATCH+gitrev format.
 std::string version_string();
 
-}  // namespace GRPC_WRAPPERS_NS
-}  // namespace grpc_wrappers
+}  // namespace GOOGLE_CLOUD_CPP_COMMON_GRPC_NS
+}  // namespace grpc
 }  // namespace cloud
 }  // namespace google
 
-#endif  // GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_GRPC_WRAPPERS_VERSION_H_
+#endif  // GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_CPP_COMMON_GRPC_VERSION_H_

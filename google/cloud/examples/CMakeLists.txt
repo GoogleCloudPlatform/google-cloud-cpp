@@ -18,5 +18,5 @@ add_executable(gcs2cbt gcs2cbt.cc)
 target_link_libraries(gcs2cbt
                       bigtable_client
                       storage_client
-                      grpc_wrappers
+                      google_cloud_cpp_common_grpc
                       google_cloud_cpp_common_options)
