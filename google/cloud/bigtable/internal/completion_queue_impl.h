@@ -18,7 +18,7 @@
 #include "google/cloud/bigtable/async_operation.h"
 #include "google/cloud/bigtable/version.h"
 #include "google/cloud/future.h"
-#include "google/cloud/gax/grpc_error_delegate.h"
+#include "google/cloud/grpc_wrappers/grpc_error_delegate.h"
 #include "google/cloud/internal/invoke_result.h"
 #include "google/cloud/internal/throw_delegate.h"
 #include "google/cloud/status_or.h"
@@ -114,7 +114,7 @@ class AsyncUnaryRpcFuture : public AsyncGrpcOperation {
     }
     if (!status_.ok()) {
       // Convert the error to a `google::cloud::Status` and satisfy the future.
-      promise_.set_value(gax::MakeStatusFromRpcError(status_));
+      promise_.set_value(grpc_wrappers::MakeStatusFromRpcError(status_));
       return true;
     }
     // Success, use `response_` to satisfy the future.

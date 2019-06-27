@@ -12,16 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_GAX_GRPC_ERROR_DELEGATE_H_
-#define GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_GAX_GRPC_ERROR_DELEGATE_H_
+#ifndef GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_GRPC_WRAPPERS_GRPC_ERROR_DELEGATE_H_
+#define GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_GRPC_WRAPPERS_GRPC_ERROR_DELEGATE_H_
 
-#include "google/cloud/gax/version.h"
+#include "google/cloud/grpc_wrappers/version.h"
 #include "google/cloud/status.h"
 #include <grpcpp/grpcpp.h>
 
 namespace google {
-namespace gax {
-inline namespace GAX_CPP_NS {
+namespace cloud {
+namespace grpc_wrappers {
+inline namespace GRPC_WRAPPERS_NS {
 /**
  * Creates a google::cloud::Status from a grpc::Status.
  */
@@ -33,8 +34,9 @@ google::cloud::Status MakeStatusFromRpcError(grpc::Status const& status);
 google::cloud::Status MakeStatusFromRpcError(grpc::StatusCode code,
                                              std::string what);
 
-}  // namespace GAX_CPP_NS
-}  // namespace gax
+}  // namespace GRPC_WRAPPERS_NS
+}  // namespace grpc_wrappers
+}  // namespace cloud
 }  // namespace google
 
-#endif  // GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_GAX_GRPC_ERROR_DELEGATE_H_
+#endif  // GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_GRPC_WRAPPERS_GRPC_ERROR_DELEGATE_H_

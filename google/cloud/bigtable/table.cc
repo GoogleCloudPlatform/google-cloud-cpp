@@ -17,7 +17,7 @@
 #include "google/cloud/bigtable/internal/async_retry_unary_rpc.h"
 #include "google/cloud/bigtable/internal/bulk_mutator.h"
 #include "google/cloud/bigtable/internal/unary_client_utils.h"
-#include "google/cloud/gax/grpc_error_delegate.h"
+#include "google/cloud/grpc_wrappers/grpc_error_delegate.h"
 #include <thread>
 #include <type_traits>
 
@@ -100,7 +100,7 @@ Status Table::Apply(SingleRowMutation mut) {
     // It is up to the policy to terminate this loop, it could run
     // forever, but that would be a bad policy (pun intended).
     if (!rpc_policy->OnFailure(status) || !is_idempotent) {
-      return gax::MakeStatusFromRpcError(
+      return grpc_wrappers::MakeStatusFromRpcError(
           status.error_code(),
           "Permanent (or too many transient) errors in Table::Apply()");
     }
@@ -241,7 +241,7 @@ StatusOr<MutationBranch> Table::CheckAndMutateRow(
       "Table::CheckAndMutateRow", status, is_idempotent);
 
   if (!status.ok()) {
-    return gax::MakeStatusFromRpcError(status);
+    return grpc_wrappers::MakeStatusFromRpcError(status);
   }
   return response.predicate_matched() ? MutationBranch::kPredicateMatched
                                       : MutationBranch::kPredicateNotMatched;
@@ -322,7 +322,7 @@ StatusOr<std::vector<bigtable::RowKeySample>> Table::SampleRows() {
       break;
     }
     if (!retry_policy->OnFailure(status)) {
-      return gax::MakeStatusFromRpcError(
+      return grpc_wrappers::MakeStatusFromRpcError(
           status.error_code(),
           "Retry policy exhausted: " + status.error_message());
     }
@@ -345,7 +345,7 @@ StatusOr<Row> Table::ReadModifyWriteRowImpl(
       &DataClient::ReadModifyWriteRow, request, "ReadModifyWriteRowRequest",
       status);
   if (!status.ok()) {
-    return gax::MakeStatusFromRpcError(status);
+    return grpc_wrappers::MakeStatusFromRpcError(status);
   }
   return TransformReadModifyWriteRowResponse<
       btproto::ReadModifyWriteRowResponse>(response);
