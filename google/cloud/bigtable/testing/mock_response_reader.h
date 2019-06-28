@@ -28,7 +28,7 @@ namespace testing {
 /**
  * Refactor code common to several mock objects.
  *
- * Mocking a ::grpc::ClientReaderInterface<> was getting tedious. This refactors
+ * Mocking a grpc::ClientReaderInterface<> was getting tedious. This refactors
  * most (but unfortunately cannnot refactor all) the code for such objects.
  *
  * @tparam Response the response type.
@@ -70,7 +70,7 @@ class MockResponseReader : public ::grpc::ClientReaderInterface<Response> {
  * Define the interface to mock the result of starting a unary async RPC.
  *
  * Note that using this mock often requires special memory management. The
- * google mock library requires all mocks to be destroyed. In contrast, ::grpc
+ * google mock library requires all mocks to be destroyed. In contrast, grpc
  * specializes `std::unique_ptr<>` to *not* delete objects of type
  * `grpc::ClientAsyncResponseReaderInterface<T>`:
  *

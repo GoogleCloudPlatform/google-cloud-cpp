@@ -71,7 +71,7 @@ class Filter {
    * Return a filter that accepts only the last @p n values of each column.
    *
    * The server rejects filters where @p n <= 0, any ReadRows() request
-   * containing such a filter fails with `::grpc::StatusCode::INVALID_ARGUMENT`.
+   * containing such a filter fails with `grpc::StatusCode::INVALID_ARGUMENT`.
    * This function does not perform any local validation of @p n.
    */
   static Filter Latest(std::int32_t n) {
@@ -89,7 +89,7 @@ class Filter {
    *     if it is not being used as a literal. The server rejects filters with
    *     invalid patterns, including patterns containing the ':' character.
    *     The server fails the ReadRows() request with a
-   *     `::grpc::StatusCode::INVALID_ARGUMENT` status code. This function makes
+   *     `grpc::StatusCode::INVALID_ARGUMENT` status code. This function makes
    *     no attempt to validate the pattern before sending it to the server.
    */
   static Filter FamilyRegex(std::string pattern) {
@@ -104,7 +104,7 @@ class Filter {
    * @param pattern the regular expression.  It must be a valid
    *     [RE2](https://github.com/google/re2/wiki/Syntax) pattern. The server
    *     rejects filters with an invalid pattern with a
-   *     `::grpc::StatusCode::INVALID_ARGUMENT` status code.  This function
+   *     `grpc::StatusCode::INVALID_ARGUMENT` status code.  This function
    * makes no attempt to validate the pattern before sending it to the server.
    *
    * @note Special care need be used with the expression used. A column name
@@ -127,7 +127,7 @@ class Filter {
    *
    * The column range must be non-empty, i.e., @p start must be strictly
    * smaller than  @p end.  The server will reject empty ranges with a
-   * `::grpc::StatusCode::INVALID_ARGUMENT` status code. This function makes no
+   * `grpc::StatusCode::INVALID_ARGUMENT` status code. This function makes no
    * attempt to validate the column family or column range before sending them
    * to the server.
    */
@@ -156,7 +156,7 @@ class Filter {
    *
    * The timestamp range must be non-empty, i.e. @p start must be strictly
    * smaller than  @p end.  The server will reject empty ranges with a
-   * `::grpc::StatusCode::INVALID_ARGUMENT` status code. This function makes no
+   * `grpc::StatusCode::INVALID_ARGUMENT` status code. This function makes no
    * attempt to validate the timestamp range before sending it to the server.
    */
   static Filter TimestampRangeMicros(std::int64_t start, std::int64_t end) {
@@ -182,7 +182,7 @@ class Filter {
    *
    * The timestamp range must be non-empty, i.e. @p start must be strictly
    * smaller than  @p end.  The server will reject empty ranges with a
-   * `::grpc::StatusCode::INVALID_ARGUMENT` error. This function makes no
+   * `grpc::StatusCode::INVALID_ARGUMENT` error. This function makes no
    * attempt to validate the timestamp range before sending it to the server.
    *
    * @tparam Rep1 a placeholder to match the Rep tparam for @p start type,
@@ -236,7 +236,7 @@ class Filter {
    * @param pattern the regular expression.  It must be a valid
    *     [RE2](https://github.com/google/re2/wiki/Syntax) pattern. The server
    *     rejects filters with an invalid pattern with a
-   *     `::grpc::StatusCode::INVALID_ARGUMENT` status code. This function makes
+   *     `grpc::StatusCode::INVALID_ARGUMENT` status code. This function makes
    *     no attempt to validate the timestamp range before sending it to
    *     the server.
    *
@@ -278,7 +278,7 @@ class Filter {
    * - Within a column, the cells appear in descending order by timestamp.
    *
    * The server rejects filters where @p n <= 0, any ReadRows() request
-   * containing such a filter fails with `::grpc::StatusCode::INVALID_ARGUMENT`.
+   * containing such a filter fails with `grpc::StatusCode::INVALID_ARGUMENT`.
    * This function does not perform any local validation of @p n.
    */
   static Filter CellsRowLimit(std::int32_t n) {
@@ -302,7 +302,7 @@ class Filter {
    * - Within a column, the cells appear in descending order by timestamp.
    *
    * The server rejects filters where @p n <= 0, any ReadRows() request
-   * containing such a filter fails with `::grpc::StatusCode::INVALID_ARGUMENT`.
+   * containing such a filter fails with `grpc::StatusCode::INVALID_ARGUMENT`.
    * This function does not perform any local validation of @p n.
    */
   static Filter CellsRowOffset(std::int32_t n) {
@@ -316,7 +316,7 @@ class Filter {
    *
    * The server rejects filters where @p probability is outside the range
    * (0.0, 1.0).  Any ReadRows() request containing such a filter fails with
-   * `::grpc::StatusCode::INVALID_ARGUMENT`. This function does not perform any
+   * `grpc::StatusCode::INVALID_ARGUMENT`. This function does not perform any
    * local validation of @p probability.
    *
    * @param probability the probability that any row will be selected.  It
@@ -342,7 +342,7 @@ class Filter {
    * Return a filter that accepts values in the range [@p start, @p end).
    *
    * The range must be non-empty. The server will reject empty ranges with a
-   * `::grpc::StatusCode::INVALID_ARGUMENT` error. This function makes no
+   * `grpc::StatusCode::INVALID_ARGUMENT` error. This function makes no
    * attempt to validate the timestamp range before sending it to the server.
    */
   static Filter ValueRangeLeftOpen(std::string start, std::string end) {
@@ -357,7 +357,7 @@ class Filter {
    * Return a filter that accepts values in the range [@p start, @p end].
    *
    * The range must be non-empty. The server will reject empty ranges with a
-   * `::grpc::StatusCode::INVALID_ARGUMENT` error. This function makes no
+   * `grpc::StatusCode::INVALID_ARGUMENT` error. This function makes no
    * attempt to validate the timestamp range before sending it to the server.
    */
   static Filter ValueRangeRightOpen(std::string start, std::string end) {
@@ -372,7 +372,7 @@ class Filter {
    * Return a filter that accepts values in the range [@p start, @p end].
    *
    * The range must be non-empty. The server will reject empty ranges with a
-   * `::grpc::StatusCode::INVALID_ARGUMENT` error. This function makes no
+   * `grpc::StatusCode::INVALID_ARGUMENT` error. This function makes no
    * attempt to validate the timestamp range before sending it to the server.
    */
   static Filter ValueRangeClosed(std::string start, std::string end) {
@@ -387,7 +387,7 @@ class Filter {
    * Return a filter that accepts values in the range (@p start, @p end).
    *
    * The range must be non-empty. The server will reject empty ranges with a
-   * `::grpc::StatusCode::INVALID_ARGUMENT` error. This function makes no
+   * `grpc::StatusCode::INVALID_ARGUMENT` error. This function makes no
    * attempt to validate the timestamp range before sending it to the server.
    */
   static Filter ValueRangeOpen(std::string start, std::string end) {
@@ -403,7 +403,7 @@ class Filter {
    * within the @p column_family.
    *
    * The range must be non-empty. The server will reject empty ranges with a
-   * `::grpc::StatusCode::INVALID_ARGUMENT` error. This function makes no
+   * `grpc::StatusCode::INVALID_ARGUMENT` error. This function makes no
    * attempt to validate the timestamp range before sending it to the server.
    */
   static Filter ColumnRangeRightOpen(std::string column_family,
@@ -421,7 +421,7 @@ class Filter {
    * within the @p column_family.
    *
    * The range must be non-empty. The server will reject empty ranges with a
-   * `::grpc::StatusCode::INVALID_ARGUMENT` error. This function makes no
+   * `grpc::StatusCode::INVALID_ARGUMENT` error. This function makes no
    * attempt to validate the timestamp range before sending it to the server.
    */
   static Filter ColumnRangeLeftOpen(std::string column_family,
@@ -439,7 +439,7 @@ class Filter {
    * within the @p column_family.
    *
    * The range must be non-empty. The server will reject empty ranges with a
-   * `::grpc::StatusCode::INVALID_ARGUMENT` error. This function makes no
+   * `grpc::StatusCode::INVALID_ARGUMENT` error. This function makes no
    * attempt to validate the timestamp range before sending it to the server.
    */
   static Filter ColumnRangeClosed(std::string column_family, std::string start,
@@ -457,7 +457,7 @@ class Filter {
    * within the @p column_family.
    *
    * The range must be non-empty. The server will reject empty ranges with a
-   * `::grpc::StatusCode::INVALID_ARGUMENT` error. This function makes no
+   * `grpc::StatusCode::INVALID_ARGUMENT` error. This function makes no
    * attempt to validate the timestamp range before sending it to the server.
    */
   static Filter ColumnRangeOpen(std::string column_family, std::string start,
@@ -499,7 +499,7 @@ class Filter {
    * @param label the label applied to each cell.  The labels must be at most 15
    *     characters long, and must match the `[a-z0-9\\-]+` pattern.  The server
    *     validates the filter and will return a
-   *     `::grpc::StatusCode::INVALID_ARGUMENT` if the label does not meet these
+   *     `grpc::StatusCode::INVALID_ARGUMENT` if the label does not meet these
    *     requirements. This function makes no attempt to validate the @p label
    *     parameter before sending it to the server.
    */

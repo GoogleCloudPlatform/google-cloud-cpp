@@ -23,7 +23,7 @@ namespace google {
 namespace cloud {
 inline namespace GOOGLE_CLOUD_CPP_NS {
 /**
- * Well-known status codes with `::grpc::StatusCode`-compatible values.
+ * Well-known status codes with `grpc::StatusCode`-compatible values.
  *
  * The semantics of these values are documented in:
  *     https://grpc.io/grpc/cpp/classgrpc_1_1_status.html
@@ -57,7 +57,7 @@ std::ostream& operator<<(std::ostream& os, StatusCode code);
 /**
  * Reports error code and details from a remote request.
  *
- * This class is modeled after `::grpc::Status`, it contains the status code and
+ * This class is modeled after `grpc::Status`, it contains the status code and
  * error message (if applicable) from a JSON request.
  */
 class Status {

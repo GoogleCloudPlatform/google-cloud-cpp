@@ -57,7 +57,7 @@ class AsyncGrpcOperation : public AsyncOperation {
    *
    * @param cq the completion queue sending the notification, this is useful in
    *   case the callback needs to retry the operation.
-   * @param ok opaque parameter returned by ::grpc::CompletionQueue.  The
+   * @param ok opaque parameter returned by grpc::CompletionQueue.  The
    *   semantics defined by gRPC depend on the type of operation, therefore the
    *   operation needs to interpret this parameter based on those semantics.
    * @return Whether the operation is completed (e.g. in case of streaming
@@ -72,7 +72,7 @@ class AsyncGrpcOperation : public AsyncOperation {
  * This class is used by the implementation of `CompletionQueue` to associate
  * a future with an asynchronous unary RPC call. gRPC requires applications to
  * provide a `grpc::ClientContext` object, an object of the response type, and a
- * `::grpc::Status` object to make an asynchronous RPC. The lifetime of these
+ * `grpc::Status` object to make an asynchronous RPC. The lifetime of these
  * objects must be at least as long as the duration of the asynchronous call.
  * Furthermore, the application must provide a unique `void*` that is associated
  * with the RPC.
@@ -172,7 +172,7 @@ using CheckRunAsyncCallback =
  *
  * This meta function extracts, if possible, the response type from an
  * asynchronous RPC callable. These callables return a
- * `std::unique_ptr<::grpc::ClientAsyncResponseReaderInterface<T>>` and we are
+ * `std::unique_ptr<grpc::ClientAsyncResponseReaderInterface<T>>` and we are
  * interested in the `T` type.
  *
  * This is the generic version, implementing the "does not match the expected
@@ -188,7 +188,7 @@ struct AsyncCallResponseTypeUnwrap : public std::false_type {
  *
  * This meta function extracts, if possible, the response type from an
  * asynchronous RPC callable. These callables return a
- * `std::unique_ptr<::grpc::ClientAsyncResponseReaderInterface<T>>` and we are
+ * `std::unique_ptr<grpc::ClientAsyncResponseReaderInterface<T>>` and we are
  * interested in the `T` type.
  *
  * This is the specialization implementing the "matched with the expected type"
@@ -208,10 +208,10 @@ struct AsyncCallResponseTypeUnwrap<
  * Asynchronous calls have the form:
  *
  * @code
- *   std::unique_ptr<::grpc::ClientAsyncResponseReaderInterface<ResponseType>>(
- *      ::grpc::ClientContext*,
+ *   std::unique_ptr<grpc::ClientAsyncResponseReaderInterface<ResponseType>>(
+ *      grpc::ClientContext*,
  *      RequestType const&,
- *      ::grpc::CompletionQueue*
+ *      grpc::CompletionQueue*
  *   );
  * @endcode
  *

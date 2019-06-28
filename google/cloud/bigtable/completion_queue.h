@@ -87,9 +87,9 @@ class CompletionQueue {
    * @param context an initialized request context to make the call.
    *
    * @tparam AsyncCallType the type of @a async_call. It must be invocable with
-   *     `(::grpc::ClientContext*, RequestType const&,
-   * ::grpc::CompletionQueue*)`. Furthermore, it should return a
-   *     `std::unique_ptr<::grpc::ClientAsyncResponseReaderInterface<Response>>>`.
+   *     `(grpc::ClientContext*, RequestType const&,
+   * grpc::CompletionQueue*)`. Furthermore, it should return a
+   *     `std::unique_ptr<grpc::ClientAsyncResponseReaderInterface<Response>>>`.
    *     These requirements are verified by
    *     `internal::CheckAsyncUnaryRpcSignature<>`, and this function is
    *     excluded from overload resolution if the parameters do not meet these
@@ -129,10 +129,10 @@ class CompletionQueue {
    *
    * @tparam AsyncCallType the type of @a async_call. It must be invocable with
    *     parameters
-   *     `(::grpc::ClientContext*, RequestType const&,
-   * ::grpc::CompletionQueue*)`. Furthermore, it should return a type
+   *     `(grpc::ClientContext*, RequestType const&,
+   * grpc::CompletionQueue*)`. Furthermore, it should return a type
    * convertible to
-   *     `std::unique_ptr<::grpc::ClientAsyncReaderInterface<Response>>>`.
+   *     `std::unique_ptr<grpc::ClientAsyncReaderInterface<Response>>>`.
    *     These requirements are verified by
    *     `internal::AsyncStreamingReadRpcUnwrap<>`, and this function is
    *     excluded from overload resolution if the parameters do not meet these

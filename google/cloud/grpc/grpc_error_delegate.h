@@ -24,12 +24,12 @@ namespace cloud {
 namespace grpc {
 inline namespace GOOGLE_CLOUD_CPP_COMMON_GRPC_NS {
 /**
- * Creates a google::cloud::Status from a ::grpc::Status.
+ * Creates a google::cloud::Status from a grpc::Status.
  */
 google::cloud::Status MakeStatusFromRpcError(::grpc::Status const& status);
 
 /**
- * Creates a google::cloud::Status from a ::grpc::StatusCode and description.
+ * Creates a google::cloud::Status from a grpc::StatusCode and description.
  */
 google::cloud::Status MakeStatusFromRpcError(::grpc::StatusCode code,
                                              std::string what);

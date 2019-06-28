@@ -145,7 +145,7 @@ class ClientOptions {
   /**
    * Set compression algorithm for channel.
    *
-   * Please see the docs for ::grpc::ChannelArguments::SetCompressionAlgorithm()
+   * Please see the docs for grpc::ChannelArguments::SetCompressionAlgorithm()
    * on https://grpc.io/grpc/cpp/classgrpc_1_1_channel_arguments.html
    * for more details.
    *
@@ -155,7 +155,7 @@ class ClientOptions {
   }
 
   /**
-   * Set the ::grpclb fallback timeout with the timestamp @p fallback_timeout
+   * Set the grpclb fallback timeout with the timestamp @p fallback_timeout
    * for the channel.
    *
    * For example:
@@ -183,7 +183,7 @@ class ClientOptions {
    *     for more details.
    *
    * Please see the docs for
-   * ::grpc::ChannelArguments::SetGrpclbFallbackTimeout() on
+   * grpc::ChannelArguments::SetGrpclbFallbackTimeout() on
    * https://grpc.io/grpc/cpp/classgrpc_1_1_channel_arguments.html for more
    * details.
    *
@@ -207,7 +207,7 @@ class ClientOptions {
   /**
    * Set the string to prepend to the user agent.
    *
-   * Please see the docs for ::grpc::ChannelArguments::SetUserAgentPrefix()
+   * Please see the docs for grpc::ChannelArguments::SetUserAgentPrefix()
    * on https://grpc.io/grpc/cpp/classgrpc_1_1_channel_arguments.html
    * for more details.
    *
@@ -219,7 +219,7 @@ class ClientOptions {
   /**
    * Set the buffer pool to be attached to the constructed channel.
    *
-   * Please see the docs for ::grpc::ChannelArguments::SetResourceQuota()
+   * Please see the docs for grpc::ChannelArguments::SetResourceQuota()
    * on https://grpc.io/grpc/cpp/classgrpc_1_1_channel_arguments.html
    * for more details.
    *
@@ -232,7 +232,7 @@ class ClientOptions {
    * Set the max receive message size in bytes. -1 means unlimited.
    *
    * Please see the docs for
-   * ::grpc::ChannelArguments::SetMaxReceiveMessageSize() on
+   * grpc::ChannelArguments::SetMaxReceiveMessageSize() on
    * https://grpc.io/grpc/cpp/classgrpc_1_1_channel_arguments.html for more
    * details.
    *
@@ -244,7 +244,7 @@ class ClientOptions {
   /**
    * Set the max send message size in bytes. -1 means unlimited.
    *
-   * Please see the docs for ::grpc::ChannelArguments::SetMaxSendMessageSize()
+   * Please see the docs for grpc::ChannelArguments::SetMaxSendMessageSize()
    * on https://grpc.io/grpc/cpp/classgrpc_1_1_channel_arguments.html
    * for more details.
    *
@@ -257,7 +257,7 @@ class ClientOptions {
    * Set LB policy name.
    *
    * Please see the docs for
-   * ::grpc::ChannelArguments::SetLoadBalancingPolicyName()
+   * grpc::ChannelArguments::SetLoadBalancingPolicyName()
    * on https://grpc.io/grpc/cpp/classgrpc_1_1_channel_arguments.html
    * for more details.
    *
@@ -269,7 +269,7 @@ class ClientOptions {
   /**
    * Set service config in JSON form.
    *
-   * Please see the docs for ::grpc::ChannelArguments::SetServiceConfigJSON()
+   * Please see the docs for grpc::ChannelArguments::SetServiceConfigJSON()
    * on https://grpc.io/grpc/cpp/classgrpc_1_1_channel_arguments.html
    * for more details.
    *
@@ -282,7 +282,7 @@ class ClientOptions {
    * Set target name override for SSL host name checking.
    *
    * Please see the docs for
-   * ::grpc::ChannelArguments::SetSslTargetNameOverride() on
+   * grpc::ChannelArguments::SetSslTargetNameOverride() on
    * https://grpc.io/grpc/cpp/classgrpc_1_1_channel_arguments.html for more
    * details.
    *

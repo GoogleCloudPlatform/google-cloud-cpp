@@ -30,7 +30,7 @@ namespace internal {
  *
  * This meta function extracts, if possible, the response type from an
  * asynchronous streaming read RPC callable. These callables return a
- * `std::unique_ptr<::grpc::ClientAsyncReaderInterface<T>>` and we are
+ * `std::unique_ptr<grpc::ClientAsyncReaderInterface<T>>` and we are
  * interested in the `T` type.
  *
  * This is the generic version, implementing the "does not match the expected
@@ -45,7 +45,7 @@ struct AsyncStreamingReadRpcUnwrap {};
  *
  * This meta function extracts, if possible, the response type from an
  * asynchronous streaming read RPC callable. These callables return a
- * `std::unique_ptr<::grpc::ClientAsyncReaderInterface<T>>` and we are
+ * `std::unique_ptr<grpc::ClientAsyncReaderInterface<T>>` and we are
  * interested in the `T` type.
  *
  * This is the specialization implementing the "matched with the expected type"
@@ -64,10 +64,10 @@ struct AsyncStreamingReadRpcUnwrap<
  * Asynchronous streaming read RPC calls have the form:
  *
  * @code
- *   std::unique_ptr<::grpc::ClientAsyncReaderInterface<ResponseType>>(
- *      ::grpc::ClientContext*,
+ *   std::unique_ptr<grpc::ClientAsyncReaderInterface<ResponseType>>(
+ *      grpc::ClientContext*,
  *      RequestType const&,
- *      ::grpc::CompletionQueue*
+ *      grpc::CompletionQueue*
  *   );
  * @endcode
  *

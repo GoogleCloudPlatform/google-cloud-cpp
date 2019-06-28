@@ -121,7 +121,7 @@ inline namespace BIGTABLE_CLIENT_NS {
 class InstanceAdmin {
  public:
   /**
-   * @param client the interface to create ::grpc stubs, report errors, etc.
+   * @param client the interface to create grpc stubs, report errors, etc.
    */
   explicit InstanceAdmin(std::shared_ptr<InstanceAdminClient> client)
       : client_(std::move(client)),
@@ -137,7 +137,7 @@ class InstanceAdmin {
   /**
    * Create a new InstanceAdmin using explicit policies to handle RPC errors.
    *
-   * @param client the interface to create ::grpc stubs, report errors, etc.
+   * @param client the interface to create grpc stubs, report errors, etc.
    * @param policies the set of policy overrides for this object.
    * @tparam Policies the types of the policies to override, the types must
    *     derive from one of the following types:
