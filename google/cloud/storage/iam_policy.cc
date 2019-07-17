@@ -219,7 +219,8 @@ struct NativeIamBinding::Impl {
         if (!status.ok()) {
           return status;
         }
-        members.emplace_back(member);
+        std::string member_str(member);
+        members.emplace_back(std::move(member_str));
       }
       json.erase(members_it);
     }
