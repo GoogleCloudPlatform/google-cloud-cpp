@@ -66,12 +66,8 @@ class RawClient {
       PatchBucketRequest const& request) = 0;
   virtual StatusOr<google::cloud::IamPolicy> GetBucketIamPolicy(
       GetBucketIamPolicyRequest const& request) = 0;
-  virtual StatusOr<NativeIamPolicy> GetNativeBucketIamPolicy(
-      GetBucketIamPolicyRequest const& request) = 0;
   virtual StatusOr<google::cloud::IamPolicy> SetBucketIamPolicy(
       SetBucketIamPolicyRequest const& request) = 0;
-  virtual StatusOr<NativeIamPolicy> SetNativeBucketIamPolicy(
-      SetNativeBucketIamPolicyRequest const& request) = 0;
   virtual StatusOr<TestBucketIamPermissionsResponse> TestBucketIamPermissions(
       TestBucketIamPermissionsRequest const& request) = 0;
   virtual StatusOr<BucketMetadata> LockBucketRetentionPolicy(
@@ -174,6 +170,13 @@ class RawClient {
       GetNotificationRequest const&) = 0;
   virtual StatusOr<EmptyResponse> DeleteNotification(
       DeleteNotificationRequest const&) = 0;
+  //@}
+  //@{
+  /// @name Bucket resource operations
+  virtual StatusOr<NativeIamPolicy> GetNativeBucketIamPolicy(
+      GetBucketIamPolicyRequest const& request) = 0;
+  virtual StatusOr<NativeIamPolicy> SetNativeBucketIamPolicy(
+      SetNativeBucketIamPolicyRequest const& request) = 0;
   //@}
 };
 

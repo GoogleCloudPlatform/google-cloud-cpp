@@ -72,8 +72,6 @@ class IdempotencyPolicy {
   virtual bool IsIdempotent(
       internal::SetBucketIamPolicyRequest const& request) const = 0;
   virtual bool IsIdempotent(
-      internal::SetNativeBucketIamPolicyRequest const& request) const = 0;
-  virtual bool IsIdempotent(
       internal::TestBucketIamPermissionsRequest const& request) const = 0;
   virtual bool IsIdempotent(
       internal::LockBucketRetentionPolicyRequest const& request) const = 0;
@@ -180,6 +178,11 @@ class IdempotencyPolicy {
       internal::GetNotificationRequest const& request) const = 0;
   virtual bool IsIdempotent(
       internal::DeleteNotificationRequest const& request) const = 0;
+  //@}
+  //@{
+  /// @name Bucket resource operations
+  virtual bool IsIdempotent(
+      internal::SetNativeBucketIamPolicyRequest const& request) const = 0;
   //@}
 };
 
