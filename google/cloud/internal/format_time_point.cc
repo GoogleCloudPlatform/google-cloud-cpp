@@ -15,6 +15,7 @@
 #include "google/cloud/internal/format_time_point.h"
 #include "google/cloud/internal/throw_delegate.h"
 #include <cctype>
+#include <cinttypes>
 #include <cstdio>
 #include <iomanip>
 #include <iostream>
@@ -40,8 +41,8 @@ std::string FormatFractional(std::chrono::nanoseconds ns) {
     return buffer;
   }
 
-  std::snprintf(buffer, sizeof(buffer), ".%09lld",
-                static_cast<long long>(ns.count()));
+  std::snprintf(buffer, sizeof(buffer), ".%09" PRId64,
+                static_cast<std::int64_t>(ns.count()));
   return buffer;
 }
 

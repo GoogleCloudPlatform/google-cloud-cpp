@@ -102,7 +102,7 @@ StatusOr<HttpResponse> CurlDownloadRequest::Close() {
     }
   }
 
-  StatusOr<long> http_code = handle_.GetResponseCode();
+  auto http_code = handle_.GetResponseCode();
   if (!http_code.ok()) {
     TRACE_STATE() << ", http_code.status=" << http_code.status();
     return http_code.status();
@@ -163,7 +163,7 @@ StatusOr<ReadSourceResult> CurlDownloadRequest::Read(char* buf, std::size_t n) {
     //   if not.
     // if the option is not supported then we cannot use HTTP at all in libcurl
     // and the whole class would fail.
-    long http_code = handle_.GetResponseCode().value();
+    auto http_code = handle_.GetResponseCode().value();
     TRACE_STATE() << ", code=" << http_code;
     return ReadSourceResult{
         bytes_read,

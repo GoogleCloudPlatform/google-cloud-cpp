@@ -18,6 +18,7 @@
 #include "google/cloud/storage/internal/nljson.h"
 #include "google/cloud/storage/internal/object_acl_requests.h"
 #include "google/cloud/storage/object_metadata.h"
+#include <cinttypes>
 #include <sstream>
 
 namespace google {
@@ -337,8 +338,8 @@ ReadObjectRangeResponse ReadObjectRangeResponse::FromHttpResponse(
   if (buffer[0] == '*' && buffer[1] == '/') {
     // The header is just the indication of size ('bytes */<size>'), parse that.
     buffer += 2;
-    long long object_size;
-    auto count = std::sscanf(buffer, "%lld", &object_size);
+    std::int64_t object_size;
+    auto count = std::sscanf(buffer, "%" SCNd64, &object_size);
     if (count != 1) {
       raise_error();
     }
@@ -346,11 +347,11 @@ ReadObjectRangeResponse ReadObjectRangeResponse::FromHttpResponse(
                                    object_size};
   }
 
-  long long first_byte;
-  long long last_byte;
-  long long object_size;
-  auto count = std::sscanf(buffer, "%lld-%lld/%lld", &first_byte, &last_byte,
-                           &object_size);
+  std::int64_t first_byte;
+  std::int64_t last_byte;
+  std::int64_t object_size;
+  auto count = std::sscanf(buffer, "%" SCNd64 "-%" SCNd64 "/%" SCNd64,
+                           &first_byte, &last_byte, &object_size);
   if (count != 3) {
     raise_error();
   }

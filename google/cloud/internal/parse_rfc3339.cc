@@ -15,6 +15,7 @@
 #include "google/cloud/internal/parse_rfc3339.h"
 #include "google/cloud/internal/throw_delegate.h"
 #include <cctype>
+#include <cinttypes>
 #include <cstdio>
 #include <iomanip>
 #include <iostream>
@@ -114,9 +115,9 @@ std::chrono::system_clock::duration ParseFractionalSeconds(
   }
   ++buffer;
 
-  long fractional_seconds;
+  std::int64_t fractional_seconds;
   int pos;
-  auto count = std::sscanf(buffer, "%9ld%n", &fractional_seconds, &pos);
+  auto count = std::sscanf(buffer, "%9" SCNd64 "%n", &fractional_seconds, &pos);
   if (count != 1) {
     ReportError(timestamp, "Invalid fractional seconds component.");
   }

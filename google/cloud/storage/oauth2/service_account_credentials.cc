@@ -205,9 +205,9 @@ std::pair<std::string, std::string> AssertionComponentsFromInfo(
   // Convert to longs only when we are dealing with timestamps since the
   // epoch.
   auto now_from_epoch =
-      static_cast<long>(std::chrono::system_clock::to_time_t(now));
-  auto expiration_from_epoch =
-      static_cast<long>(std::chrono::system_clock::to_time_t(expiration));
+      static_cast<std::time_t>(std::chrono::system_clock::to_time_t(now));
+  auto expiration_from_epoch = static_cast<std::time_t>(
+      std::chrono::system_clock::to_time_t(expiration));
   storage::internal::nl::json assertion_payload = {
       {"iss", info.client_email},
       {"scope", scope_str},

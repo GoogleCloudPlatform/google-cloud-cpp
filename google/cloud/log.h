@@ -79,6 +79,7 @@
 #include "google/cloud/version.h"
 #include <atomic>
 #include <chrono>
+#include <cstdint>
 #include <functional>
 #include <iostream>
 #include <map>
@@ -290,8 +291,8 @@ class LogSink {
     return static_cast<Severity>(minimum_severity_.load());
   }
 
-  long AddBackend(std::shared_ptr<LogBackend> backend);
-  void RemoveBackend(long id);
+  std::int32_t AddBackend(std::shared_ptr<LogBackend> backend);
+  void RemoveBackend(std::int32_t id);
   void ClearBackends();
   std::size_t BackendCount() const;
 
@@ -306,15 +307,15 @@ class LogSink {
  private:
   void EnableStdClogImpl();
   void DisableStdClogImpl();
-  long AddBackendImpl(std::shared_ptr<LogBackend> backend);
-  void RemoveBackendImpl(long id);
+  std::int32_t AddBackendImpl(std::shared_ptr<LogBackend> backend);
+  void RemoveBackendImpl(std::int32_t id);
 
   std::atomic<bool> empty_;
   std::atomic<int> minimum_severity_;
   std::mutex mutable mu_;
-  long next_id_;
-  long clog_backend_id_;
-  std::map<long, std::shared_ptr<LogBackend>> backends_;
+  std::int32_t next_id_;
+  std::int32_t clog_backend_id_;
+  std::map<std::int32_t, std::shared_ptr<LogBackend>> backends_;
 };
 
 /**

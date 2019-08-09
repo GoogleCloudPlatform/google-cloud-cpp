@@ -49,12 +49,12 @@ LogSink& LogSink::Instance() {
   return instance;
 }
 
-long LogSink::AddBackend(std::shared_ptr<LogBackend> backend) {
+std::int32_t LogSink::AddBackend(std::shared_ptr<LogBackend> backend) {
   std::unique_lock<std::mutex> lk(mu_);
   return AddBackendImpl(std::move(backend));
 }
 
-void LogSink::RemoveBackend(long id) {
+void LogSink::RemoveBackend(std::int32_t id) {
   std::unique_lock<std::mutex> lk(mu_);
   RemoveBackendImpl(id);
 }
@@ -127,14 +127,14 @@ void LogSink::DisableStdClogImpl() {
   clog_backend_id_ = 0;
 }
 
-long LogSink::AddBackendImpl(std::shared_ptr<LogBackend> backend) {
-  long id = ++next_id_;
+std::int32_t LogSink::AddBackendImpl(std::shared_ptr<LogBackend> backend) {
+  std::int32_t id = ++next_id_;
   backends_.emplace(id, std::move(backend));
   empty_.store(backends_.empty());
   return id;
 }
 
-void LogSink::RemoveBackendImpl(long id) {
+void LogSink::RemoveBackendImpl(std::int32_t id) {
   auto it = backends_.find(id);
   if (backends_.end() == it) {
     return;
