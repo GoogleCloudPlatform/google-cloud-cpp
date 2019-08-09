@@ -191,7 +191,8 @@ class CurlHandle {
   friend class CurlRequest;
   friend class CurlRequestBuilder;
 
-  [[noreturn]] void ThrowSetOptionError(CURLcode e, CURLoption opt, long param);
+  [[noreturn]] void ThrowSetOptionError(CURLcode e, CURLoption opt,
+                                        std::int64_t param);
   [[noreturn]] void ThrowSetOptionError(CURLcode e, CURLoption opt,
                                         char const* param);
   [[noreturn]] void ThrowSetOptionError(CURLcode e, CURLoption opt,
