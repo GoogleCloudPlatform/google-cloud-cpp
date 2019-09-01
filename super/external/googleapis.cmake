@@ -22,8 +22,10 @@ include(external/grpc)
 if (NOT TARGET googleapis_project)
     # Give application developers a hook to configure the version and hash
     # downloaded from GitHub.
-    set(GOOGLE_CLOUD_CPP_GOOGLEAPIS_URL
-        "https://github.com/googleapis/cpp-cmakefiles/archive/1f68a41e38079373d763478ec56cc2eeafb26906.tar.gz")
+    set(
+        GOOGLE_CLOUD_CPP_GOOGLEAPIS_URL
+        "https://github.com/googleapis/cpp-cmakefiles/archive/1f68a41e38079373d763478ec56cc2eeafb26906.tar.gz"
+        )
     set(GOOGLE_CLOUD_CPP_GOOGLEAPIS_SHA256
         "cd97361795ab40f40a38548246cbb3533ffa5791fc5658627172c0c44b35fd31")
 
