@@ -31,7 +31,8 @@ RetryObjectReadSource::RetryObjectReadSource(
       child_(std::move(child)),
       current_offset_(request_.StartingByte()),
       retry_policy_(std::move(retry_policy)),
-      backoff_policy_prototype_(std::move(backoff_policy)) {}
+      backoff_policy_prototype_(std::move(backoff_policy)),
+      read_last_(request_.HasOption<ReadLast>()) {}
 
 StatusOr<ReadSourceResult> RetryObjectReadSource::Read(char* buf,
                                                        std::size_t n) {
@@ -54,7 +55,13 @@ StatusOr<ReadSourceResult> RetryObjectReadSource::Read(char* buf,
     // create a new one and replace it. Should that fail, the retry policy would
     // already be exhausted, so we should fail this operation too.
     child_.reset();
-    request_.set_option(ReadFromOffset(current_offset_));
+
+    if (read_last_) {
+      request_.set_option(ReadLast(current_offset_));
+    } else {
+      request_.set_option(ReadFromOffset(current_offset_));
+    }
+
     if (generation_) {
       request_.set_option(Generation(*generation_));
     }
@@ -82,7 +89,13 @@ StatusOr<ReadSourceResult> RetryObjectReadSource::Read(char* buf,
   if (g != result->response.headers.end()) {
     generation_ = std::stoll(g->second);
   }
-  current_offset_ += result->bytes_received;
+
+  if (read_last_) {
+    current_offset_ -= result->bytes_received;
+  } else {
+    current_offset_ += result->bytes_received;
+  }
+
   return result;
 }
 
