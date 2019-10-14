@@ -24,7 +24,7 @@ TEST(ApplyTest, Simple) {
   std::string s;
   int i;
   char c;
-  auto res = apply(
+  auto res = ::google::cloud::internal::apply(
       [&](std::string new_s, int new_i, char new_c) {
         s = std::move(new_s);
         i = new_i;
@@ -43,16 +43,17 @@ TEST(ApplyTest, VoidResult) {
   int i;
   auto f = [&](int new_i) { i = new_i; };
   static_assert(
-      std::is_same<
-          void, invoke_result_t<decltype(apply<decltype(f), std::tuple<int>>),
-                                decltype(f), std::tuple<int>>>::value,
+      std::is_same<void,
+                   invoke_result_t<decltype(::google::cloud::internal::apply<
+                                            decltype(f), std::tuple<int>>),
+                                   decltype(f), std::tuple<int>>>::value,
       "");
-  apply(f, std::make_tuple(42));
+  ::google::cloud::internal::apply(f, std::make_tuple(42));
   EXPECT_EQ(42, i);
 }
 
 TEST(ApplyTest, NoArgs) {
-  int i = apply([] { return 42; }, std::tuple<>());
+  int i = ::google::cloud::internal::apply([] { return 42; }, std::tuple<>());
   EXPECT_EQ(42, i);
 }
 
