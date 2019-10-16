@@ -78,6 +78,7 @@ storage_client_hdrs = [
     "list_buckets_reader.h",
     "list_hmac_keys_reader.h",
     "list_objects_reader.h",
+    "location_type.h",
     "notification_event_type.h",
     "notification_metadata.h",
     "notification_payload_format.h",

@@ -20,6 +20,7 @@
 #include "google/cloud/storage/internal/common_metadata.h"
 #include "google/cloud/storage/internal/patch_builder.h"
 #include "google/cloud/storage/lifecycle_rule.h"
+#include "google/cloud/storage/location_type.h"
 #include "google/cloud/storage/object_access_control.h"
 #include "google/cloud/storage/version.h"
 #include <map>
@@ -737,6 +738,10 @@ class BucketMetadata : private internal::CommonMetadata<BucketMetadata> {
   }
 
   std::string const& location_type() const { return location_type_; }
+  BucketMetadata& set_location_type(std::string v) {
+    location_type_ = std::move(v);
+    return *this;
+  }
 
   //@{
   /// @name Accessors and modifiers for logging configuration.

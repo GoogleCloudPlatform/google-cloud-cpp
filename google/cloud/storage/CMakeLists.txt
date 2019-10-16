@@ -180,6 +180,7 @@ add_library(storage_client
             list_hmac_keys_reader.cc
             list_objects_reader.h
             list_objects_reader.cc
+            location_type.h
             notification_event_type.h
             notification_metadata.h
             notification_metadata.cc
@@ -362,6 +363,7 @@ if (BUILD_TESTING)
         list_buckets_reader_test.cc
         list_hmac_keys_reader_test.cc
         list_objects_reader_test.cc
+        location_type_test.cc
         oauth2/anonymous_credentials_test.cc
         oauth2/authorized_user_credentials_test.cc
         oauth2/compute_engine_credentials_test.cc

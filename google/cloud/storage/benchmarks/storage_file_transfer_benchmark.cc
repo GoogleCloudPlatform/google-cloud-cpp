@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) {
       client
           .CreateBucket(bucket_name,
                         gcs::BucketMetadata()
-                            .set_storage_class(gcs::storage_class::Standard())
+                            .set_location_type(gcs::location_type::Region())
                             .set_location(options->region),
                         gcs::PredefinedAcl("private"),
                         gcs::PredefinedDefaultObjectAcl("projectPrivate"),

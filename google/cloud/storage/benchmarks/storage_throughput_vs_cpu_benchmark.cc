@@ -39,8 +39,8 @@ byte on both upload and download operations.
 The program first creates a GCS bucket that will contain all the objects used
 by that run of the program. The name of this bucket is selected at random, so
 multiple copies of the program can run simultaneously. The bucket is deleted at
-the end of the run of this program. The bucket uses the `STANDARD` storage
-class, in a region set via the command line. Choosing regions close to where the
+the end of the run of this program. The bucket uses the `REGION` location
+type, in a region set via the command line. Choosing regions close to where the
 program is running can be used to estimate the latency without any wide-area
 network effects. Choosing regions far from where the program is running can be
 used to evaluate the performance of the library when the WAN is taken into
@@ -143,7 +143,7 @@ int main(int argc, char* argv[]) {
       client
           .CreateBucket(bucket_name,
                         gcs::BucketMetadata()
-                            .set_storage_class(gcs::storage_class::Standard())
+                            .set_location_type(gcs::location_type::Region())
                             .set_location(options->region),
                         gcs::PredefinedAcl("private"),
                         gcs::PredefinedDefaultObjectAcl("projectPrivate"),

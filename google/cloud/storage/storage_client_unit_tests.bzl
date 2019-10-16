@@ -77,6 +77,7 @@ storage_client_unit_tests = [
     "list_buckets_reader_test.cc",
     "list_hmac_keys_reader_test.cc",
     "list_objects_reader_test.cc",
+    "location_type_test.cc",
     "oauth2/anonymous_credentials_test.cc",
     "oauth2/authorized_user_credentials_test.cc",
     "oauth2/compute_engine_credentials_test.cc",
