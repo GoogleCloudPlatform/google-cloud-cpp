@@ -6,11 +6,11 @@ vcpkg_from_github(
     OUT_SOURCE_PATH
     SOURCE_PATH
     REPO
-    googleapis/google-cloud-cpp-common
+    dopiera/google-cloud-cpp-common
     REF
-    v0.15.0
+    v0.16.0
     SHA512
-    0a723f714f63fbaa1900e4725b051445de614ed8a4700a6ad27037f9b63e56a7e9c5b4490e42044f077496074a8e0c3e7971bbcd601527c9f9fa20f088a19fa3
+    a29fbbcd7db0beba3e52519f92512d108ddc94b68e9844273772f9860b805a051da1383c864aee6800de8bf73899a71b11a51c35047d995aaf23f299a7192015
     HEAD_REF
     master)
 
