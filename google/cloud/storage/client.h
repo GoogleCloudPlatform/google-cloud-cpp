@@ -3045,6 +3045,8 @@ class Client {
       internal::PolicyDocumentRequest const& request);
 
   std::shared_ptr<internal::RawClient> raw_client_;
+
+  friend class NonResumableParallelUploadState;
 };
 
 /**
@@ -3120,8 +3122,8 @@ struct DeleteApplyHelper {
   }
 
   Client& client;
-  std::string const& bucket_name;
-  std::string const& object_name;
+  std::string bucket_name;
+  std::string object_name;
 };
 
 }  // namespace internal
@@ -3296,7 +3298,8 @@ StatusOr<ObjectMetadata> ComposeMany(
         internal::DeleteApplyHelper{client, bucket_name, object.name()},
         std::tuple_cat(
             std::make_tuple(IfGenerationMatch(object.generation())),
-            StaticTupleFilter<NotAmong<Versions>::TPred>(all_options)));
+            StaticTupleFilter<Among<QuotaUser, UserProject, UserIp>::TPred>(
+                all_options)));
   });
 
   std::size_t num_tmp_objects = 0;
