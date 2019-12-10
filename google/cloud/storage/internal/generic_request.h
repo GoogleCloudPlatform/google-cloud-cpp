@@ -63,8 +63,16 @@ class GenericRequestBase;
 template <typename Derived, typename Option>
 class GenericRequestBase<Derived, Option> {
  public:
+  // Can't use capture by unversal references because if it were a template
+  // guarded by `std::enable_if<>` it would shadow the exact same superclass'
+  // member function.
   Derived& set_option(Option&& p) {
     option_ = std::move(p);
+    return *static_cast<Derived*>(this);
+  }
+
+  Derived& set_option(Option const& p) {
+    option_ = p;
     return *static_cast<Derived*>(this);
   }
 
@@ -110,6 +118,11 @@ class GenericRequestBase : public GenericRequestBase<Derived, Options...> {
 
   Derived& set_option(Option&& p) {
     option_ = std::move(p);
+    return *static_cast<Derived*>(this);
+  }
+
+  Derived& set_option(Option const& p) {
+    option_ = p;
     return *static_cast<Derived*>(this);
   }
 
