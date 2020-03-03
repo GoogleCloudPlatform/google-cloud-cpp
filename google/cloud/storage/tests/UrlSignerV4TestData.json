@@ -104,5 +104,36 @@
       "scheme": "https",
       "expectedCanonicalRequest": "GET\n/test-bucket/test-object\nX-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=test-iam-credentials%40dummy-project-id.iam.gserviceaccount.com%2F20190201%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20190201T090000Z&X-Goog-Expires=10&X-Goog-SignedHeaders=bar%3Bfoo%3Bhost\nbar:BAR-value\nfoo:foo-value\nhost:storage.googleapis.com\n\nbar;foo;host\nUNSIGNED-PAYLOAD",
       "expectedStringToSign": "GOOG4-RSA-SHA256\n20190201T090000Z\n20190201/auto/storage/goog4_request\n59c1ac1a6ee7d773d5c4487ecc861d60b71c4871dd18fc7d8485fac09df1d296"
+    },
+    {
+      "description": "Query Parameter Encoding",
+      "bucket": "test-bucket",
+      "object": "test-object",
+      "method": "GET",
+      "expiration": "10",
+      "timestamp": "2019-02-01T09:00:00Z",
+      "expectedUrl": "https://storage.googleapis.com/test-bucket/test-object?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=test-iam-credentials%40dummy-project-id.iam.gserviceaccount.com%2F20190201%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20190201T090000Z&X-Goog-Expires=10&X-Goog-SignedHeaders=host&aA0%C3%A9%2F%3D%25-_.~=~._-%25%3D%2F%C3%A90Aa&X-Goog-Signature=221f1905382ce560042b0441e678b6589f4a661fd319f079bde1f7d7ab07e8515334dbabd901c95d3f16a03f389f661ef7de897fdc7cea8914d93ac8638ad56a9dca62ec8983478a9513a702e12dd57182b5b5ee58d7e94dd685f6c2bbaec1ad168294eaf8300cafec7565e1ad99f55b324caa48720d541e1b2be39b10baa7ff39d2cb77efdad91d63fa0c80625234430027077f68f8ad8c258ef8aba93e2a15fb3f74111e9ffab46f481899d1e83db7d84d9b2645975086ba67ce2d9284d50bb2725871d05621a791ee1c9db7db8a52d579191c5f59da6063128effbe0bbc1ae9a573e298e63aa29bbe9bb8dba76a6c98154a9f03f5ce0cb8f176e0ad14acae",
+      "queryParameters": {
+        "aA0é/=%-_.~": "~._-%=/é0Aa"
+      },
+      "scheme": "https",
+      "expectedCanonicalRequest": "GET\n/test-bucket/test-object\nX-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=test-iam-credentials%40dummy-project-id.iam.gserviceaccount.com%2F20190201%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20190201T090000Z&X-Goog-Expires=10&X-Goog-SignedHeaders=host&aA0%C3%A9%2F%3D%25-_.~=~._-%25%3D%2F%C3%A90Aa\nhost:storage.googleapis.com\n\nhost\nUNSIGNED-PAYLOAD",
+      "expectedStringToSign": "GOOG4-RSA-SHA256\n20190201T090000Z\n20190201/auto/storage/goog4_request\na4815f31e2df44febcde5f15614a38dfaab1d2dbc2488c92e0dfaef06351448a"
+    },
+    {
+      "description": "Query Parameter Ordering",
+      "bucket": "test-bucket",
+      "object": "test-object",
+      "method": "GET",
+      "expiration": "10",
+      "timestamp": "2019-02-01T09:00:00Z",
+      "expectedUrl": "https://storage.googleapis.com/test-bucket/test-object?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=test-iam-credentials%40dummy-project-id.iam.gserviceaccount.com%2F20190201%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20190201T090000Z&X-Goog-Expires=10&X-Goog-Meta-Foo=bar&X-Goog-SignedHeaders=host&prefix=%2Ffoo&X-Goog-Signature=a07745e1b3d59b85cbe11aa766df72c22468959e7217615dccb7f030234f66b60b37e480f30725ed51f29816362ca8286c619ebb66448ff1d370be2a4a48aacf20d3d2d6200ed17341a5791baf2ee5cd9c2823adacc6264f66c8a54fa887e1bce3c55cf78fb2f6a52618cf09d6f945f63d148052a7b66a75e075ff5065828a806b84bdc49a42399be7483225c720d5e18a6160f79d815f433e7921694fe1d041099851793c2581db0e5ca503cfb566e414f900ceede5f9b22030edd32ab20b6f7f9fb2afba89098b9364e03397c03a94eac3a140c99979b8786844fb4f6c62c1985378939dd1bbaea8e41b9100dda85a27733171cc78d96ee362ea2c3432f4d8",
+      "queryParameters": {
+        "prefix": "/foo",
+        "X-Goog-Meta-Foo": "bar"
+      },
+      "scheme": "https",
+      "expectedCanonicalRequest": "GET\n/test-bucket/test-object\nX-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=test-iam-credentials%40dummy-project-id.iam.gserviceaccount.com%2F20190201%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20190201T090000Z&X-Goog-Expires=10&X-Goog-Meta-Foo=bar&X-Goog-SignedHeaders=host&prefix=%2Ffoo\nhost:storage.googleapis.com\n\nhost\nUNSIGNED-PAYLOAD",
+      "expectedStringToSign": "GOOG4-RSA-SHA256\n20190201T090000Z\n20190201/auto/storage/goog4_request\n4dafe74ad142f32b7c25fc4e6b38fd3b8a6339d7f112247573fb0066f637db6c"
     }
 ]

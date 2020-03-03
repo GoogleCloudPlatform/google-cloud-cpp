@@ -18,10 +18,12 @@
 #include "google/cloud/storage/internal/signed_url_requests.h"
 #include "google/cloud/storage/list_objects_reader.h"
 #include "google/cloud/storage/testing/storage_integration_test.h"
+#include "google/cloud/terminate_handler.h"
 #include "google/cloud/testing_util/assert_ok.h"
 #include "google/cloud/testing_util/init_google_mock.h"
 #include <gmock/gmock.h>
 #include <fstream>
+#include <type_traits>
 
 /**
  * @file
@@ -54,16 +56,88 @@ class V4SignedUrlConformanceTest
  protected:
   std::vector<std::pair<std::string, std::string>> ExtractHeaders(
       internal::nl::json j_obj) {
-    std::vector<std::pair<std::string, std::string>> headers;
+    return ExtractListOfPairs(std::move(j_obj), "headers");
+  }
 
-    // Check for the keys of the headers field
-    for (auto& x : j_obj["headers"].items()) {
+  std::vector<std::pair<std::string, std::string>> ExtractQueryParams(
+      internal::nl::json j_obj) {
+    return ExtractListOfPairs(std::move(j_obj), "queryParameters");
+  }
+
+ private:
+  std::vector<std::pair<std::string, std::string>> ExtractListOfPairs(
+      internal::nl::json j_obj, std::string const& field) {
+    std::vector<std::pair<std::string, std::string>> res;
+
+    // Check for the keys of the relevant field
+    for (auto& x : j_obj[field].items()) {
       // The keys are returned in alphabetical order by nlohmann::json, but
       // the order does not matter when creating signed urls.
-      headers.emplace_back(x.key(), x.value());
+      res.emplace_back(x.key(), x.value());
     }
-    return headers;
+    return res;
   }
+};
+
+template <typename N, typename Enable, typename... T>
+struct FixedSizeTupleImpl {};
+
+template <std::size_t N, typename T1, typename... T>
+struct FixedSizeTupleImpl<std::integral_constant<std::size_t, N>,
+                          typename std::enable_if<(N > 1), void>::type, T1,
+                          T...> {
+  using type =
+      typename FixedSizeTupleImpl<std::integral_constant<std::size_t, N - 1>,
+                                  void, T1, T1, T...>::type;
+};
+
+template <typename... T>
+struct FixedSizeTupleImpl<std::integral_constant<std::size_t, 1>, void, T...> {
+  using type = std::tuple<T...>;
+};
+
+template <std::size_t N, typename T>
+struct FixedSizeTuple {
+  using type =
+      typename FixedSizeTupleImpl<std::integral_constant<std::size_t, N>, void,
+                                  T>::type;
+};
+
+template <int N, typename T1, typename... T>
+struct RuntimeTupleRefImpl {
+  T1& operator()(std::tuple<T1, T...>& t, std::size_t n) const {
+    if (N == n) {
+      return std::get<N>(t);
+    }
+    return RuntimeTupleRefImpl<N - 1, T1, T...>()(t, n);
+  }
+};
+
+template <typename T1, typename... T>
+struct RuntimeTupleRefImpl<-1, T1, T...> {
+  T1& operator()(std::tuple<T1, T...>& /*t*/, std::size_t /*n*/) const {
+    Terminate("Index out of range");
+  }
+};
+
+template <typename T1, typename... T>
+T1& RuntimeTupleRef(std::tuple<T1, T...>& t, std::size_t idx) {
+  return RuntimeTupleRefImpl<std::tuple_size<std::tuple<T1, T...>>::value - 1,
+                             T1, T...>()(t, idx);
+}
+
+struct CreateV4SignedUrlApplyHelper {
+  template <typename... Options>
+  StatusOr<std::string> operator()(Options&&... options) {
+    return client.CreateV4SignedUrl(std::move(verb), std::move(bucket_name),
+                                    std::move(object_name),
+                                    std::forward<Options>(options)...);
+  }
+
+  Client& client;
+  std::string verb;
+  std::string bucket_name;
+  std::string object_name;
 };
 
 TEST_P(V4SignedUrlConformanceTest, V4SignJson) {
@@ -74,7 +148,6 @@ TEST_P(V4SignedUrlConformanceTest, V4SignJson) {
   ASSERT_STATUS_OK(creds);
   std::string account_email = creds->get()->AccountEmail();
   Client client(*creds);
-  StatusOr<std::string> actual;
   std::string actual_canonical_request;
   std::string actual_string_to_sign;
 
@@ -91,89 +164,46 @@ TEST_P(V4SignedUrlConformanceTest, V4SignJson) {
   std::string const expected_string_to_sign = j_obj["expectedStringToSign"];
 
   // Extract the headers for each object
-  std::vector<std::pair<std::string, std::string>> headers =
-      ExtractHeaders(j_obj);
+  auto headers = ExtractHeaders(j_obj);
+  auto params = ExtractQueryParams(j_obj);
 
   google::cloud::storage::internal::V4SignUrlRequest request(
       method_name, bucket_name, object_name);
-  if (headers.empty()) {
-    request.set_multiple_options(
-        SignedUrlTimestamp(google::cloud::internal::ParseRfc3339(date)),
-        SignedUrlDuration(valid_for),
-        AddExtensionHeader("host", "storage.googleapis.com"));
+  request.set_multiple_options(
+      SignedUrlTimestamp(google::cloud::internal::ParseRfc3339(date)),
+      SignedUrlDuration(valid_for),
+      AddExtensionHeader("host", "storage.googleapis.com"));
 
-    actual = client.CreateV4SignedUrl(
-        method_name, bucket_name, object_name,
-        SignedUrlTimestamp(google::cloud::internal::ParseRfc3339(date)),
-        SignedUrlDuration(valid_for),
-        AddExtensionHeader("host", "storage.googleapis.com"));
-  } else if (headers.size() == 1) {
+  FixedSizeTuple<5, AddExtensionHeaderOption>::type header_extensions;
+  ASSERT_LE(headers.size(),
+            std::tuple_size<decltype(header_extensions)>::value);
+  for (std::size_t i = 0; i < headers.size(); ++i) {
+    auto& header = headers.at(i);
     request.set_multiple_options(
-        SignedUrlTimestamp(google::cloud::internal::ParseRfc3339(date)),
-        SignedUrlDuration(valid_for),
-        AddExtensionHeader("host", "storage.googleapis.com"),
-        AddExtensionHeader(headers.at(0).first, headers.at(0).second));
-
-    actual = client.CreateV4SignedUrl(
-        method_name, bucket_name, object_name,
-        SignedUrlTimestamp(google::cloud::internal::ParseRfc3339(date)),
-        SignedUrlDuration(valid_for),
-        AddExtensionHeader("host", "storage.googleapis.com"),
-        AddExtensionHeader(headers.at(0).first, headers.at(0).second));
-  } else if (headers.size() == 2) {
-    request.set_multiple_options(
-        SignedUrlTimestamp(google::cloud::internal::ParseRfc3339(date)),
-        SignedUrlDuration(valid_for),
-        AddExtensionHeader("host", "storage.googleapis.com"),
-        AddExtensionHeader(headers.at(0).first, headers.at(0).second),
-        AddExtensionHeader(headers.at(1).first, headers.at(1).second));
-
-    actual = client.CreateV4SignedUrl(
-        method_name, bucket_name, object_name,
-        SignedUrlTimestamp(google::cloud::internal::ParseRfc3339(date)),
-        SignedUrlDuration(valid_for),
-        AddExtensionHeader("host", "storage.googleapis.com"),
-        AddExtensionHeader(headers.at(0).first, headers.at(0).second),
-        AddExtensionHeader(headers.at(1).first, headers.at(1).second));
-  } else if (headers.size() == 3) {
-    request.set_multiple_options(
-        SignedUrlTimestamp(google::cloud::internal::ParseRfc3339(date)),
-        SignedUrlDuration(valid_for),
-        AddExtensionHeader("host", "storage.googleapis.com"),
-        AddExtensionHeader(headers.at(0).first, headers.at(0).second),
-        AddExtensionHeader(headers.at(1).first, headers.at(1).second),
-        AddExtensionHeader(headers.at(2).first, headers.at(2).second));
-
-    actual = client.CreateV4SignedUrl(
-        method_name, bucket_name, object_name,
-        SignedUrlTimestamp(google::cloud::internal::ParseRfc3339(date)),
-        SignedUrlDuration(valid_for),
-        AddExtensionHeader("host", "storage.googleapis.com"),
-        AddExtensionHeader(headers.at(0).first, headers.at(0).second),
-        AddExtensionHeader(headers.at(1).first, headers.at(1).second),
-        AddExtensionHeader(headers.at(2).first, headers.at(2).second));
-  } else if (headers.size() == 4) {
-    request.set_multiple_options(
-        SignedUrlTimestamp(google::cloud::internal::ParseRfc3339(date)),
-        SignedUrlDuration(valid_for),
-        AddExtensionHeader("host", "storage.googleapis.com"),
-        AddExtensionHeader(headers.at(0).first, headers.at(0).second),
-        AddExtensionHeader(headers.at(1).first, headers.at(1).second),
-        AddExtensionHeader(headers.at(2).first, headers.at(2).second),
-        AddExtensionHeader(headers.at(3).first, headers.at(3).second));
-
-    actual = client.CreateV4SignedUrl(
-        method_name, bucket_name, object_name,
-        SignedUrlTimestamp(google::cloud::internal::ParseRfc3339(date)),
-        SignedUrlDuration(valid_for),
-        AddExtensionHeader("host", "storage.googleapis.com"),
-        AddExtensionHeader(headers.at(0).first, headers.at(0).second),
-        AddExtensionHeader(headers.at(1).first, headers.at(1).second),
-        AddExtensionHeader(headers.at(2).first, headers.at(2).second),
-        AddExtensionHeader(headers.at(3).first, headers.at(3).second));
-  } else {
-    EXPECT_LT(headers.size(), 5);
+        AddExtensionHeader(header.first, header.second));
+    RuntimeTupleRef(header_extensions, i) =
+        AddExtensionHeader(header.first, header.second);
   }
+
+  FixedSizeTuple<5, AddQueryParameterOption>::type query_params;
+  ASSERT_LE(params.size(), std::tuple_size<decltype(query_params)>::value);
+  for (std::size_t i = 0; i < params.size(); ++i) {
+    auto& param = params.at(i);
+    request.set_multiple_options(
+        AddQueryParameterOption(param.first, param.second));
+    RuntimeTupleRef(query_params, i) =
+        AddQueryParameterOption(param.first, param.second);
+  }
+
+  auto actual = google::cloud::internal::apply(
+      CreateV4SignedUrlApplyHelper{client, method_name, bucket_name,
+                                   object_name},
+      std::tuple_cat(
+          std::make_tuple(
+              SignedUrlTimestamp(google::cloud::internal::ParseRfc3339(date)),
+              SignedUrlDuration(valid_for),
+              AddExtensionHeader("host", "storage.googleapis.com")),
+          header_extensions, query_params));
 
   actual_string_to_sign = request.StringToSign(account_email);
   actual_canonical_request = request.CanonicalRequest(account_email);
