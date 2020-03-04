@@ -79,9 +79,28 @@ class V4SignedUrlConformanceTest
   }
 };
 
+/**
+ * Implementation of FixedSizeTuple.
+ *
+ * For a given number `N` > 0, and a non-empty list of types T..., this returns
+ * a std::tuple with the first type of `T...` repeated `N` times, followed by
+ * `T...`.
+ *
+ * This is effectively a recursion, where `N` indicates how many types are left
+ * to be prepended to the accumulator (`T...`).
+ *
+ * @tparam `N` how many times to prepend the first element of `T...` to the
+ *     resulting `std::tuple`'s instantiation type list; it should be a
+ *     `std::integral_constant<>` rather than a normal `int` to allow for
+ *     specializations (14.5.5)
+ * @tparam `Enable` a formal parameter to allow for using `std::enable_if`
+ * @tparam `T...` tail of the list of types with which the resulting
+ *     `std::tuple` will be instantiated
+ */
 template <typename N, typename Enable, typename... T>
 struct FixedSizeTupleImpl {};
 
+/// Recursive case - prepend a type to `T...` and decrease `N`.
 template <std::size_t N, typename T1, typename... T>
 struct FixedSizeTupleImpl<std::integral_constant<std::size_t, N>,
                           typename std::enable_if<(N > 1), void>::type, T1,
@@ -91,11 +110,13 @@ struct FixedSizeTupleImpl<std::integral_constant<std::size_t, N>,
                                   void, T1, T1, T...>::type;
 };
 
+/// End of recursion - instantiate the `std::tuple`.
 template <typename... T>
 struct FixedSizeTupleImpl<std::integral_constant<std::size_t, 1>, void, T...> {
   using type = std::tuple<T...>;
 };
 
+/// Create a tuple with `N` instances of `T`.
 template <std::size_t N, typename T>
 struct FixedSizeTuple {
   using type =
@@ -103,6 +124,27 @@ struct FixedSizeTuple {
                                   T>::type;
 };
 
+/**
+ * Implementation of `RuntimeTupleRef`.
+ *
+ * This is effectively a recursion which for a tuple of size `N` generates the
+ * following code:
+ * ```
+ * if (N == n) {
+ *   return std::get<N>(t);
+ * }
+ * if (N - 1 == n) {
+ *   return std::get<N>(t);
+ * }
+ * ....
+ * if (0 == n) {
+ *   return std::get<N>(t);
+ * }
+ * Terminate("Index out of range");
+ * ```
+ *
+ * `N` tracks how many more `if`s need to be generated.
+ */
 template <int N, typename T1, typename... T>
 struct RuntimeTupleRefImpl {
   T1& operator()(std::tuple<T1, T...>& t, std::size_t n) const {
@@ -113,6 +155,7 @@ struct RuntimeTupleRefImpl {
   }
 };
 
+/// Implementation of `RuntimeTupleRef` - end of recursion.
 template <typename T1, typename... T>
 struct RuntimeTupleRefImpl<-1, T1, T...> {
   T1& operator()(std::tuple<T1, T...>& /*t*/, std::size_t /*n*/) const {
@@ -120,6 +163,17 @@ struct RuntimeTupleRefImpl<-1, T1, T...> {
   }
 };
 
+/**
+ * Return the to n-th `std::tuple` element, where `n` is known only at runtime.
+ *
+ * @tparam T1 the type of the first element of the `std::tuple`
+ * @tparam T the types of the remaining `std::tuple`'s elements
+ *
+ * @param t the searched tuple
+ * @param idx the index of the searched element; if the index is invalid for the
+ *     given tuple `Terminate` is called
+ * @return reference to element `idx` in tuple `t`
+ */
 template <typename T1, typename... T>
 T1& RuntimeTupleRef(std::tuple<T1, T...>& t, std::size_t idx) {
   return RuntimeTupleRefImpl<std::tuple_size<std::tuple<T1, T...>>::value - 1,
