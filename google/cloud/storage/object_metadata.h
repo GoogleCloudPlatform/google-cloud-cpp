@@ -324,8 +324,7 @@ struct WithObjectMetadata
     : public internal::ComplexOption<WithObjectMetadata, ObjectMetadata> {
   using ComplexOption<WithObjectMetadata, ObjectMetadata>::ComplexOption;
   // g++ prior to version 7 has a bug which hides this ctor
-  WithObjectMetadata()
-      : internal::ComplexOption<WithObjectMetadata, ObjectMetadata>() {}
+  WithObjectMetadata() = default;
   static char const* name() { return "object-metadata"; }
 };
 
