@@ -530,6 +530,85 @@ TEST(V4SignedUrlRequests, VirtualHostnameWithBadHostname) {
   EXPECT_THAT(status.message(), HasSubstr("some-other-hostname"));
 }
 
+TEST(V4SignedUrlRequests, DomainNamedBucket) {
+  V4SignUrlRequest request("GET", "test-bucket", "test-object");
+  std::string const date = "2019-02-01T09:00:00Z";
+  auto const valid_for = std::chrono::seconds(10);
+  request.set_multiple_options(
+      SignedUrlTimestamp(google::cloud::internal::ParseRfc3339(date)),
+      SignedUrlDuration(valid_for), DomainNamedBucket("mydomain.tld"));
+  ASSERT_STATUS_OK(request.Validate());
+  request.AddMissingRequiredHeaders();
+  ASSERT_STATUS_OK(request.Validate());
+
+  std::string expected =
+      "GET\n"
+      "/test-object\n"
+      "X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=fake-client-id%"
+      "2F20190201%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date="
+      "20190201T090000Z&X-Goog-Expires=10&X-Goog-SignedHeaders=host\n"
+      "host:mydomain.tld\n"
+      "\n"
+      "host\n"
+      "UNSIGNED-PAYLOAD";
+  std::string actual = request.CanonicalRequest("fake-client-id");
+  EXPECT_EQ(expected, actual);
+}
+
+TEST(V4SignedUrlRequests, DomainNamedBucketWithManualHostname) {
+  V4SignUrlRequest request("GET", "test-bucket", "test-object");
+  std::string const date = "2019-02-01T09:00:00Z";
+  auto const valid_for = std::chrono::seconds(10);
+  request.set_multiple_options(
+      SignedUrlTimestamp(google::cloud::internal::ParseRfc3339(date)),
+      SignedUrlDuration(valid_for), DomainNamedBucket("mydomain.tld"),
+      AddExtensionHeader("host", "mydomain.tld"));
+  ASSERT_STATUS_OK(request.Validate());
+  request.AddMissingRequiredHeaders();
+  ASSERT_STATUS_OK(request.Validate());
+
+  std::string expected =
+      "GET\n"
+      "/test-object\n"
+      "X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=fake-client-id%"
+      "2F20190201%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date="
+      "20190201T090000Z&X-Goog-Expires=10&X-Goog-SignedHeaders=host\n"
+      "host:mydomain.tld\n"
+      "\n"
+      "host\n"
+      "UNSIGNED-PAYLOAD";
+  std::string actual = request.CanonicalRequest("fake-client-id");
+  EXPECT_EQ(expected, actual);
+}
+
+TEST(V4SignedUrlRequests, DomainNamedBucketWithBadHostname) {
+  V4SignUrlRequest request("GET", "test-bucket", "test-object");
+  std::string const date = "2019-02-01T09:00:00Z";
+  auto const valid_for = std::chrono::seconds(10);
+  request.set_multiple_options(
+      SignedUrlTimestamp(google::cloud::internal::ParseRfc3339(date)),
+      SignedUrlDuration(valid_for), DomainNamedBucket("mydomain.tld"),
+      AddExtensionHeader("host", "some-other-hostname"));
+  auto status = request.Validate();
+  ASSERT_FALSE(status.ok());
+  EXPECT_EQ(StatusCode::kInvalidArgument, status.code());
+  EXPECT_THAT(status.message(), HasSubstr("some-other-hostname"));
+}
+
+TEST(V4SignedUrlRequests, DomainNamedBucketXORVirtualHostname) {
+  V4SignUrlRequest request("GET", "test-bucket", "test-object");
+  std::string const date = "2019-02-01T09:00:00Z";
+  auto const valid_for = std::chrono::seconds(10);
+  request.set_multiple_options(
+      SignedUrlTimestamp(google::cloud::internal::ParseRfc3339(date)),
+      SignedUrlDuration(valid_for), DomainNamedBucket("mydomain.tld"),
+      VirtualHostname(true));
+  auto status = request.Validate();
+  ASSERT_FALSE(status.ok());
+  EXPECT_EQ(StatusCode::kInvalidArgument, status.code());
+  EXPECT_THAT(status.message(), HasSubstr("simultaneously"));
+}
+
 TEST(DefaultCtorsWork, Trivial) {
   EXPECT_FALSE(ExpirationTime().has_value());
   EXPECT_FALSE(AddExtensionHeaderOption().has_value());
@@ -540,6 +619,7 @@ TEST(DefaultCtorsWork, Trivial) {
   EXPECT_FALSE(SigningAccount().has_value());
   EXPECT_FALSE(SigningAccountDelegates().has_value());
   EXPECT_FALSE(VirtualHostname().has_value());
+  EXPECT_FALSE(DomainNamedBucket().has_value());
 }
 
 }  // namespace

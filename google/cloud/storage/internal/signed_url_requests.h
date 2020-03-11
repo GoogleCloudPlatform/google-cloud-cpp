@@ -295,6 +295,8 @@ class V4SignUrlRequest {
 
   void SetOption(VirtualHostname const& hostname);
 
+  void SetOption(DomainNamedBucket const& o);
+
   std::string CanonicalRequestHash(std::string const& client_id) const;
 
   std::string Scope() const;
@@ -309,10 +311,15 @@ class V4SignUrlRequest {
 
   std::string PayloadHashValue() const;
 
+  bool SkipBucketInPath() const {
+    return virtual_host_name_ || domain_named_bucket_;
+  }
+
   SignUrlRequestCommon common_request_;
   std::chrono::system_clock::time_point timestamp_;
   std::chrono::seconds expires_;
   bool virtual_host_name_;
+  optional<std::string> domain_named_bucket_;
 };
 
 std::ostream& operator<<(std::ostream& os, V4SignUrlRequest const& r);
