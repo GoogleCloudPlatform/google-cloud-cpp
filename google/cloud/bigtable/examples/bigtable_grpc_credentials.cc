@@ -70,9 +70,7 @@ void AccessToken(int argc, char* argv[]) {
                           instance_id);
 
     auto tables = admin.ListTables(cbt::TableAdmin::NAME_ONLY);
-    if (!tables) {
-      throw std::runtime_error(tables.status().message());
-    }
+    if (!tables) throw std::runtime_error(tables.status().message());
   }
   //! [test access token]
   (std::move(project_id), std::move(instance_id), std::move(access_token));
@@ -115,9 +113,7 @@ void JWTAccessToken(int argc, char* argv[]) {
                           instance_id);
 
     auto tables = admin.ListTables(cbt::TableAdmin::NAME_ONLY);
-    if (!tables) {
-      throw std::runtime_error(tables.status().message());
-    }
+    if (!tables) throw std::runtime_error(tables.status().message());
   }
   //! [test jwt access token]
   (std::move(project_id), std::move(instance_id),
@@ -147,9 +143,7 @@ void GCECredentials(int argc, char* argv[]) {
                           instance_id);
 
     auto tables = admin.ListTables(cbt::TableAdmin::NAME_ONLY);
-    if (!tables) {
-      throw std::runtime_error(tables.status().message());
-    }
+    if (!tables) throw std::runtime_error(tables.status().message());
   }
   //! [test gce credentials]
   (std::move(project_id), std::move(instance_id));
@@ -161,9 +155,9 @@ int main(int argc, char* argv[]) try {
   using CommandType = std::function<void(int, char*[])>;
 
   std::map<std::string, CommandType> commands = {
-      {"test-access-token", &AccessToken},
-      {"test-jwt-access-token", &JWTAccessToken},
-      {"test-gce-credentials", &GCECredentials},
+      {"test-access-token", AccessToken},
+      {"test-jwt-access-token", JWTAccessToken},
+      {"test-gce-credentials", GCECredentials},
   };
 
   {
