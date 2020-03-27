@@ -38,6 +38,21 @@ TEST(PolicyDocumentRequest, SigningAccount) {
               ::testing::ElementsAre("test-delegate1", "test-delegate2"));
 }
 
+TEST(PolicyDocumentV4Request, SigningAccount) {
+  PolicyDocumentV4Request request;
+  EXPECT_FALSE(request.signing_account().has_value());
+  EXPECT_FALSE(request.signing_account_delegates().has_value());
+
+  request.set_multiple_options(
+      SigningAccount("another-account@example.com"),
+      SigningAccountDelegates({"test-delegate1", "test-delegate2"}));
+  ASSERT_TRUE(request.signing_account().has_value());
+  ASSERT_TRUE(request.signing_account_delegates().has_value());
+  EXPECT_EQ("another-account@example.com", request.signing_account().value());
+  EXPECT_THAT(request.signing_account_delegates().value(),
+              ::testing::ElementsAre("test-delegate1", "test-delegate2"));
+}
+
 }  // namespace
 }  // namespace internal
 }  // namespace STORAGE_CLIENT_NS

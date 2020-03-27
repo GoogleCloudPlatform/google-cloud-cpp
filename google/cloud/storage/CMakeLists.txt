@@ -225,6 +225,7 @@ add_library(
     version_info.h
     well_known_headers.cc
     well_known_headers.h
+    well_known_parameters.cc
     well_known_parameters.h)
 target_link_libraries(
     storage_client

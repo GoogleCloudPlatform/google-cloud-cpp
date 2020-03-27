@@ -54,12 +54,38 @@ std::ostream& operator<<(std::ostream& os, PolicyDocument const& rhs) {
   return os << "]}";
 }
 
+std::ostream& operator<<(std::ostream& os, PolicyDocumentV4 const& rhs) {
+  os << "PolicyDocumentV4={";
+
+  os << "bucket=" << rhs.bucket << ", object=" << rhs.object
+     << ", expiration=" << rhs.expiration.count()
+     << ", timestamp=" << google::cloud::internal::FormatRfc3339(rhs.timestamp)
+     << ", ";
+  os << "conditions=[";
+  for (auto i = 0U; i != rhs.conditions.size(); ++i) {
+    os << rhs.conditions[i];
+    if (i + 1 < rhs.conditions.size()) {
+      os << ", ";
+    }
+  }
+  return os << "]}";
+}
+
 std::ostream& operator<<(std::ostream& os, PolicyDocumentResult const& rhs) {
   return os << "PolicyDocumentResult={"
             << "access_id=" << rhs.access_id << ", expiration="
             << google::cloud::internal::FormatRfc3339(rhs.expiration)
             << ", policy=" << rhs.policy << ", signature=" << rhs.signature
             << "}";
+}
+
+std::ostream& operator<<(std::ostream& os, PolicyDocumentV4Result const& rhs) {
+  return os << "PolicyDocumentV4Result={"
+            << "url=" << rhs.url << ", access_id=" << rhs.access_id
+            << ", expiration="
+            << google::cloud::internal::FormatRfc3339(rhs.expiration)
+            << ", policy=" << rhs.policy << ", signature=" << rhs.signature
+            << ", signing_algorithm=" << rhs.signing_algorithm << "}";
 }
 }  // namespace STORAGE_CLIENT_NS
 }  // namespace storage
