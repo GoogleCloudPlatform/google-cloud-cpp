@@ -34,7 +34,7 @@ echo "${COLOR_YELLOW}$(date -u): Update or install dependencies.${COLOR_RESET}"
 
 brew_env=()
 if [[ "${KOKORO_JOB_TYPE:-}" == "PRESUBMIT_GITHUB" ]]; then
-  brew_env+=("HOMEBREW_NO_AUTO_UPDATE=1")
+  brew_env+=() # TODO(coryan) - test only ("HOMEBREW_NO_AUTO_UPDATE=1")
 fi
 env ${brew_env[@]+"${brew_env[@]}"} brew install libressl
 
