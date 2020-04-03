@@ -17,8 +17,17 @@
 #include "google/cloud/storage/internal/nljson.h"
 #include "google/cloud/storage/internal/openssl_util.h"
 #include "google/cloud/internal/format_time_point.h"
+#if GOOGLE_CLOUD_STORAGE_HAVE_CODECVT
+#include <codecvt>
+#include <locale>
+#endif  // GOOGLE_CLOUD_STORAGE_HAVE_CODECVT
 #include <iomanip>
 #include <sstream>
+
+// Some MSVC versions need this.
+#if (!_DLL) && (_MSC_VER >= 1900) && (_MSC_VER <= 1911)
+std::locale::id std::codecvt<char16_t, char, _Mbstatet>::id;
+#endif
 
 namespace google {
 namespace cloud {
@@ -54,6 +63,60 @@ internal::nl::json TransformConditions(
   return res;
 }
 }  // namespace
+
+#if GOOGLE_CLOUD_STORAGE_HAVE_CODECVT
+StatusOr<std::string> PostPolicyV4Escape(std::string const& utf8_bytes) {
+  std::string result;
+
+  std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+  auto utf32 = conv.from_bytes(utf8_bytes);
+  for (char32_t c : utf32) {
+    // '$' is not escaped due to b/143897847.
+    switch (c) {
+      case '\\':
+        result.append("\\\\");
+        break;
+      case '\b':
+        result.append("\\b");
+        break;
+      case '\f':
+        result.append("\\f");
+        break;
+      case '\n':
+        result.append("\\n");
+        break;
+      case '\r':
+        result.append("\\r");
+        break;
+      case '\t':
+        result.append("\\t");
+        break;
+      case '\v':
+        result.append("\\v");
+        break;
+      default:
+        // All unicode characters should be encoded as \udead.
+        std::ostringstream os;
+        char32_t constexpr kMaxAsciiChar = 127;
+        if (c > kMaxAsciiChar) {
+          os << "\\u" << std::setw(4) << std::setfill('0') << std::hex
+             << static_cast<std::uint32_t>(c);
+          result.append(os.str());
+        } else {
+          result.append(1, static_cast<char>(c));
+        }
+        break;
+    }
+  }
+  return result;
+}
+#else   // GOOGLE_CLOUD_STORAGE_HAVE_CODECVT
+StatusOr<std::string> PostPolicyV4Escape(std::string const&) {
+  return Status(StatusCode::kUnimplemented,
+                "Signing POST policies is unavailable with this compiler due "
+                "to the lack of `codecvt` header.");
+}
+#endif  // GOOGLE_CLOUD_STORAGE_HAVE_CODECVT
 
 std::string PolicyDocumentRequest::StringToSign() const {
   using internal::nl::json;

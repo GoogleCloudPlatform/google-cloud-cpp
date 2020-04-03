@@ -54,6 +54,17 @@ TEST(PolicyDocumentV4Request, SigningAccount) {
               ::testing::ElementsAre("test-delegate1", "test-delegate2"));
 }
 
+TEST(PostPolicyV4EscapeTest, Simple) {
+#if GOOGLE_CLOUD_STORAGE_HAVE_CODECVT
+  EXPECT_EQ("\127\065abcd$", *PostPolicyV4Escape("\127\065abcd$"));
+  EXPECT_EQ("\\\\\\b\\f\\n\\r\\t\\v\\u0128\\uabcd",
+            *PostPolicyV4Escape("\\\b\f\n\r\t\v\u0128\uabcd"));
+#else   // GOOGLE_CLOUD_STORAGE_HAVE_CODECVT
+  EXPECT_EQ(StatusCode::kUnimplemented,
+            PostPolicyV4Escape("whatever").status().code());
+#endif  // GOOGLE_CLOUD_STORAGE_HAVE_CODECVT
+}
+
 TEST(PolicyDocumentV4Request, Printing) {
   PolicyDocumentV4 doc;
   doc.bucket = "test-bucket";
