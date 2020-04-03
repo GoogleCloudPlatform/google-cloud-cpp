@@ -267,7 +267,9 @@ TEST_P(V4PostPolicyConformanceTest, V4PostPolicy) {
   std::string const expected_date = fields["x-goog-date"];
   std::string const expected_signature = fields["x-goog-signature"];
   std::string const expected_policy = fields["policy"];
-  std::string const expected_decoded_policy = output["expectedDecodedPolicy"];
+  // We need to escape it because nl::json interprets the escaped characters.
+  std::string const expected_decoded_policy =
+      *internal::PostPolicyV4Escape(output["expectedDecodedPolicy"]);
 
   auto headers = ExtractFields(input);
 
@@ -405,6 +407,7 @@ int main(int argc, char* argv[]) {
       std::map<std::string, google::cloud::storage::internal::nl::json>>();
   google::cloud::storage::post_policy_tests = post_policy_tests_destroyer.get();
 
+#if GOOGLE_CLOUD_CPP_HAVE_CODECVT
   auto post_policy_tests_json = json["postPolicyV4Tests"];
   if (!post_policy_tests_json.is_array()) {
     std::cerr << "Expected an obects' value to be arrays, found: "
@@ -434,10 +437,6 @@ int main(int argc, char* argv[]) {
                  back_inserter(name), [](char c) {
                    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
                  });
-    if (name == "POSTPolicyCharacterEscaping") {
-      // TODO(3635): Remove once proper escaping is implemented.
-      continue;
-    }
     bool inserted =
         google::cloud::storage::post_policy_tests->emplace(name, j_obj.value())
             .second;
@@ -445,6 +444,7 @@ int main(int argc, char* argv[]) {
       std::cerr << "Duplicate test description: " << name << "\n";
     }
   }
+#endif  // GOOGLE_CLOUD_CPP_HAVE_CODECVT
 
   google::cloud::testing_util::InitGoogleMock(argc, argv);
 
