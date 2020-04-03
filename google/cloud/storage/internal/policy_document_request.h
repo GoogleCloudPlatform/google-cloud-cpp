@@ -27,7 +27,7 @@ namespace storage {
 inline namespace STORAGE_CLIENT_NS {
 namespace internal {
 
-StatusOr<std::string> PostPolicyV4Escape(std::string const& utf8_bytes);
+std::string PostPolicyV4Escape(std::string const& utf8_bytes);
 
 /**
  * Creates a policy document.

@@ -17,6 +17,7 @@
 #include "google/cloud/storage/internal/nljson.h"
 #include "google/cloud/storage/internal/openssl_util.h"
 #include "google/cloud/internal/format_time_point.h"
+#include <codecvt>
 #include <iomanip>
 #include <sstream>
 
@@ -54,6 +55,49 @@ internal::nl::json TransformConditions(
   return res;
 }
 }  // namespace
+
+std::string PostPolicyV4Escape(std::string const& utf8_bytes) {
+  std::stringstream stream;
+
+  std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+  for (char32_t c : conv.from_bytes(utf8_bytes)) {
+    // '$' is not escaped due to b/143897847.
+    switch (c) {
+      case '\\':
+        stream << "\\\\";
+        break;
+      case '\b':
+        stream << "\\b";
+        break;
+      case '\f':
+        stream << "\\f";
+        break;
+      case '\n':
+        stream << "\\n";
+        break;
+      case '\r':
+        stream << "\\r";
+        break;
+      case '\t':
+        stream << "\\t";
+        break;
+      case '\v':
+        stream << "\\v";
+        break;
+      default:
+        // All unicode characters should be encoded as \udead.
+        char32_t const k_max_ascii_char = 127;
+        if (c > k_max_ascii_char) {
+          stream << "\\u" << std::setw(4) << std::setfill('0') << std::hex
+                 << static_cast<std::uint32_t>(c);
+        } else {
+          stream << static_cast<char>(c);
+        }
+        break;
+    }
+  }
+  return stream.str();
+}
 
 std::string PolicyDocumentRequest::StringToSign() const {
   using internal::nl::json;
