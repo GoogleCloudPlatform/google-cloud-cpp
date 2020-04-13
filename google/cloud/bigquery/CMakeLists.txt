@@ -18,12 +18,12 @@ find_package(google_cloud_cpp_common CONFIG REQUIRED)
 find_package(google_cloud_cpp_grpc_utils CONFIG REQUIRED)
 
 include(EnableClangTidy)
-include(EnableWerror)
+# include(EnableWerror)
 set(DOXYGEN_PROJECT_NAME "Google Cloud BigQuery C++ Client")
 set(DOXYGEN_PROJECT_BRIEF "A C++ Client Library for Google Cloud BigQuery")
 set(DOXYGEN_PROJECT_NUMBER "${BIGQUERY_CLIENT_VERSION}")
 set(DOXYGEN_EXAMPLE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/samples)
-include(EnableDoxygen)
+# include(EnableDoxygen)
 
 # Define a function to fetch the current git revision. Using a function creates
 # a new scope, so the CMake variables do not leak to the global namespace.
