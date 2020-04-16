@@ -43,7 +43,6 @@ load(":storage_examples_unit_tests.bzl", "storage_examples_unit_tests")
     ],
 ) for test in storage_examples_unit_tests]
 
-load(":storage_examples.bzl", "storage_examples")
 load(":storage_autorun_examples.bzl", "storage_autorun_examples")
 
 auto_runnable_tags = [
@@ -66,4 +65,4 @@ integration_test_tags = [
         "@com_github_googleapis_google_cloud_cpp_common//google/cloud/testing_util:google_cloud_cpp_testing",
         "@com_google_googletest//:gtest",
     ],
-) for test in storage_examples + storage_autorun_examples]
+) for test in storage_autorun_examples]
