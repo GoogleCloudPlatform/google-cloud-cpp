@@ -14,19 +14,83 @@
 
 #include "google/cloud/storage/testing/storage_integration_test.h"
 #include "google/cloud/internal/getenv.h"
+#include "google/cloud/status.h"
+#include "google/cloud/testing_util/assert_ok.h"
+#include <gmock/gmock.h>
+#include <cstdlib>
+#ifdef __unix__
+#include <dirent.h>
+#endif  // __unix__
 
 namespace google {
 namespace cloud {
 namespace storage {
 namespace testing {
+namespace {
 
-google::cloud::StatusOr<google::cloud::storage::Client>
-StorageIntegrationTest::MakeIntegrationTestClient() {
+using ::google::cloud::internal::GetEnv;
+using ::google::cloud::internal::Sample;
+
+StatusOr<std::size_t> GetNumEntries(std::string const& path) {
+#ifdef __unix__
+  DIR* dir = opendir(path.c_str());
+  if (dir == nullptr) {
+    return Status(StatusCode::kInternal, "Failed to open directory \"" + path +
+                                             "\": " + strerror(errno));
+  }
+  std::size_t count = 0;
+  while (readdir(dir)) {
+    ++count;
+  }
+  closedir(dir);
+  return count;
+#else   // __unix__
+  return Status(StatusCode::kUnimplemented,
+                "Can't check #entries in " + path +
+                    ", because only UNIX systems are supported");
+#endif  // __unix__
+}
+
+}  // anonymous namespace
+
+StatusOr<std::size_t> StorageIntegrationTest::GetNumOpenFiles() {
+  auto res = GetNumEntries("/proc/self/fd");
+  if (!res) return res;
+  if (*res < 3) {
+    return Status(StatusCode::kInternal,
+                  "Expected at least three entries in /proc/self/fd: ., .., "
+                  "and /proc/self/fd itself, found " +
+                      std::to_string(*res));
+  }
+  return *res - 3;
+}
+
+void StorageIntegrationTest::SetUp() {
+  client_ = MakeIntegrationTestClient();
+  ASSERT_STATUS_OK(client_);
+
+  project_id_ = GetEnv("GOOGLE_CLOUD_PROJECT").value_or("");
+  ASSERT_FALSE(project_id_.empty());
+
+  bucket_name_ =
+      GetEnv("GOOGLE_CLOUD_CPP_STORAGE_TEST_BUCKET_NAME").value_or("");
+  ASSERT_FALSE(bucket_name_.empty());
+
+  test_service_account_ =
+      GetEnv("GOOGLE_CLOUD_CPP_STORAGE_TEST_SERVICE_ACCOUNT").value_or("");
+  ASSERT_FALSE(test_service_account_.empty());
+
+  test_signing_service_account_ =
+      GetEnv("GOOGLE_CLOUD_CPP_STORAGE_TEST_SIGNING_SERVICE_ACCOUNT")
+          .value_or("");
+  ASSERT_FALSE(test_signing_service_account_.empty());
+}
+
+StatusOr<Client> StorageIntegrationTest::MakeIntegrationTestClient() {
   return MakeIntegrationTestClient(TestRetryPolicy());
 }
 
-google::cloud::StatusOr<google::cloud::storage::Client>
-StorageIntegrationTest::MakeIntegrationTestClient(
+StatusOr<Client> StorageIntegrationTest::MakeIntegrationTestClient(
     std::unique_ptr<RetryPolicy> retry_policy) {
   auto options = ClientOptions::CreateDefaultClientOptions();
   if (!options) {
@@ -34,8 +98,7 @@ StorageIntegrationTest::MakeIntegrationTestClient(
   }
 
   auto backoff = TestBackoffPolicy();
-  auto idempotency =
-      google::cloud::internal::GetEnv("CLOUD_STORAGE_IDEMPOTENCY");
+  auto idempotency = GetEnv("CLOUD_STORAGE_IDEMPOTENCY");
   if (!idempotency || *idempotency == "always-retry") {
     return Client(*std::move(options), *retry_policy, *backoff);
   }
@@ -67,11 +130,16 @@ std::unique_ptr<RetryPolicy> StorageIntegrationTest::TestRetryPolicy() {
 
 std::string StorageIntegrationTest::MakeRandomObjectName() {
   return "ob-" +
-         google::cloud::internal::Sample(generator_, 16,
-                                         "abcdefghijklmnopqrstuvwxyz"
-                                         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                                         "012456789") +
+         Sample(generator_, 16,
+                "abcdefghijklmnopqrstuvwxyz"
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                "012456789") +
          ".txt";
+}
+
+std::string StorageIntegrationTest::MakeEntityName() const {
+  // We always use the viewers for the project because it is known to exist.
+  return "project-viewers-" + project_id_;
 }
 
 std::string StorageIntegrationTest::LoremIpsum() const {
@@ -102,14 +170,12 @@ std::string StorageIntegrationTest::MakeRandomBucketName() {
   static std::size_t const kMaxBucketNameLength = 63;
   std::size_t const max_random_characters =
       kMaxBucketNameLength - prefix.size();
-  return prefix + google::cloud::internal::Sample(
-                      generator_, static_cast<int>(max_random_characters),
-                      "abcdefghijklmnopqrstuvwxyz012456789");
+  return prefix + Sample(generator_, static_cast<int>(max_random_characters),
+                         "abcdefghijklmnopqrstuvwxyz012456789");
 }
 
 bool StorageIntegrationTest::UsingTestbench() const {
-  return google::cloud::internal::GetEnv("CLOUD_STORAGE_TESTBENCH_ENDPOINT")
-      .has_value();
+  return GetEnv("CLOUD_STORAGE_TESTBENCH_ENDPOINT").has_value();
 }
 
 void StorageIntegrationTest::WriteRandomLines(std::ostream& upload,
@@ -121,8 +187,7 @@ void StorageIntegrationTest::WriteRandomLines(std::ostream& upload,
         "abcdefghijklmnopqrstuvwxyz"
         "0123456789"
         ".,/;:'[{]}=+-_}]`~!@#$%^&*()";
-    return google::cloud::internal::Sample(generator_, line_size - 1,
-                                           characters);
+    return Sample(generator_, line_size - 1, characters);
   };
 
   for (int line = 0; line != line_count; ++line) {
@@ -140,8 +205,7 @@ std::string StorageIntegrationTest::MakeRandomData(std::size_t desired_size) {
         "abcdefghijklmnopqrstuvwxyz"
         "0123456789"
         ".,/;:'[{]}=+-_}]`~!@#$%^&*()";
-    return google::cloud::internal::Sample(
-               generator_, static_cast<int>(line_size - 1), characters) +
+    return Sample(generator_, static_cast<int>(line_size - 1), characters) +
            "\n";
   };
 
@@ -154,6 +218,13 @@ std::string StorageIntegrationTest::MakeRandomData(std::size_t desired_size) {
     text += generate_random_line(desired_size - text.size());
   }
   return text;
+}
+
+void StorageIntegrationTestWithHmacServiceAccount::SetUp() {
+  StorageIntegrationTest::SetUp();
+  service_account_ =
+      GetEnv("GOOGLE_CLOUD_CPP_STORAGE_TEST_HMAC_SERVICE_ACCOUNT").value_or("");
+  ASSERT_FALSE(service_account_.empty());
 }
 
 }  // namespace testing
