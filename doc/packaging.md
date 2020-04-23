@@ -291,6 +291,13 @@ We can now compile, test, and install `google-cloud-cpp`.
 
 ```bash
 cd $HOME/project
+cmake -H. -Bcmake-out
+cmake --build cmake-out -- -j "${NCPU:-4}"
+cd $HOME/project/cmake-out
+ctest -LE integration-tests --output-on-failure
+sudo cmake --build . --target install
+```
+
 
 ### openSUSE (Tumbleweed)
 
@@ -298,7 +305,7 @@ Install the minimal development tools, libcurl and OpenSSL:
 
 ```bash
 sudo zypper refresh && \
-sudo zypper install --allow-downgrade -y cmake gcc gcc-c++ git gzip \
+sudo zypper install --allow-downgrade -y ccache cmake gcc gcc-c++ git gzip \
         libcurl-devel libopenssl-devel make tar wget zlib-devel
 ```
 
@@ -411,8 +418,8 @@ workstation or build server.
 
 ```bash
 sudo zypper refresh && \
-sudo zypper install --allow-downgrade -y automake cmake gcc gcc-c++ git gzip \
-        libcurl-devel libopenssl-devel libtool make tar wget which
+sudo zypper install --allow-downgrade -y automake ccache cmake gcc gcc-c++ git \
+        gzip libcurl-devel libopenssl-devel libtool make tar wget which
 ```
 
 The following steps will install libraries and tools in `/usr/local`. openSUSE
@@ -701,7 +708,7 @@ Install the minimal development tools, libcurl, OpenSSL and libc-ares:
 ```bash
 sudo apt-get update && \
 sudo apt-get --no-install-recommends install -y apt-transport-https apt-utils \
-        automake build-essential cmake ca-certificates git gcc g++ cmake \
+        automake build-essential ccache cmake ca-certificates git gcc g++ \
         libc-ares-dev libc-ares2 libcurl4-openssl-dev libssl-dev m4 make \
         pkg-config tar wget zlib1g-dev
 ```
@@ -833,7 +840,7 @@ Install the minimal development tools, OpenSSL and libcurl:
 ```bash
 sudo apt-get update && \
 sudo apt-get --no-install-recommends install -y apt-transport-https apt-utils \
-        automake build-essential cmake ca-certificates git gcc g++ cmake \
+        automake build-essential ccache cmake ca-certificates git gcc g++ \
         libcurl4-openssl-dev libssl-dev libtool m4 make \
         pkg-config tar wget zlib1g-dev
 ```
@@ -987,9 +994,9 @@ prevent you from compiling against openssl-1.1.0.
 ```bash
 sudo apt-get update && \
 sudo apt-get --no-install-recommends install -y apt-transport-https apt-utils \
-        automake build-essential cmake ca-certificates git gcc g++ cmake libc-ares-dev \
-        libc-ares2 libcurl4-openssl-dev libssl1.0-dev make m4 pkg-config tar \
-        wget zlib1g-dev
+        automake build-essential ccache cmake ca-certificates git gcc g++ \
+        libc-ares-dev libc-ares2 libcurl4-openssl-dev libssl1.0-dev make m4 \
+        pkg-config tar wget zlib1g-dev
 ```
 
 #### Protobuf
@@ -1268,3 +1275,10 @@ We can now compile, test, and install `google-cloud-cpp`.
 
 ```bash
 cd $HOME/project
+cmake -H. -Bcmake-out
+cmake --build cmake-out -- -j "${NCPU:-4}"
+cd $HOME/project/cmake-out
+ctest -LE integration-tests --output-on-failure
+sudo cmake --build . --target install
+```
+
