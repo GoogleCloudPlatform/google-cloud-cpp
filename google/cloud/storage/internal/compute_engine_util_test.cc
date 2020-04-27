@@ -57,6 +57,16 @@ TEST_F(ComputeEngineUtilTest, CanOverrideGceMetadataHostname) {
   EXPECT_EQ(std::string("metadata.google.internal"), GceMetadataHostname());
 }
 
+///@test Check if name resolution works - successful case.
+TEST(ComputeEngineUtilResolveTest, Success) {
+  EXPECT_TRUE(ResolvesToIpAddress("google.com"));
+}
+
+///@test Check if name resolution works - negative case.
+TEST(ComputeEngineUtilResolveTest, Failure) {
+  EXPECT_FALSE(ResolvesToIpAddress(".invalid"));
+}
+
 }  // namespace
 }  // namespace internal
 }  // namespace STORAGE_CLIENT_NS

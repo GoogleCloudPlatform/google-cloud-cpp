@@ -15,11 +15,18 @@
 #include "google/cloud/storage/internal/compute_engine_util.h"
 #include "google/cloud/internal/getenv.h"
 #include "google/cloud/log.h"
+#include <cstring>
 #include <string>
 #if _WIN32
+#include <WS2tcpip.h>
 #include <Windows.h>
+#include <windns.h>
+#include <winsock2.h>
 #else  // On Linux
+#include <sys/socket.h>
+#include <sys/types.h>
 #include <fstream>
+#include <netdb.h>
 #endif  // _WIN32
 
 namespace google {
@@ -37,13 +44,8 @@ std::string GceMetadataHostname() {
   return "metadata.google.internal";
 }
 
-bool RunningOnComputeEngineVm() {
-  // Allow overriding this value for integration tests.
-  auto override_val = google::cloud::internal::GetEnv(GceCheckOverrideEnvVar());
-  if (override_val.has_value()) {
-    return std::string("1") == *override_val;
-  }
-
+namespace {
+bool SystemProductIsComputeEngine() {
 #if _WIN32
   // These values came from a GCE VM running Windows Server 2012 R2.
   std::wstring const reg_key_path = L"SYSTEM\\HardwareConfig\\Current\\";
@@ -101,6 +103,55 @@ bool RunningOnComputeEngineVm() {
   std::getline(is, first_line);
   return first_line == gce_product_name;
 #endif  // _WIN32
+}
+}  // namespace
+
+bool ResolvesToIpAddress(std::string const& name) {
+#if _WIN32
+  // Windows requires winsock initializtion.
+  WSADATA wsaData;
+  int win_res = WSAStartup(MAKEWORD(2, 2), &wsaData);
+  if (win_res != 0) {
+    return false;
+  }
+  struct DeinitWinSock {
+    ~DeinitWinSock() { WSACleanup(); }
+  };
+  DeinitWinSock deinit_winsock;
+#endif  // _WIN32
+
+  struct addrinfo hints;
+  memset(&hints, 0, sizeof(struct addrinfo));
+  hints.ai_family = AF_UNSPEC;
+
+  addrinfo* result;
+  int res = getaddrinfo(name.c_str(), nullptr, &hints, &result);
+  if (res != 0) {
+    return false;
+  }
+  struct AddrInfoDeleter {
+    void operator()(addrinfo* p) { freeaddrinfo(p); }
+  };
+  std::unique_ptr<addrinfo, AddrInfoDeleter> addr_info_deleter(result);
+
+  for (addrinfo* rp = result; rp != nullptr; rp = rp->ai_next) {
+    if (rp->ai_family == AF_INET || rp->ai_family == AF_INET6) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool RunningOnComputeEngineVm() {
+  // Allow overriding this value for integration tests.
+  auto override_val = google::cloud::internal::GetEnv(GceCheckOverrideEnvVar());
+  if (override_val.has_value()) {
+    return std::string("1") == *override_val;
+  }
+  if (SystemProductIsComputeEngine()) {
+    return true;
+  }
+  return ResolvesToIpAddress("metadata.google.internal");
 }
 
 }  // namespace internal

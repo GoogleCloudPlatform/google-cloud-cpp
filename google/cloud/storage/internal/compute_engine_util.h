@@ -58,6 +58,14 @@ inline char const* GceMetadataHostnameEnvVar() {
  */
 bool RunningOnComputeEngineVm();
 
+/**
+ * Check if a name resolves to an address.
+ *
+ * This is only an implementation detail `RunningOnComputeEngineVm` exposed for
+ * testing purposes only.
+ */
+bool ResolvesToIpAddress(std::string const& name);
+
 }  // namespace internal
 }  // namespace STORAGE_CLIENT_NS
 }  // namespace storage
