@@ -117,8 +117,7 @@ TEST_P(V4SignedUrlConformanceTest, V4SignJson) {
     url_style = j_obj["urlStyle"];
   }
   std::string const date = j_obj["timestamp"];
-  auto const valid_for =
-      std::chrono::seconds(std::stoi(j_obj["expiration"].get<std::string>()));
+  auto const valid_for = std::chrono::seconds(j_obj["expiration"].get<int>());
   std::string const expected = j_obj["expectedUrl"];
   std::string const expected_canonical_request =
       j_obj["expectedCanonicalRequest"];
