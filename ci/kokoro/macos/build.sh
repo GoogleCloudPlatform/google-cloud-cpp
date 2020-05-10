@@ -127,17 +127,22 @@ readonly CACHE_NAME
 echo "================================================================"
 io::log_yellow "starting build script."
 
-if "${driver_script}" "${script_flags[@]}"; then
-  io::log_green "build script was successful."
-  exit_status=0
+# macOS uses Bash 3, which treats empty arrays as unset, so we have to invoke
+# the driver script differently depending on whether or not we have flags.
+if [[ ${#script_flags[@]} -gt 0 ]]; then
+  "${driver_script}" "${script_flags[@]}"
+  exit_status=$?
 else
-  io::log_red "build script reported errors."
-  exit_status=1
+  "${driver_script}"
+  exit_status=$?
 fi
 
 if [[ "${exit_status}" -eq 0 ]]; then
+  io::log_green "build script was successful."
   "${PROJECT_ROOT}/ci/kokoro/macos/upload-cache.sh" \
     "${CACHE_FOLDER}" "${CACHE_NAME}" || true
+else
+  io::log_red "build script reported errors."
 fi
 
 exit ${exit_status}
