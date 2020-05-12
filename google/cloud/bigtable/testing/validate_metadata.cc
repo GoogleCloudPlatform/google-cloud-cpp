@@ -52,6 +52,11 @@ namespace {
  */
 std::multimap<std::string, std::string> GetMetadata(
     grpc::ClientContext& context) {
+  // Set the deadline to far in the future. This trick doesn't work if the
+  // context is already expired.
+  context.set_deadline(std::chrono::system_clock::now() +
+                       std::chrono::hours(24));
+
   // Start the generic server.
   grpc::ServerBuilder builder;
   grpc::AsyncGenericService generic_service;
