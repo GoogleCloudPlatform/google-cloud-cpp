@@ -47,6 +47,9 @@ namespace internal {
 class NonResumableParallelUploadState;
 class ResumableParallelUploadState;
 }  // namespace internal
+namespace testing {
+class ClientTester;
+}  // namespace testing
 /**
  * The Google Cloud Storage (GCS) Client.
  *
@@ -3096,6 +3099,7 @@ class Client {
 
   friend class internal::NonResumableParallelUploadState;
   friend class internal::ResumableParallelUploadState;
+  friend class testing::ClientTester;
 };
 
 /**
