@@ -40,10 +40,14 @@ class Row {
 
   /// Return the row key. The returned value is not valid
   /// after this object is deleted.
-  RowKeyType const& row_key() const { return row_key_; }
+  RowKeyType const& row_key() const& { return row_key_; }
+  /// Return the row key.
+  RowKeyType row_key() && { return std::move(row_key_); }
 
   /// Return all cells.
-  std::vector<Cell> const& cells() const { return cells_; }
+  std::vector<Cell> const& cells() const& { return cells_; }
+  /// Return all cells.
+  std::vector<Cell> cells() && { return std::move(cells_); }
 
  private:
   RowKeyType row_key_;
