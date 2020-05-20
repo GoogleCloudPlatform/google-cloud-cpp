@@ -125,16 +125,24 @@ class Cell {
 
   /// Return the row key this cell belongs to. The returned value is not valid
   /// after this object is deleted.
-  RowKeyType const& row_key() const { return row_key_; }
+  RowKeyType const& row_key() const& { return row_key_; }
+  /// Return the row key this cell belongs to.
+  RowKeyType row_key() && { return std::move(row_key_); }
 
   /// Return the family this cell belongs to. The returned value is not valid
   /// after this object is deleted.
-  std::string const& family_name() const { return family_name_; }
+  std::string const& family_name() const& { return family_name_; }
+  /// Return the family this cell belongs to.
+  std::string family_name() && { return std::move(family_name_); }
 
   /// Return the column this cell belongs to. The returned value is not valid
   /// after this object is deleted.
-  ColumnQualifierType const& column_qualifier() const {
+  ColumnQualifierType const& column_qualifier() const& {
     return column_qualifier_;
+  }
+  /// Return the column this cell belongs to.
+  ColumnQualifierType column_qualifier() && {
+    return std::move(column_qualifier_);
   }
 
   /// Return the timestamp of this cell.
@@ -144,7 +152,9 @@ class Cell {
 
   /// Return the contents of this cell. The returned value is not valid after
   /// this object is deleted.
-  CellValueType const& value() const { return value_; }
+  CellValueType const& value() const& { return value_; }
+  /// Return the contents of this cell.
+  CellValueType value() && { return std::move(value_); }
 
   /**
    * Interpret the value as a big-endian encoded `T` and return it.
@@ -160,7 +170,9 @@ class Cell {
   }
 
   /// Return the labels applied to this cell by label transformer read filters.
-  std::vector<std::string> const& labels() const { return labels_; }
+  std::vector<std::string> const& labels() const& { return labels_; }
+  /// Return the labels applied to this cell by label transformer read filters.
+  std::vector<std::string> labels() && { return std::move(labels_); }
 
  private:
   RowKeyType row_key_;

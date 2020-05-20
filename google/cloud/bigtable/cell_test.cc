@@ -70,3 +70,50 @@ TEST(CellTest, SimpleNumericNegativeValue) {
   EXPECT_STATUS_OK(decoded);
   EXPECT_EQ(value, *decoded);
 }
+
+/// @test Verify Cell rvalue-ref accessors.
+TEST(CellTest, RValueRefAccessors) {
+  std::string row_key = "row";
+  std::string family_name = "family";
+  std::string column_qualifier = "column";
+  std::int64_t timestamp = 42;
+  std::string value = "value";
+
+  bigtable::Cell cell(row_key, family_name, column_qualifier, timestamp, value);
+
+  static_assert(
+      !std::is_lvalue_reference<decltype(
+          bigtable::Cell(cell).row_key())>::value,
+      "Member function `row_key` is expected to return a value from an "
+      "r-value reference to row.");
+  static_assert(
+      !std::is_lvalue_reference<decltype(
+          bigtable::Cell(cell).family_name())>::value,
+      "Member function `family_name` is expected to return a value from an "
+      "r-value reference to row.");
+  static_assert(
+      !std::is_lvalue_reference<decltype(
+          bigtable::Cell(cell).column_qualifier())>::value,
+      "Member function `column_qualifier` is expected to return a value from "
+      "an r-value reference to row.");
+  static_assert(
+      !std::is_lvalue_reference<decltype(bigtable::Cell(cell).value())>::value,
+      "Member function `value` is expected to return a value from an r-value "
+      "reference to row.");
+  static_assert(
+      !std::is_lvalue_reference<decltype(bigtable::Cell(cell).labels())>::value,
+      "Member function `labels` is expected to return a value from "
+      "an r-value reference to row.");
+
+  std::string moved_row_key = bigtable::Cell(cell).row_key();
+  std::string moved_family_name = bigtable::Cell(cell).family_name();
+  std::string moved_column_qualifier = bigtable::Cell(cell).column_qualifier();
+  std::string moved_value = bigtable::Cell(cell).value();
+  std::vector<std::string> moved_labels = bigtable::Cell(cell).labels();
+
+  EXPECT_EQ(row_key, moved_row_key);
+  EXPECT_EQ(family_name, moved_family_name);
+  EXPECT_EQ(column_qualifier, moved_column_qualifier);
+  EXPECT_EQ(value, moved_value);
+  EXPECT_EQ(0U, moved_labels.size());
+}
