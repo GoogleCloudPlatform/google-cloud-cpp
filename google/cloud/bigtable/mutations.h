@@ -117,7 +117,17 @@ Mutation SetCell(std::string family, ColumnType&& column, std::int64_t value) {
  *
  * These mutations are not idempotent and not retried by default.
  */
-Mutation SetCell(Cell const& cell);
+template <typename CellType>
+Mutation SetCell(CellType&& cell) {
+  Mutation m;
+  auto& set_cell = *m.op.mutable_set_cell();
+  set_cell.set_family_name(std::forward<CellType>(cell).family_name());
+  set_cell.set_column_qualifier(
+      std::forward<CellType>(cell).column_qualifier());
+  set_cell.set_timestamp_micros(cell.timestamp().count());
+  set_cell.set_value(std::forward<CellType>(cell).value());
+  return m;
+}
 
 //@{
 /**
