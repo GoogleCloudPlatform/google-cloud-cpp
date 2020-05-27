@@ -54,6 +54,19 @@ inline UseResumableUploadSession NewResumableUploadSession() {
   return UseResumableUploadSession("");
 }
 
+/**
+ * Provide an expected final length of an uploaded object.
+ *
+ * Resumable uploads allow or an additional integrity check - make GCS check
+ * if the uploaded content matches the declared length. If it doesn't the upload
+ * will fail.
+ */
+struct UploadContentLength
+    : public internal::WellKnownHeader<UploadContentLength, std::uintmax_t> {
+  using WellKnownHeader<UploadContentLength, std::uintmax_t>::WellKnownHeader;
+  static char const* header_name() { return "X-Upload-Content-Length"; }
+};
+
 }  // namespace STORAGE_CLIENT_NS
 }  // namespace storage
 }  // namespace cloud
