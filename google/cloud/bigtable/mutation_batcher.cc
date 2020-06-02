@@ -135,6 +135,11 @@ bool MutationBatcher::HasSpaceFor(PendingSingleRowMutation const& mut) const {
              options_.max_mutations_per_batch;
 }
 
+future<std::vector<FailedMutation>> MutationBatcher::AsyncBulkApplyImpl(
+    Table& table, BulkMutation&& mut, CompletionQueue& cq) {
+  return table.AsyncBulkApply(std::move(mut), cq);
+}
+
 bool MutationBatcher::FlushIfPossible(CompletionQueue cq) {
   if (cur_batch_->num_mutations > 0 &&
       num_outstanding_batches_ < options_.max_batches) {
@@ -142,10 +147,24 @@ bool MutationBatcher::FlushIfPossible(CompletionQueue cq) {
 
     auto batch = std::make_shared<Batch>();
     cur_batch_.swap(batch);
-    table_.AsyncBulkApply(std::move(batch->requests), cq)
+    AsyncBulkApplyImpl(table_, std::move(batch->requests), cq)
         .then([this, cq,
                batch](future<std::vector<FailedMutation>> failed) mutable {
-          OnBulkApplyDone(std::move(cq), std::move(*batch), failed.get());
+          // In order to avoid copying the failed vector, we std::move() it to
+          // a vector allocated via a std::shared_ptr and pass the shared_ptr
+          // instead.
+          auto failed_ptr =
+              std::make_shared<std::vector<FailedMutation>>(failed.get());
+          MutationBatcher* batcher = this;
+          // Calling OnBulkApplyDone here might lead to a deadlock if the
+          // underlying operation completes very quickly, yielding the outer
+          // `.then()` call synchronous. The deadlock would occur because the
+          // mutex is held here and OnBulkApplyDone would try to reacquire it.
+          const_cast<CompletionQueue&>(cq).RunAsync(
+              [batcher, batch, failed_ptr](CompletionQueue& cq) mutable {
+                batcher->OnBulkApplyDone(cq, std::move(*batch),
+                                         *std::move(failed_ptr));
+              });
         });
     return true;
   }
