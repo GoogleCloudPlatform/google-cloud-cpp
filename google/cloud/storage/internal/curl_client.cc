@@ -107,14 +107,9 @@ Status CurlClient::SetupBuilderCommon(CurlRequestBuilder& builder,
 
 template <typename Request>
 void SetupBuilderUserIp(CurlRequestBuilder& builder, Request const& request) {
-  if (request.template HasOption<UserIp>()) {
-    std::string value = request.template GetOption<UserIp>().value();
-    if (value.empty()) {
-      value = builder.LastClientIpAddress();
-    }
-    if (!value.empty()) {
-      builder.AddQueryParameter(UserIp::name(), value);
-    }
+  std::string value = request.template ValueOr(UserIp("")).value();
+  if (!value.empty()) {
+    builder.AddQueryParameter(UserIp::name(), value);
   }
 }
 
@@ -133,12 +128,10 @@ Status CurlClient::SetupBuilder(CurlRequestBuilder& builder,
 template <typename RequestType>
 StatusOr<std::unique_ptr<ResumableUploadSession>>
 CurlClient::CreateResumableSessionGeneric(RequestType const& request) {
-  if (request.template HasOption<UseResumableUploadSession>()) {
-    auto session_id =
-        request.template GetOption<UseResumableUploadSession>().value();
-    if (!session_id.empty()) {
-      return RestoreResumableSession(session_id);
-    }
+  auto session_id =
+      request.template ValueOr(UseResumableUploadSession("")).value();
+  if (!session_id.empty()) {
+    return RestoreResumableSession(session_id);
   }
 
   CurlRequestBuilder builder(
