@@ -54,6 +54,22 @@ TEST(GenericRequestTest, SetOptionLValueLastBase) {
   EXPECT_EQ("header1", req.GetOption<CustomHeader>().custom_header_name());
 }
 
+TEST(GenericRequestTest, ValueOr) {
+  Dummy req;
+  EXPECT_EQ("default_val",
+            req.ValueOr(CustomHeader("header1", "default_val")).value());
+  req.set_option(CustomHeader("header1", "val"));
+  EXPECT_EQ("val", req.ValueOr(CustomHeader("header1", "default_val")).value());
+}
+
+TEST(GenericRequestTest, ValueOrLValues) {
+  Dummy req;
+  CustomHeader default_val("header1", "default_val");
+  EXPECT_EQ("default_val", req.ValueOr(default_val).value());
+  req.set_option(CustomHeader("header1", "val"));
+  EXPECT_EQ("val", req.ValueOr(default_val).value());
+}
+
 }  // namespace
 }  // namespace internal
 }  // namespace STORAGE_CLIENT_NS

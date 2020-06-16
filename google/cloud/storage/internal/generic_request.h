@@ -222,6 +222,13 @@ class GenericRequest
   Option GetOption() const {
     return Super::template GetOption<Option>();
   }
+
+  template <typename Option>
+  typename std::decay<Option>::type ValueOr(Option&& default_val) const {
+    return HasOption<typename std::decay<Option>::type>()
+               ? GetOption<typename std::decay<Option>::type>()
+               : std::forward<Option>(default_val);
+  }
 };
 
 }  // namespace internal
