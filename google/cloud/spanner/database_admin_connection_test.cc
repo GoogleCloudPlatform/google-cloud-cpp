@@ -74,7 +74,7 @@ TEST(DatabaseAdminClientTest, CreateDatabaseSuccess) {
 
   auto conn = CreateTestingConnection(std::move(mock));
   Database dbase("test-project", "test-instance", "test-db");
-  auto fut = conn->CreateDatabase({dbase, {}});
+  auto fut = conn->CreateDatabase({dbase, {}, absl::nullopt});
   ASSERT_EQ(std::future_status::ready, fut.wait_for(std::chrono::seconds(10)));
   auto db = fut.get();
   EXPECT_STATUS_OK(db);
@@ -136,7 +136,7 @@ TEST(DatabaseAdminClientTest, HandleCreateDatabaseError) {
 
   auto conn = CreateTestingConnection(std::move(mock));
   Database dbase("test-project", "test-instance", "test-db");
-  auto fut = conn->CreateDatabase({dbase, {}});
+  auto fut = conn->CreateDatabase({dbase, {}, absl::nullopt});
   ASSERT_EQ(std::future_status::ready, fut.wait_for(std::chrono::seconds(0)));
   auto db = fut.get();
   EXPECT_EQ(StatusCode::kPermissionDenied, db.status().code());
@@ -329,7 +329,7 @@ TEST(DatabaseAdminClientTest, CreateDatabaseErrorInPoll) {
 
   auto conn = CreateTestingConnection(std::move(mock));
   Database dbase("test-project", "test-instance", "test-db");
-  auto db = conn->CreateDatabase({dbase, {}}).get();
+  auto db = conn->CreateDatabase({dbase, {}, absl::nullopt}).get();
   EXPECT_EQ(StatusCode::kPermissionDenied, db.status().code());
 }
 
