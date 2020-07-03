@@ -18,8 +18,8 @@
 #include "google/cloud/spanner/testing/pick_random_instance.h"
 #include "google/cloud/spanner/testing/random_database_name.h"
 #include "google/cloud/internal/getenv.h"
-#include "google/cloud/internal/setenv.h"
 #include "google/cloud/internal/random.h"
+#include "google/cloud/internal/setenv.h"
 #include "google/cloud/testing_util/assert_ok.h"
 #include <gmock/gmock.h>
 
@@ -40,18 +40,18 @@ auto constexpr kKeyName = "spanner-cmek-test-key";
 
 class DatabaseAdminClientTest : public ::testing::Test {
  protected:
-   static void SetUpTestSuite() {
-     // XXX(salty) run these tests against staging spanner
-     using ::google::cloud::internal::SetEnv;
-     SetEnv("GOOGLE_CLOUD_CPP_SPANNER_DEFAULT_ENDPOINT",
-            "staging-wrenchworks.sandbox.googleapis.com");
+  static void SetUpTestSuite() {
+    // XXX(salty) run these tests against staging spanner
+    using ::google::cloud::internal::SetEnv;
+    SetEnv("GOOGLE_CLOUD_CPP_SPANNER_DEFAULT_ENDPOINT",
+           "staging-wrenchworks.sandbox.googleapis.com");
 #if 0
      // XXX(salty) I thought I needed this service account but I guess not?
      SetEnv(
          "GOOGLE_CLOUD_CPP_SPANNER_TEST_SERVICE_ACCOUNT",
          "service-936212892354@gcp-sa-staging-spanner.iam.gserviceaccount.com");
 #endif
-   }
+  }
 
   // We can't use ASSERT* in the constructor, so defer initializing `instance_`
   // and `database_` until `SetUp()`.
@@ -74,9 +74,7 @@ class DatabaseAdminClientTest : public ::testing::Test {
         Database(instance_, spanner_testing::RandomDatabaseName(generator));
 
     test_iam_service_account_ =
-        GetEnv(
-            "GOOGLE_CLOUD_CPP_SPANNER_TEST_SERVICE_ACCOUNT")
-            .value_or("");
+        GetEnv("GOOGLE_CLOUD_CPP_SPANNER_TEST_SERVICE_ACCOUNT").value_or("");
     ASSERT_TRUE(emulator_ || !test_iam_service_account_.empty());
   }
 
@@ -240,8 +238,6 @@ TEST_F(DatabaseAdminClientTest, CreateWithNonexistentEncryptionKey) {
   auto database = database_future.get();
   EXPECT_FALSE(database.ok());
 }
-
-
 
 }  // namespace
 }  // namespace SPANNER_CLIENT_NS

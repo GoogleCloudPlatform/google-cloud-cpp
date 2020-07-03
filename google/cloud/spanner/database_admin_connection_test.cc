@@ -89,14 +89,14 @@ TEST(DatabaseAdminClientTest, CreateDatabaseWithEncryption) {
   EXPECT_CALL(*mock, CreateDatabase(_, _))
       .WillOnce(
           [](grpc::ClientContext&, gcsa::CreateDatabaseRequest const& request) {
-          EXPECT_TRUE(request.has_encryption_config());
-          EXPECT_EQ(request.encryption_config().kms_key_name(),
-                    "projects/test-project/locations/some-location/keyRings/"
-                    "a-key-ring/cryptoKeys/a-key-name");
-          google::longrunning::Operation op;
-          op.set_name("test-operation-name");
-          op.set_done(false);
-          return make_status_or(op);
+            EXPECT_TRUE(request.has_encryption_config());
+            EXPECT_EQ(request.encryption_config().kms_key_name(),
+                      "projects/test-project/locations/some-location/keyRings/"
+                      "a-key-ring/cryptoKeys/a-key-name");
+            google::longrunning::Operation op;
+            op.set_name("test-operation-name");
+            op.set_done(false);
+            return make_status_or(op);
           });
   EXPECT_CALL(*mock, GetOperation(_, _))
       .WillOnce([](grpc::ClientContext&,
