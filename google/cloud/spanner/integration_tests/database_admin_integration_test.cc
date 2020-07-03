@@ -108,7 +108,8 @@ TEST_F(DatabaseAdminClientTest, DatabaseBasicCRUD) {
                                  << " already exists, this is unexpected as "
                                     "the database id is selected at random.";
 
-  // Use an encryption key for this test.
+  // Use an encryption key for this test (the emulator doesn't support it but
+  // ignores it, so go ahead and set it, we just can't check that it exists).
   KmsKeyName encryption_key(instance_.project_id(), kLocation, kKeyRing,
                             kKeyName);
   auto database_future = client_.CreateDatabase(
@@ -205,6 +206,7 @@ TEST_F(DatabaseAdminClientTest, DatabaseBasicCRUD) {
 
 // @test Verify we can create a database with an encryption key.
 TEST_F(DatabaseAdminClientTest, CreateWithEncryptionKey) {
+  if (emulator_) GTEST_SKIP() << "emulator does not support CMEK";
   KmsKeyName encryption_key(instance_.project_id(), kLocation, kKeyRing,
                             kKeyName);
   auto database_future = client_.CreateDatabase(
@@ -231,6 +233,7 @@ TEST_F(DatabaseAdminClientTest, CreateWithEncryptionKey) {
 // @test Verify creating a database fails if a nonexistent encryption key is
 // supplied.
 TEST_F(DatabaseAdminClientTest, CreateWithNonexistentEncryptionKey) {
+  if (emulator_) GTEST_SKIP() << "emulator does not support CMEK";
   KmsKeyName nonexistent_encryption_key(instance_.project_id(), kLocation,
                                         kKeyRing, "ceci-n-est-pas-une-cle");
   auto database_future = client_.CreateDatabase(
