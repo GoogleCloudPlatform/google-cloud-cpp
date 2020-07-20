@@ -414,8 +414,7 @@ BucketMetadataPatchBuilder& BucketMetadataPatchBuilder::SetLifecycle(
       condition["age"] = *c.age;
     }
     if (c.created_before.has_value()) {
-      condition["createdBefore"] =
-          google::cloud::internal::FormatRfc3339(*c.created_before);
+      condition["createdBefore"] = absl::FormatCivilTime(*c.created_before);
     }
     if (c.is_live.has_value()) {
       condition["isLive"] = *c.is_live;

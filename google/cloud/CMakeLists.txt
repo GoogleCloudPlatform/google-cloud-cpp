@@ -351,7 +351,7 @@ if (GOOGLE_CLOUD_CPP_ENABLE_GRPC)
         internal/time_utils.h)
     target_link_libraries(
         google_cloud_cpp_grpc_utils
-        PUBLIC absl::memory googleapis-c++::rpc_status_protos
+        PUBLIC absl::memory absl::time googleapis-c++::rpc_status_protos
                google_cloud_cpp_common gRPC::grpc++ gRPC::grpc)
     google_cloud_cpp_add_common_options(google_cloud_cpp_grpc_utils)
     target_include_directories(

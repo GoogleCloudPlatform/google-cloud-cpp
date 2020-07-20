@@ -14,6 +14,7 @@
 
 #include "google/cloud/storage/lifecycle_rule.h"
 #include "google/cloud/storage/internal/metadata_parser.h"
+#include "google/cloud/internal/date.h"
 #include <algorithm>
 #include <iostream>
 
@@ -62,6 +63,17 @@ LifecycleRuleAction LifecycleRule::SetStorageClass(std::string storage_class) {
   return LifecycleRuleAction{"SetStorageClass", std::move(storage_class)};
 }
 
+LifecycleRuleCondition LifecycleRule::CreatedBefore(std::string const& date) {
+  absl::CivilDay day;
+  if (!absl::ParseCivilTime(date, &day)) {
+    google::cloud::internal::ThrowInvalidArgument("Cannot parse " + date +
+                                                  " as a date");
+  }
+  LifecycleRuleCondition result;
+  result.created_before.emplace(std::move(day));
+  return result;
+}
+
 std::ostream& operator<<(std::ostream& os, LifecycleRuleCondition const& rhs) {
   os << "LifecycleRuleCondition={";
   char const* sep = "";
@@ -70,8 +82,7 @@ std::ostream& operator<<(std::ostream& os, LifecycleRuleCondition const& rhs) {
     sep = ", ";
   }
   if (rhs.created_before.has_value()) {
-    os << sep
-       << "created_before=" << rhs.created_before->time_since_epoch().count();
+    os << sep << "created_before=" << *rhs.created_before;
     sep = ", ";
   }
   if (rhs.is_live.has_value()) {
@@ -111,9 +122,7 @@ void LifecycleRule::MergeConditions(LifecycleRuleCondition& result,
       *result.created_before =
           std::max(*result.created_before, *rhs.created_before);
     } else {
-      auto tmp = *rhs.created_before;
-      result.created_before.emplace(
-          std::forward<std::chrono::system_clock::time_point>(tmp));
+      result.created_before.emplace(std::move(*rhs.created_before));
     }
   }
   if (rhs.is_live.has_value()) {

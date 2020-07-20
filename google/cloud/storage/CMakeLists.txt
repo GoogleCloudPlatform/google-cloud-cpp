@@ -226,6 +226,7 @@ add_library(
 target_link_libraries(
     storage_client
     PUBLIC absl::memory
+           absl::time
            google_cloud_cpp_common
            nlohmann_json
            Crc32c::crc32c

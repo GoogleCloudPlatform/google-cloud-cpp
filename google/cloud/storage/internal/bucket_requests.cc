@@ -16,6 +16,7 @@
 #include "google/cloud/storage/internal/bucket_acl_requests.h"
 #include "google/cloud/storage/internal/nljson.h"
 #include "google/cloud/storage/internal/object_acl_requests.h"
+#include "google/cloud/internal/date.h"
 #include "google/cloud/internal/format_time_point.h"
 #include <sstream>
 
@@ -80,9 +81,13 @@ StatusOr<LifecycleRule> LifecycleRuleParser::FromJson(
       result.condition_.age.emplace(internal::ParseIntField(condition, "age"));
     }
     if (condition.count("createdBefore") != 0) {
-      result.condition_.created_before.emplace(
-          google::cloud::internal::ParseRfc3339(
-              condition.value("createdBefore", "")));
+      auto const date = condition.value("createdBefore", "");
+      absl::CivilDay day;
+      if (!absl::ParseCivilTime(date, &day)) {
+        return Status(StatusCode::kInvalidArgument,
+                      "Cannot parse " + date + " as a date");
+      }
+      result.condition_.created_before.emplace(std::move(day));
     }
     if (condition.count("isLive") != 0) {
       result.condition_.is_live.emplace(
@@ -366,8 +371,7 @@ std::string BucketMetadataToJsonString(BucketMetadata const& meta) {
         condition["age"] = *c.age;
       }
       if (c.created_before.has_value()) {
-        condition["createdBefore"] =
-            google::cloud::internal::FormatRfc3339(*c.created_before);
+        condition["createdBefore"] = absl::FormatCivilTime(*c.created_before);
       }
       if (c.is_live) {
         condition["isLive"] = *c.is_live;

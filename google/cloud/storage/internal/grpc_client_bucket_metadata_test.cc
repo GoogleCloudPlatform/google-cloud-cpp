@@ -442,7 +442,7 @@ TEST(GrpcClientBucketMetadata, LifecycleRuleActionRoundtrip) {
 TEST(GrpcClientBucketMetadata, LifecycleRuleConditionRoundtrip) {
   auto constexpr kText = R"pb(
     age: 7
-    created_before { seconds: 86400 nanos: 123456000 }
+    created_before { seconds: 86400 nanos: 0 }
     is_live: { value: true }
     num_newer_versions: 3
     matches_storage_class: "STANDARD"
@@ -451,8 +451,7 @@ TEST(GrpcClientBucketMetadata, LifecycleRuleConditionRoundtrip) {
   google::storage::v1::Bucket::Lifecycle::Rule::Condition start;
   EXPECT_TRUE(google::protobuf::TextFormat::ParseFromString(kText, &start));
   auto const expected = LifecycleRule::ConditionConjunction(
-      LifecycleRule::MaxAge(7),
-      LifecycleRule::CreatedBefore("1970-01-02T00:00:00.123456Z"),
+      LifecycleRule::MaxAge(7), LifecycleRule::CreatedBefore("1970-01-02"),
       LifecycleRule::IsLive(true), LifecycleRule::NumNewerVersions(3),
       LifecycleRule::MatchesStorageClasses({"STANDARD", "NEARLINE"}));
   auto const middle = GrpcClient::FromProto(start);
@@ -466,7 +465,7 @@ TEST(GrpcClientBucketMetadata, LifecycleRuleRoundtrip) {
     action { type: "Delete" }
     condition {
       age: 7
-      created_before { seconds: 86400 nanos: 123456000 }
+      created_before { seconds: 86400 }
       is_live: { value: true }
       num_newer_versions: 3
       matches_storage_class: "STANDARD"
@@ -477,8 +476,7 @@ TEST(GrpcClientBucketMetadata, LifecycleRuleRoundtrip) {
   EXPECT_TRUE(google::protobuf::TextFormat::ParseFromString(kText, &start));
   auto const expected = LifecycleRule(
       LifecycleRule::ConditionConjunction(
-          LifecycleRule::MaxAge(7),
-          LifecycleRule::CreatedBefore("1970-01-02T00:00:00.123456Z"),
+          LifecycleRule::MaxAge(7), LifecycleRule::CreatedBefore("1970-01-02"),
           LifecycleRule::IsLive(true), LifecycleRule::NumNewerVersions(3),
           LifecycleRule::MatchesStorageClasses({"STANDARD", "NEARLINE"})),
       LifecycleRule::Delete());
