@@ -21,6 +21,7 @@ pubsub_client_hdrs = [
     "connection_options.h",
     "create_subscription_builder.h",
     "create_topic_builder.h",
+    "internal/batching_publisher_connection.h",
     "internal/emulator_overrides.h",
     "internal/publisher_stub.h",
     "internal/subscriber_stub.h",
@@ -44,6 +45,7 @@ pubsub_client_hdrs = [
 pubsub_client_srcs = [
     "ack_handler.cc",
     "connection_options.cc",
+    "internal/batching_publisher_connection.cc",
     "internal/emulator_overrides.cc",
     "internal/publisher_stub.cc",
     "internal/subscriber_stub.cc",
