@@ -99,10 +99,9 @@ class ConnectionImpl : public Connection {
   Status PrepareSession(SessionHolder& session,
                         bool dissociate_from_pool = false);
 
-  Status BeginTransaction(
-      SessionHolder& session,
-      google::spanner::v1::TransactionSelector& s,
-      char const* func, bool is_partitioned_dml = false);
+  Status BeginTransaction(SessionHolder& session,
+                          google::spanner::v1::TransactionSelector& s,
+                          char const* func, bool is_partitioned_dml = false);
 
   RowStream ReadImpl(
       SessionHolder& session,
