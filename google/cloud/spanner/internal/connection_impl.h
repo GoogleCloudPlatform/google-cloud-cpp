@@ -101,7 +101,7 @@ class ConnectionImpl : public Connection {
 
   Status BeginTransaction(
       SessionHolder& session,
-      absl::optional<google::spanner::v1::TransactionSelector>& s,
+      google::spanner::v1::TransactionSelector& s,
       char const* func, bool is_partitioned_dml = false);
 
   RowStream ReadImpl(

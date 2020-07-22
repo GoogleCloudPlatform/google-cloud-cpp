@@ -303,9 +303,10 @@ Status ConnectionImpl::PrepareSession(SessionHolder& session,
 
 /**
  * Performs an explicit `BeginTransaction` in cases where that is needed.
- * This method must be called in the context of a `Transaction::Visit` functor.
  *
- * @param session,ts the parameters passed to the `Visit` functor.
+ * @param session identifies the Session to use.
+ * @param s the `Transaction` selector. if @p is_partitioned_dml is false then
+ *   either `begin` or `single_use` must be present in `s`
  * @param func identifies the calling function for logging purposes.
  *   It should generally be passed the value of the __func__ macro.
  * @param is_partitioned_dml whether this is a Partitioned DML transaction.
@@ -313,25 +314,17 @@ Status ConnectionImpl::PrepareSession(SessionHolder& session,
  * @returns an error `Status` on failure, otherwise `OK` with `s.id()` set
  * to the returned transaction ID.
  */
-Status ConnectionImpl::BeginTransaction(
-    SessionHolder& session,
-    absl::optional<spanner_proto::TransactionSelector>& s, char const* func,
-    bool is_partitioned_dml) {
-  if (!s) {
-    return Status(StatusCode::kInternal,
-                  "Invalid transaction in BeginTransaction");
-  }
+Status ConnectionImpl::BeginTransaction(SessionHolder& session,
+                                        spanner_proto::TransactionSelector& s,
+                                        char const* func,
+                                        bool is_partitioned_dml) {
   spanner_proto::BeginTransactionRequest begin;
   begin.set_session(session->session_name());
   if (is_partitioned_dml) {
     *begin.mutable_options()->mutable_partitioned_dml() =
         spanner_proto::TransactionOptions_PartitionedDml();
   } else {
-    if (!s->has_begin() && !s->has_single_use()) {
-      return Status(StatusCode::kInternal,
-                    "Invalid transaction state for BeginTransaction");
-    }
-    *begin.mutable_options() = s->has_begin() ? s->begin() : s->single_use();
+    *begin.mutable_options() = s.has_begin() ? s.begin() : s.single_use();
   }
 
   auto stub = session_pool_->GetStub(*session);
@@ -348,7 +341,7 @@ Status ConnectionImpl::BeginTransaction(
     if (internal::IsSessionNotFound(status)) session->set_bad();
     return status;
   }
-  s->set_id(response->id());
+  s.set_id(response->id());
   return {};
 }
 
@@ -765,7 +758,7 @@ StatusOr<PartitionedDmlResult> ConnectionImpl::ExecutePartitionedDmlImpl(
   }
 
   auto begin_status =
-      BeginTransaction(session, s, __func__, /*is_partitioned_dml=*/true);
+      BeginTransaction(session, *s, __func__, /*is_partitioned_dml=*/true);
   if (!begin_status.ok()) {
     return begin_status;
   }
@@ -822,7 +815,7 @@ StatusOr<CommitResult> ConnectionImpl::CommitImpl(
   }
 
   if (s->selector_case() != spanner_proto::TransactionSelector::kId) {
-    auto begin_status = BeginTransaction(session, s, __func__);
+    auto begin_status = BeginTransaction(session, *s, __func__);
     if (!begin_status.ok()) {
       return begin_status;
     }
