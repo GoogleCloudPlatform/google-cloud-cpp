@@ -54,7 +54,8 @@ MATCHER_P(MatchesPayload, value, "Checks whether payload matches a value") {
 TEST(CurlResumableUploadSessionTest, Simple) {
   auto mock = MockCurlClient::Create();
   std::string test_url = "http://invalid.example.com/not-used-in-mock";
-  CurlResumableUploadSession session(mock, test_url);
+  CurlResumableUploadSession session(mock,
+                                     QueryResumableUploadRequest(test_url));
 
   std::string const payload = "test payload";
   auto const size = payload.size();
@@ -96,7 +97,9 @@ TEST(CurlResumableUploadSessionTest, Reset) {
   auto mock = MockCurlClient::Create();
   std::string url1 = "http://invalid.example.com/not-used-in-mock-1";
   std::string url2 = "http://invalid.example.com/not-used-in-mock-2";
-  CurlResumableUploadSession session(mock, url1);
+  QueryResumableUploadRequest query_request(url1);
+  query_request.set_multiple_options(UserProject("some-project"));
+  CurlResumableUploadSession session(mock, std::move(query_request));
 
   std::string const payload = "test payload";
   auto const size = payload.size();
@@ -116,6 +119,8 @@ TEST(CurlResumableUploadSessionTest, Reset) {
   EXPECT_CALL(*mock, QueryResumableUpload(_))
       .WillOnce([&](QueryResumableUploadRequest const& request) {
         EXPECT_EQ(url1, request.upload_session_url());
+        EXPECT_EQ("some-project",
+                  request.GetOption<UserProject>().value_or(""));
         return make_status_or(resume_response);
       });
 
@@ -139,7 +144,7 @@ TEST(CurlResumableUploadSessionTest, SessionUpdatedInChunkUpload) {
   auto mock = MockCurlClient::Create();
   std::string url1 = "http://invalid.example.com/not-used-in-mock-1";
   std::string url2 = "http://invalid.example.com/not-used-in-mock-2";
-  CurlResumableUploadSession session(mock, url1);
+  CurlResumableUploadSession session(mock, QueryResumableUploadRequest(url1));
 
   std::string const payload = "test payload";
   auto const size = payload.size();
@@ -166,7 +171,8 @@ TEST(CurlResumableUploadSessionTest, SessionUpdatedInChunkUpload) {
 TEST(CurlResumableUploadSessionTest, Empty) {
   auto mock = MockCurlClient::Create();
   std::string test_url = "http://invalid.example.com/not-used-in-mock";
-  CurlResumableUploadSession session(mock, test_url);
+  CurlResumableUploadSession session(mock,
+                                     QueryResumableUploadRequest(test_url));
 
   std::string const payload{};
   auto const size = payload.size();

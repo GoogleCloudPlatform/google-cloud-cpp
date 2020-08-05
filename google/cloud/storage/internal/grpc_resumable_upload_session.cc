@@ -56,8 +56,7 @@ StatusOr<ResumableUploadResponse> GrpcResumableUploadSession::UploadFinalChunk(
 }
 
 StatusOr<ResumableUploadResponse> GrpcResumableUploadSession::ResetSession() {
-  QueryResumableUploadRequest request(session_id_);
-  auto result = client_->QueryResumableUpload(request);
+  auto result = client_->QueryResumableUpload(query_request_);
   last_response_ = std::move(result);
   if (!last_response_) return last_response_;
 

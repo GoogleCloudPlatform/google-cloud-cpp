@@ -85,7 +85,7 @@ class MockClient : public google::cloud::storage::internal::RawClient {
                    internal::ResumableUploadRequest const&));
   MOCK_METHOD1(RestoreResumableSession,
                StatusOr<std::unique_ptr<internal::ResumableUploadSession>>(
-                   std::string const&));
+                   internal::QueryResumableUploadRequest const&));
   MOCK_METHOD1(DeleteResumableUpload,
                StatusOr<internal::EmptyResponse>(
                    internal::DeleteResumableUploadRequest const&));

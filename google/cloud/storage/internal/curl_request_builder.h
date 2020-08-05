@@ -179,6 +179,15 @@ class CurlRequestBuilder {
     return factory_->LastClientIpAddress();
   }
 
+  /**
+   * Indicate that the URL already has some options, so the added ones should
+   * only be appended.
+   */
+  CurlRequestBuilder& SetUrlContainsParams() {
+    query_parameter_separator_ = "&";
+    return *this;
+  }
+
  private:
   void ValidateBuilderState(char const* where) const;
 

@@ -135,8 +135,11 @@ StatusOr<std::unique_ptr<ResumableUploadSession>>
 CurlClient::CreateResumableSessionGeneric(RequestType const& request) {
   auto session_id =
       request.template GetOption<UseResumableUploadSession>().value_or("");
+
   if (!session_id.empty()) {
-    return RestoreResumableSession(session_id);
+    QueryResumableUploadRequest query_request(session_id);
+    query_request.SetOptionsFromCreate(request);
+    return RestoreResumableSession(query_request);
   }
 
   CurlRequestBuilder builder(
@@ -220,9 +223,11 @@ CurlClient::CreateResumableSessionGeneric(RequestType const& request) {
     os << __func__ << " - invalid server response, parsed to " << *response;
     return Status(StatusCode::kInternal, std::move(os).str());
   }
+  QueryResumableUploadRequest query_request(response->upload_session_url);
+  query_request.SetOptionsFromCreate(request);
   return std::unique_ptr<ResumableUploadSession>(
-      absl::make_unique<CurlResumableUploadSession>(
-          shared_from_this(), std::move(response->upload_session_url)));
+      absl::make_unique<CurlResumableUploadSession>(shared_from_this(),
+                                                    std::move(query_request)));
 }
 
 CurlClient::CurlClient(ClientOptions options)
@@ -280,6 +285,7 @@ StatusOr<ResumableUploadResponse> CurlClient::UploadChunk(
 StatusOr<ResumableUploadResponse> CurlClient::QueryResumableUpload(
     QueryResumableUploadRequest const& request) {
   CurlRequestBuilder builder(request.upload_session_url(), upload_factory_);
+  builder.SetUrlContainsParams();
   auto status = SetupBuilder(builder, request, "PUT");
   if (!status.ok()) {
     return status;
@@ -695,9 +701,10 @@ CurlClient::CreateResumableSession(ResumableUploadRequest const& request) {
 }
 
 StatusOr<std::unique_ptr<ResumableUploadSession>>
-CurlClient::RestoreResumableSession(std::string const& session_id) {
+CurlClient::RestoreResumableSession(
+    QueryResumableUploadRequest const& request) {
   auto session = absl::make_unique<CurlResumableUploadSession>(
-      shared_from_this(), session_id);
+      shared_from_this(), request);
   auto response = session->ResetSession();
   if (response.status().ok()) {
     return std::unique_ptr<ResumableUploadSession>(std::move(session));

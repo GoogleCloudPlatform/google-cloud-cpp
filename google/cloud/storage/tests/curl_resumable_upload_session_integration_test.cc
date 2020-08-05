@@ -16,6 +16,7 @@
 #include "google/cloud/storage/testing/storage_integration_test.h"
 #include "google/cloud/internal/getenv.h"
 #include "google/cloud/testing_util/assert_ok.h"
+#include "google/cloud/testing_util/capture_log_lines_backend.h"
 #include <gmock/gmock.h>
 
 namespace google {
@@ -125,7 +126,8 @@ TEST_F(CurlResumableUploadIntegrationTest, Restore) {
   ASSERT_STATUS_OK(response.status());
 
   StatusOr<std::unique_ptr<ResumableUploadSession>> session =
-      client->RestoreResumableSession((*old_session)->session_id());
+      client->RestoreResumableSession(
+          QueryResumableUploadRequest((*old_session)->session_id()));
   EXPECT_EQ(contents.size(), (*session)->next_expected_byte());
   old_session->reset();
 
@@ -210,6 +212,63 @@ TEST_F(CurlResumableUploadIntegrationTest, Empty) {
   EXPECT_EQ(object_name, metadata.name());
   EXPECT_EQ(bucket_name_, metadata.bucket());
   EXPECT_EQ(0, metadata.size());
+
+  auto status =
+      client->DeleteObject(DeleteObjectRequest(bucket_name_, object_name));
+  ASSERT_STATUS_OK(status);
+}
+
+/**
+ * @test Verify that query parameters are used when resetting sessions.
+ *
+ * We verify the parameters are passed by intercepting the HTTP logs.
+ */
+TEST_F(CurlResumableUploadIntegrationTest, ResetWithParameters) {
+  auto client_options = ClientOptions::CreateDefaultClientOptions();
+  ASSERT_STATUS_OK(client_options);
+  auto client = CurlClient::Create((*std::move(client_options))
+                                       .set_enable_raw_client_tracing(true)
+                                       .set_enable_http_tracing(true));
+  auto object_name = MakeRandomObjectName();
+
+  ResumableUploadRequest request(bucket_name_, object_name);
+  request.set_multiple_options(IfGenerationMatch(0),
+                               QuotaUser("test-quota-user"));
+
+  StatusOr<std::unique_ptr<ResumableUploadSession>> session =
+      client->CreateResumableSession(request);
+
+  ASSERT_STATUS_OK(session);
+
+  std::string const contents(UploadChunkRequest::kChunkSizeQuantum, '0');
+  StatusOr<ResumableUploadResponse> response =
+      (*session)->UploadChunk({{contents}});
+  ASSERT_STATUS_OK(response.status());
+
+  auto backend = std::make_shared<testing_util::CaptureLogLinesBackend>();
+  auto id = LogSink::Instance().AddBackend(backend);
+
+  response = (*session)->ResetSession();
+
+  LogSink::Instance().RemoveBackend(id);
+
+  auto predicate = [this](std::string const& line) {
+    return line.find(" PUT ") != std::string::npos &&
+           line.find("/b/" + bucket_name_ + "/o") != std::string::npos &&
+           line.find("quotaUser=test-quota-user") != std::string::npos;
+  };
+  auto count = std::count_if(backend->log_lines.begin(),
+                             backend->log_lines.end(), predicate);
+  EXPECT_LT(0, count);
+
+  response = (*session)->UploadFinalChunk({{contents}}, 2 * contents.size());
+  ASSERT_STATUS_OK(response);
+
+  EXPECT_TRUE(response->payload.has_value());
+  auto metadata = *response->payload;
+  EXPECT_EQ(object_name, metadata.name());
+  EXPECT_EQ(bucket_name_, metadata.bucket());
+  EXPECT_EQ(2 * contents.size(), metadata.size());
 
   auto status =
       client->DeleteObject(DeleteObjectRequest(bucket_name_, object_name));

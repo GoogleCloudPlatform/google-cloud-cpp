@@ -584,6 +584,28 @@ TEST(ObjectRequestsTest, QueryResumableUpload) {
   EXPECT_THAT(actual, HasSubstr(url));
 }
 
+TEST(QueryResumableUploadRequestTest, OptionsFromCreate) {
+  ResumableUploadRequest create_request("source-bucket", "source-object");
+  create_request.set_multiple_options(
+      EncryptionKey::FromBinaryKey("01234567"), KmsKeyName("some-kms-key"),
+      UserProject("test-project"), Fields("labels"), QuotaUser("test-user"),
+      UserIp("some-ip"), IfMatchEtag("etag1"));
+
+  QueryResumableUploadRequest query_request("session_id");
+  query_request.SetOptionsFromCreate(create_request);
+
+  EXPECT_EQ(EncryptionDataFromBinaryKey("01234567").sha256,
+            query_request.GetOption<EncryptionKey>().value().sha256);
+  EXPECT_EQ("some-kms-key", query_request.GetOption<KmsKeyName>().value_or(""));
+  EXPECT_EQ("test-project",
+            query_request.GetOption<UserProject>().value_or(""));
+  EXPECT_EQ("labels", query_request.GetOption<Fields>().value_or(""));
+  EXPECT_EQ("test-user", query_request.GetOption<QuotaUser>().value_or(""));
+  EXPECT_EQ("some-ip", query_request.GetOption<UserIp>().value_or(""));
+
+  EXPECT_FALSE(query_request.HasOption<IfMatchEtag>());
+}
+
 ObjectMetadata CreateObjectMetadataForTest() {
   // This metadata object has some impossible combination of fields in it. The
   // goal is to fully test the parsing, not to simulate valid objects.

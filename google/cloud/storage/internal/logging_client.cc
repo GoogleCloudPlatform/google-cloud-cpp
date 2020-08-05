@@ -214,7 +214,8 @@ LoggingClient::CreateResumableSession(ResumableUploadRequest const& request) {
 }
 
 StatusOr<std::unique_ptr<ResumableUploadSession>>
-LoggingClient::RestoreResumableSession(std::string const& request) {
+LoggingClient::RestoreResumableSession(
+    QueryResumableUploadRequest const& request) {
   return MakeCallNoResponseLogging(
       *client_, &RawClient::RestoreResumableSession, request, __func__);
 }

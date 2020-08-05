@@ -28,8 +28,10 @@ namespace internal {
 class GrpcResumableUploadSession : public ResumableUploadSession {
  public:
   explicit GrpcResumableUploadSession(std::shared_ptr<GrpcClient> client,
-                                      std::string session_id)
-      : client_(std::move(client)), session_id_(std::move(session_id)) {}
+                                      QueryResumableUploadRequest query_request)
+      : client_(std::move(client)),
+        query_request_(std::move(query_request)),
+        session_id_(query_request_.upload_session_url()) {}
 
   StatusOr<ResumableUploadResponse> UploadChunk(
       ConstBufferSequence const& payload) override;
@@ -61,6 +63,7 @@ class GrpcResumableUploadSession : public ResumableUploadSession {
   StatusOr<ResumableUploadResponse> HandleWriteError();
 
   std::shared_ptr<GrpcClient> client_;
+  QueryResumableUploadRequest query_request_;
   std::string session_id_;
   using UploadWriter =
       grpc::ClientWriterInterface<google::storage::v1::InsertObjectRequest>;

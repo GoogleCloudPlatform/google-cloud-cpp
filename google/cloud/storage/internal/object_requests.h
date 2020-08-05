@@ -456,13 +456,17 @@ std::ostream& operator<<(std::ostream& os, UploadChunkRequest const& r);
  * A request to query the status of a resumable upload.
  */
 class QueryResumableUploadRequest
-    : public GenericRequest<QueryResumableUploadRequest> {
+    : public GenericRequest<QueryResumableUploadRequest, EncryptionKey,
+                            KmsKeyName, UserProject> {
  public:
   QueryResumableUploadRequest() = default;
   explicit QueryResumableUploadRequest(std::string upload_session_url)
       : upload_session_url_(std::move(upload_session_url)) {}
 
   std::string const& upload_session_url() const { return upload_session_url_; }
+
+  /// Set options to resemble the ones used for creating the resumable upload.
+  void SetOptionsFromCreate(ResumableUploadRequest const& request);
 
  private:
   std::string upload_session_url_;

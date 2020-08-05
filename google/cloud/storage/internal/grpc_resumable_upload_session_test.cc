@@ -54,7 +54,8 @@ class MockGrpcClient : public GrpcClient {
 
 TEST(GrpcResumableUploadSessionTest, Simple) {
   auto mock = MockGrpcClient::Create();
-  GrpcResumableUploadSession session(mock, "test-upload-id");
+  GrpcResumableUploadSession session(
+      mock, QueryResumableUploadRequest("test-upload-id"));
 
   std::string const payload = "test payload";
   auto const size = payload.size();
@@ -104,7 +105,8 @@ TEST(GrpcResumableUploadSessionTest, Simple) {
 
 TEST(GrpcResumableUploadSessionTest, Reset) {
   auto mock = MockGrpcClient::Create();
-  GrpcResumableUploadSession session(mock, "test-upload-id");
+  GrpcResumableUploadSession session(
+      mock, QueryResumableUploadRequest("test-upload-id"));
 
   std::string const payload = "test payload";
   auto const size = payload.size();
@@ -163,7 +165,9 @@ TEST(GrpcResumableUploadSessionTest, Reset) {
 
 TEST(GrpcResumableUploadSessionTest, ResumeFromEmpty) {
   auto mock = MockGrpcClient::Create();
-  GrpcResumableUploadSession session(mock, "test-upload-id");
+  QueryResumableUploadRequest query_request("test-upload-id");
+  query_request.set_multiple_options(UserProject("some-project"));
+  GrpcResumableUploadSession session(mock, std::move(query_request));
 
   std::string const payload = "test payload";
   auto const size = payload.size();
@@ -210,6 +214,8 @@ TEST(GrpcResumableUploadSessionTest, ResumeFromEmpty) {
   EXPECT_CALL(*mock, QueryResumableUpload(_))
       .WillOnce([&](QueryResumableUploadRequest const& request) {
         EXPECT_EQ("test-upload-id", request.upload_session_url());
+        EXPECT_EQ("some-project",
+                  request.GetOption<UserProject>().value_or(""));
         return make_status_or(resume_response);
       });
 

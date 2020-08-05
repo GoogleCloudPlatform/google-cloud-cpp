@@ -356,7 +356,8 @@ RetryClient::CreateResumableSession(ResumableUploadRequest const& request) {
 }
 
 StatusOr<std::unique_ptr<ResumableUploadSession>>
-RetryClient::RestoreResumableSession(std::string const& request) {
+RetryClient::RestoreResumableSession(
+    QueryResumableUploadRequest const& request) {
   auto retry_policy = retry_policy_prototype_->clone();
   auto backoff_policy = backoff_policy_prototype_->clone();
   auto is_idempotent = true;

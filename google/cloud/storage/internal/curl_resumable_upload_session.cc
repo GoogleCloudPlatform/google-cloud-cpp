@@ -37,8 +37,7 @@ StatusOr<ResumableUploadResponse> CurlResumableUploadSession::UploadFinalChunk(
 }
 
 StatusOr<ResumableUploadResponse> CurlResumableUploadSession::ResetSession() {
-  QueryResumableUploadRequest request(session_id_);
-  auto result = client_->QueryResumableUpload(request);
+  auto result = client_->QueryResumableUpload(query_request_);
   Update(result, 0);
   return result;
 }

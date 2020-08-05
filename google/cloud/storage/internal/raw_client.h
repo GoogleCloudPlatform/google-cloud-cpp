@@ -99,7 +99,7 @@ class RawClient {
   virtual StatusOr<std::unique_ptr<ResumableUploadSession>>
   CreateResumableSession(ResumableUploadRequest const& request) = 0;
   virtual StatusOr<std::unique_ptr<ResumableUploadSession>>
-  RestoreResumableSession(std::string const& session_id) = 0;
+  RestoreResumableSession(QueryResumableUploadRequest const& request) = 0;
   virtual StatusOr<EmptyResponse> DeleteResumableUpload(
       DeleteResumableUploadRequest const& request) = 0;
   //@}

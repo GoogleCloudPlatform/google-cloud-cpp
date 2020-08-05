@@ -305,11 +305,12 @@ StatusOr<RewriteObjectResponse> GrpcClient::RewriteObject(
 
 StatusOr<std::unique_ptr<ResumableUploadSession>>
 GrpcClient::CreateResumableSession(ResumableUploadRequest const& request) {
-  if (request.HasOption<UseResumableUploadSession>()) {
-    auto session_id = request.GetOption<UseResumableUploadSession>().value();
-    if (!session_id.empty()) {
-      return RestoreResumableSession(session_id);
-    }
+  auto session_id =
+      request.template GetOption<UseResumableUploadSession>().value_or("");
+  if (!session_id.empty()) {
+    QueryResumableUploadRequest query_request(session_id);
+    query_request.SetOptionsFromCreate(request);
+    return RestoreResumableSession(std::move(query_request));
   }
 
   grpc::ClientContext context;
@@ -317,17 +318,20 @@ GrpcClient::CreateResumableSession(ResumableUploadRequest const& request) {
   google::storage::v1::StartResumableWriteResponse response;
   auto status = stub_->StartResumableWrite(&context, proto_request, &response);
   if (!status.ok()) return google::cloud::MakeStatusFromRpcError(status);
+  QueryResumableUploadRequest query_request(response.upload_id());
+  query_request.SetOptionsFromCreate(request);
 
   auto self = shared_from_this();
   return std::unique_ptr<ResumableUploadSession>(
-      new GrpcResumableUploadSession(self, response.upload_id()));
+      new GrpcResumableUploadSession(self, std::move(query_request)));
 }
 
 StatusOr<std::unique_ptr<ResumableUploadSession>>
-GrpcClient::RestoreResumableSession(std::string const& upload_id) {
+GrpcClient::RestoreResumableSession(
+    QueryResumableUploadRequest const& request) {
   auto self = shared_from_this();
   auto session = std::unique_ptr<ResumableUploadSession>(
-      new GrpcResumableUploadSession(self, upload_id));
+      new GrpcResumableUploadSession(self, request));
   auto response = session->ResetSession();
   if (response.status().ok()) {
     return session;

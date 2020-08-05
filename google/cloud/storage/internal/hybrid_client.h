@@ -80,7 +80,7 @@ class HybridClient : public RawClient {
   StatusOr<std::unique_ptr<ResumableUploadSession>> CreateResumableSession(
       ResumableUploadRequest const& request) override;
   StatusOr<std::unique_ptr<ResumableUploadSession>> RestoreResumableSession(
-      std::string const& upload_id) override;
+      QueryResumableUploadRequest const& request) override;
   StatusOr<EmptyResponse> DeleteResumableUpload(
       DeleteResumableUploadRequest const& request) override;
 

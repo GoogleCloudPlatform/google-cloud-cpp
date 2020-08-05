@@ -30,8 +30,10 @@ namespace internal {
 class CurlResumableUploadSession : public ResumableUploadSession {
  public:
   explicit CurlResumableUploadSession(std::shared_ptr<CurlClient> client,
-                                      std::string session_id)
-      : client_(std::move(client)), session_id_(std::move(session_id)) {}
+                                      QueryResumableUploadRequest query_request)
+      : client_(std::move(client)),
+        query_request_(std::move(query_request)),
+        session_id_(query_request_.upload_session_url()) {}
 
   StatusOr<ResumableUploadResponse> UploadChunk(
       ConstBufferSequence const& buffers) override;
@@ -56,6 +58,7 @@ class CurlResumableUploadSession : public ResumableUploadSession {
               std::size_t chunk_size);
 
   std::shared_ptr<CurlClient> client_;
+  QueryResumableUploadRequest query_request_;
   std::string session_id_;
   std::uint64_t next_expected_ = 0;
   bool done_ = false;

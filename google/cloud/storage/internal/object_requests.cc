@@ -624,6 +624,18 @@ std::ostream& operator<<(std::ostream& os, UploadChunkRequest const& r) {
   return os << "}}";
 }
 
+void QueryResumableUploadRequest::SetOptionsFromCreate(
+    ResumableUploadRequest const& request) {
+  set_multiple_options(request.template GetOption<EncryptionKey>(),
+                       request.template GetOption<KmsKeyName>(),
+                       request.template GetOption<UserProject>(),
+                       request.template GetOption<Fields>(),
+                       request.template GetOption<QuotaUser>(),
+                       request.template GetOption<UserIp>());
+  // Explicilty skip IfMatchEtag, IfNoneMatchEtag - they make little sense
+  // for a this operation.
+}
+
 std::ostream& operator<<(std::ostream& os,
                          QueryResumableUploadRequest const& r) {
   os << "QueryResumableUploadRequest={upload_session_url="
