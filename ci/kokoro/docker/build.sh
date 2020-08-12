@@ -551,8 +551,9 @@ readonly CACHE_NAME
 echo "================================================================"
 io::log_yellow "Downloading build cache."
 
-"${PROJECT_ROOT}/ci/kokoro/docker/download-cache.sh" \
-  "${CACHE_FOLDER}" "${CACHE_NAME}" "${BUILD_HOME}" || true
+io::log_red "Skipping cache download for test"
+# "${PROJECT_ROOT}/ci/kokoro/docker/download-cache.sh" \
+#   "${CACHE_FOLDER}" "${CACHE_NAME}" "${BUILD_HOME}" || true
 
 # If more than two arguments are given, arguments after the first one will
 # become the commands run in the container, otherwise run $in_docker_script with
