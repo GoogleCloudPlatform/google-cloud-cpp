@@ -45,9 +45,12 @@ cache_download_tarball "${CACHE_FOLDER}" "${HOME_DIR}" "${CACHE_NAME}.tar.gz"
 # into the future :shrug:
 echo "================================================================"
 io::log "Extracting build cache"
-tar -zxf "${HOME_DIR}/${CACHE_NAME}.tar.gz" 2>&1 | grep -E -v 'tar:.*in the future'
+tar -zxvf "${HOME_DIR}/${CACHE_NAME}.tar.gz" 2>&1 | grep -E -v 'tar:.*in the future'
 # DEBUG DEBUG
+set -v
+du -sh "${HOME_DIR}/.cache" "${HOME_DIR}/.ccache" "${HOME_DIR}" || /bin/true
 rm -fr "${HOME_DIR}/.cache"
+du -sh "${HOME_DIR}/.cache" "${HOME_DIR}/.ccache" "${HOME_DIR}" || /bin/true
 # END DEBUG DEBUG
 io::log "Extraction completed"
 
