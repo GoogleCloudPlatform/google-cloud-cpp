@@ -45,7 +45,8 @@ cache_download_tarball "${CACHE_FOLDER}" "${HOME_DIR}" "${CACHE_NAME}.tar.gz"
 # into the future :shrug:
 echo "================================================================"
 io::log "Extracting build cache"
-tar -zxf "${HOME_DIR}/${CACHE_NAME}.tar.gz" 2>&1 | grep -E -v 'tar:.*in the future'
+# DEBUG DEBUG DO NOT MERGE just do "${HOME}/.ccache" to debug this.
+tar -zxf "${HOME_DIR}/${CACHE_NAME}.tar.gz" ".ccache" "vcpkg-quickstart-cache"
 io::log "Extraction completed"
 
 exit 0
