@@ -54,7 +54,10 @@ class SessionShutdownManager {
   ~SessionShutdownManager();
 
   /// Set the promise to signal when the shutdown has completed.
-  future<Status> Start() { return done_.get_future(); }
+  future<Status> Start(promise<Status> p) {
+    done_ = std::move(p);
+    return done_.get_future();
+  }
 
   /**
    * Start an operation, using the current thread of control.

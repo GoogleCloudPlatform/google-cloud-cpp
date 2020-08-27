@@ -12,35 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "google/cloud/pubsub/internal/watermark_flow_control.h"
+#ifndef GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_PUBSUB_APPLICATION_CALLBACK_H
+#define GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_PUBSUB_APPLICATION_CALLBACK_H
+
+#include "google/cloud/pubsub/version.h"
+#include <functional>
 
 namespace google {
 namespace cloud {
-namespace pubsub_internal {
+namespace pubsub {
 inline namespace GOOGLE_CLOUD_CPP_PUBSUB_NS {
+class Message;
+class AckHandler;
 
-bool WatermarkFlowControl::MaybeAdmit(std::size_t size) {
-  std::lock_guard<std::mutex> lk(mu_);
-  if (overflow_ || IsFull()) return false;
-  current_size_ += size;
-  ++current_count_;
-  if (IsFull()) overflow_ = true;
-  return true;
-}
-
-bool WatermarkFlowControl::Release(std::size_t size) {
-  std::lock_guard<std::mutex> lk(mu_);
-  if (current_count_ > 0) --current_count_;
-  if (size < current_size_) {
-    current_size_ -= size;
-  } else {
-    current_size_ = 0;
-  }
-  if (HasCapacity()) overflow_ = false;
-  return !overflow_ && !IsFull();
-}
+/**
+ * Defines the interface for application-level callbacks.
+ *
+ * Applications provide a callable compatible with this type to receive
+ * messages.  They acknowledge (or reject) messages using `AckHandler`. This is
+ * a move-only type to support asynchronously acknowledgements.
+ */
+using ApplicationCallback = std::function<void(Message, AckHandler)>;
 
 }  // namespace GOOGLE_CLOUD_CPP_PUBSUB_NS
-}  // namespace pubsub_internal
+}  // namespace pubsub
 }  // namespace cloud
 }  // namespace google
+
+#endif  // GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_PUBSUB_APPLICATION_CALLBACK_H
