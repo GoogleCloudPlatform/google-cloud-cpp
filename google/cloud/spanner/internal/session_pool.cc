@@ -366,7 +366,7 @@ Status SessionPool::CreateSessionsSync(
   auto const& stub = channel->stub;
   auto response = RetryLoop(
       retry_policy_prototype_->clone(), backoff_policy_prototype_->clone(),
-      true,
+      google::cloud::internal::IsIdempotent::kIdempotent,
       [&stub](grpc::ClientContext& context,
               spanner_proto::BatchCreateSessionsRequest const& request) {
         return stub->BatchCreateSessions(context, request);

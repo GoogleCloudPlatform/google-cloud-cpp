@@ -59,7 +59,7 @@ template <typename Functor, typename Request, typename Sleeper,
               int>::type = 0>
 auto RetryLoopImpl(std::unique_ptr<RetryPolicy> retry_policy,
                    std::unique_ptr<BackoffPolicy> backoff_policy,
-                   bool is_idempotent, Functor&& functor,
+                   IsIdempotent is_idempotent, Functor&& functor,
                    Request const& request, char const* location,
                    Sleeper sleeper)
     -> google::cloud::internal::invoke_result_t<Functor, grpc::ClientContext&,
@@ -73,7 +73,7 @@ auto RetryLoopImpl(std::unique_ptr<RetryPolicy> retry_policy,
       return result;
     }
     last_status = GetResultStatus(std::move(result));
-    if (!is_idempotent) {
+    if (is_idempotent == IsIdempotent::kNonIdempotent) {
       return RetryLoopError("Error in non-idempotent operation", location,
                             last_status);
     }
@@ -101,8 +101,8 @@ template <typename Functor, typename Request,
               int>::type = 0>
 auto RetryLoop(std::unique_ptr<RetryPolicy> retry_policy,
                std::unique_ptr<BackoffPolicy> backoff_policy,
-               bool is_idempotent, Functor&& functor, Request const& request,
-               char const* location)
+               IsIdempotent is_idempotent, Functor&& functor,
+               Request const& request, char const* location)
     -> google::cloud::internal::invoke_result_t<Functor, grpc::ClientContext&,
                                                 Request const&> {
   return RetryLoopImpl(

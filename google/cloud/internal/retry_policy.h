@@ -24,6 +24,9 @@ namespace google {
 namespace cloud {
 inline namespace GOOGLE_CLOUD_CPP_NS {
 namespace internal {
+
+enum class IsIdempotent { kIdempotent, kNonIdempotent };
+
 /**
  * Define the interface for retry policies.
  *
