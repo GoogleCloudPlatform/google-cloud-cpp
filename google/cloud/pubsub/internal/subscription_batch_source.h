@@ -16,8 +16,13 @@
 #define GOOGLE_CLOUD_CPP_GOOGLE_CLOUD_PUBSUB_INTERNAL_SUBSCRIPTION_BATCH_SOURCE_H
 
 #include "google/cloud/pubsub/version.h"
+#include "google/cloud/future.h"
+#include "google/cloud/status.h"
+#include "google/cloud/status_or.h"
 #include <google/pubsub/v1/pubsub.pb.h>
-#include <functional>
+#include <cstdint>
+#include <string>
+#include <vector>
 
 namespace google {
 namespace cloud {
