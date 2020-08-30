@@ -34,6 +34,9 @@ class CaptureLogLinesBackend : public LogBackend {
 
   void Process(LogRecord const& lr) override;
   void ProcessWithOwnership(LogRecord lr) override;
+
+ private:
+  std::mutex mu_;
 };
 
 }  // namespace testing_util

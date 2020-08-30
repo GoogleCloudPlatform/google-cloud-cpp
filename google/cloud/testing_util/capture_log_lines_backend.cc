@@ -20,6 +20,7 @@ inline namespace GOOGLE_CLOUD_CPP_NS {
 namespace testing_util {
 
 void CaptureLogLinesBackend::Process(LogRecord const& lr) {
+  std::lock_guard<std::mutex> lk(mu_);
   // Break the records in lines, it is easier to analyze them as such.
   std::istringstream is(lr.message);
   std::string line;
