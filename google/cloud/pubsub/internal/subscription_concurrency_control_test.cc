@@ -65,8 +65,8 @@ TEST_F(SubscriptionConcurrencyControlTest, MessageLifecycle) {
   auto source =
       std::make_shared<pubsub_testing::MockSubscriptionMessageSource>();
   MessageCallback message_callback;
-  auto push_messages = [&](std::int32_t n) {
-    PushMessages(message_callback, n);
+  auto push_messages = [&](std::size_t n) {
+    PushMessages(message_callback, static_cast<std::int32_t>(n));
   };
   PrepareMessages("ack-0-", 2);
   PrepareMessages("ack-1-", 3);
@@ -144,8 +144,8 @@ TEST_F(SubscriptionConcurrencyControlTest, ParallelCallbacks) {
   EXPECT_CALL(*source, Shutdown).Times(1);
   PrepareMessages("ack-0-", 8);
   PrepareMessages("ack-1-", 8);
-  auto push_messages = [&](std::int32_t n) {
-    PushMessages(message_callback, n);
+  auto push_messages = [&](std::size_t n) {
+    PushMessages(message_callback, static_cast<std::int32_t>(n));
   };
   {
     ::testing::InSequence sequence;
@@ -225,8 +225,8 @@ TEST_F(SubscriptionConcurrencyControlTest, ParallelCallbacksRespectHwmLimit) {
   MessageCallback message_callback;
   PrepareMessages("ack-0-", kCallbackCount);
   PrepareMessages("ack-1-", 8);
-  auto push_messages = [&](std::int32_t n) {
-    PushMessages(message_callback, n);
+  auto push_messages = [&](std::size_t n) {
+    PushMessages(message_callback, static_cast<std::int32_t>(n));
   };
   {
     ::testing::InSequence sequence;
@@ -309,8 +309,8 @@ TEST_F(SubscriptionConcurrencyControlTest, CleanShutdown) {
   MessageCallback message_callback;
   PrepareMessages("ack-0-", kTestDoneThreshold + 1);
   PrepareMessages("ack-1-", kTestDoneThreshold);
-  auto push_messages = [&](std::int32_t n) {
-    PushMessages(message_callback, n);
+  auto push_messages = [&](std::size_t n) {
+    PushMessages(message_callback, static_cast<std::int32_t>(n));
   };
   {
     ::testing::InSequence sequence;
