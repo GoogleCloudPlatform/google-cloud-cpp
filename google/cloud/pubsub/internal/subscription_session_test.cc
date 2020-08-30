@@ -498,12 +498,11 @@ TEST(SubscriptionSessionTest, ShutdownWaitsFutures) {
   auto generate = [&](google::cloud::CompletionQueue& cq,
                       std::unique_ptr<grpc::ClientContext>,
                       google::pubsub::v1::PullRequest const& r) {
-    auto const max_messages = r.max_messages();
+    auto const count = (std::max)(r.max_messages(), 2 * kMaximumAcks);
     return cq.MakeRelativeTimer(std::chrono::microseconds(10))
-        .then([&generate_mu, &generate_count, max_messages](TimerFuture) {
+        .then([&generate_mu, &generate_count, count](TimerFuture) {
           std::unique_lock<std::mutex> lk(generate_mu);
           google::pubsub::v1::PullResponse response;
-          auto const count = (std::max)(max_messages, 2 * kMaximumAcks);
           for (int i = 0; i != count; ++i) {
             auto& m = *response.add_received_messages();
             m.set_ack_id("test-ack-id-" + std::to_string(generate_count));
@@ -590,12 +589,11 @@ TEST(SubscriptionSessionTest, ShutdownWaitsConditionVars) {
   auto generate = [&](google::cloud::CompletionQueue& cq,
                       std::unique_ptr<grpc::ClientContext>,
                       google::pubsub::v1::PullRequest const& r) {
-    auto const max_messages = r.max_messages();
+    auto const count = (std::max)(r.max_messages(), 2 * kMaximumAcks);
     return cq.MakeRelativeTimer(std::chrono::microseconds(10))
-        .then([&generate_mu, &generate_count, max_messages](TimerFuture) {
+        .then([&generate_mu, &generate_count, count](TimerFuture) {
           std::unique_lock<std::mutex> lk(generate_mu);
           google::pubsub::v1::PullResponse response;
-          auto const count = (std::max)(max_messages, 2 * kMaximumAcks);
           for (int i = 0; i != count; ++i) {
             auto& m = *response.add_received_messages();
             m.set_ack_id("test-ack-id-" + std::to_string(generate_count));
