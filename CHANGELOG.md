@@ -1,6 +1,44 @@
 # Changelog
 
-## v1.17.0 - TBD
+## v1.18.0 - TBD
+
+## v1.17.0 - 2020-09
+
+### Bigtable
+
+* doc: update quickstart README files (#4980)
+
+### Storage
+
+**BREAKING CHANGES**
+* fix(storage)!: use nlohmann_json library as any other dependency (#4747)
+
+**Other Changes**
+
+* doc(storage): fix typo in quickstart/README.md (#4857)
+* doc: update quickstart README files (#4980)
+* feat(storage): custom_time in ObjectMetadata (#4901)
+* feat(storage): noncurrent and custom time OLM (#4871)
+* fix: cmake configs missing find_dependency(abseil) (#4919)
+
+### Spanner
+
+* doc(spanner): fix quickstart/README.md (#4855)
+* doc: update quickstart README files (#4980)
+* fix(spanner): correct variable used to build instance config (#4791)
+
+### Common Libraries
+
+* feat(common): non-proto values in PaginationRange (#4806)
+* feat: a LogWrapper for future<Status> (#4772)
+* feat: add a `KmsKeyName` class (#4891)
+* feat: add the ContainsOnce() matcher to testing_util (#4913)
+* feat: automatically create background thread pools (#4936)
+* feat: retry loop for asynchronous RPCs (#4972)
+* fix: Do not require the google.api.http RPC option (#4973)
+* fix: clang-tidy works on all headers (#4844)
+* fix: cmake configs missing find_dependency(abseil) (#4919)
+* refactor: use absl::{con,dis}junction instead of our own (#4826)
 
 ## v1.16.0 - 2020-08
 
