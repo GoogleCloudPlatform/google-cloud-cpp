@@ -224,11 +224,13 @@ if [[ "${BUILD_TESTING:-}" = "yes" ]]; then
     fi
     set -e
 
-    echo
-    io::log_yellow "running storage integration tests via CTest+Emulator"
-    echo
-    "${PROJECT_ROOT}/google/cloud/storage/ci/${EMULATOR_SCRIPT}" \
-      "${BINARY_DIR}" "${ctest_args[@]}" -L integration-test-emulator
+    if [ "${RUN_ALL_GCS_TESTS_ON_PROD:-}" != "yes" ]; then
+      echo
+      io::log_yellow "running storage integration tests via CTest+Emulator"
+      echo
+      "${PROJECT_ROOT}/google/cloud/storage/ci/${EMULATOR_SCRIPT}" \
+        "${BINARY_DIR}" "${ctest_args[@]}" -L integration-test-emulator
+    fi
 
     echo
     io::log_yellow "running spanner integration tests via CTest+Emulator"
@@ -324,6 +326,13 @@ if [[ "${BUILD_TESTING:-}" = "yes" ]]; then
     fi
     env -C "${BINARY_DIR}" ctest "${ctest_args[@]}" \
       -L integration-test-production
+    if [ "${RUN_ALL_GCS_TESTS_ON_PROD:-}" == "yes" ]; then
+      echo
+      io::log_yellow "running storage emulator integration tests on production"
+      echo
+      env -C "${BINARY_DIR}" ctest "${ctest_args[@]}" \
+        -L integration-test-emulator -R "^storage_"
+    fi
 
     echo "================================================================"
     io::log_yellow "Completed the integration tests against production"
