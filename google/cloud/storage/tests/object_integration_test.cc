@@ -388,7 +388,11 @@ TEST_F(ObjectIntegrationTest, StreamingResumableWriteSizeMismatch) {
 
   os.Close();
   auto meta = os.metadata();
-  EXPECT_FALSE(meta.ok()) << "value=" << meta.value();
+  if (!UsingGrpc()) {
+    EXPECT_FALSE(meta.ok()) << "value=" << meta.value();
+    EXPECT_EQ(StatusCode::kInvalidArgument, meta.status().code())
+        << meta.status();
+  }
 }
 
 TEST_F(ObjectIntegrationTest, StreamingWriteAutoClose) {
@@ -800,7 +804,12 @@ TEST_F(ObjectIntegrationTest, DeleteAccessControlFailure) {
 }
 
 TEST_F(ObjectIntegrationTest, DeleteResumableUpload) {
-  StatusOr<Client> client = MakeIntegrationTestClient();
+  if (UsingGrpc()) {
+    // TODO(5030): DeleteResumableUpload doesn't work with gRPC yet.
+    return;
+  }
+  StatusOr<Client> client = MakeIntegrationTestClient(
+      absl::make_unique<LimitedErrorCountRetryPolicy>(1));
   ASSERT_STATUS_OK(client);
 
   auto object_name = MakeRandomObjectName();

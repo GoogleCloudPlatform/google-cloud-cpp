@@ -96,10 +96,13 @@ elif [[ "${BUILD_NAME}" = "coverage" ]]; then
 elif [[ "${BUILD_NAME}" = "integration" ]]; then
   export DISTRO=ubuntu
   export DISTRO_VERSION=18.04
-  RUN_INTEGRATION_TESTS="yes" # Integration tests were explicitly requested.
-  # TODO(4306): Enable the backup tests once they don't timeout too often.
+  # Integration tests were explicitly requested.
+  RUN_INTEGRATION_TESTS="yes"
+  GOOGLE_CLOUD_CPP_STORAGE_GRPC_CONFIG=media # Test gRPC data plane
+  # Run all GCS tests on prod - the emulator doesn't support gRPC
+  RUN_ALL_GCS_TESTS_ON_PROD="yes"
   GOOGLE_CLOUD_CPP_SPANNER_SLOW_INTEGRATION_TESTS="instance"
-  in_docker_script="ci/kokoro/docker/build-in-docker-bazel.sh"
+  in_docker_script="ci/kokoro/docker/build-in-docker-cmake.sh"
 elif [[ "${BUILD_NAME}" = "integration-nightly" ]]; then
   export DISTRO=ubuntu
   export DISTRO_VERSION=18.04
@@ -445,6 +448,15 @@ docker_flags=(
 
   # If set to 'no', skip the integration tests.
   "--env" "RUN_INTEGRATION_TESTS=${RUN_INTEGRATION_TESTS:-}"
+
+  # If set to 'yes', the build script will execute all GCS tests agains
+  # production (rather than emulator).
+  "--env" "RUN_ALL_GCS_TESTS_ON_PROD=${RUN_ALL_GCS_TESTS_ON_PROD:-}"
+
+  # GCS tests may use gRPC for parts of the protocol. This variable controls it.
+  # Setting it to 'media' will use gRPC for the data plane. Setting it to
+  # 'metadata' will use gRPC for everything.
+  "--env" "GOOGLE_CLOUD_CPP_STORAGE_GRPC_CONFIG=${GOOGLE_CLOUD_CPP_STORAGE_GRPC_CONFIG:-}"
 
   # The Bigtable Admin integration tests can only run in nightly builds, the
   # quota (as in calls per day) is too restrictive to run more often.
