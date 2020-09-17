@@ -33,6 +33,7 @@ namespace gcsa = ::google::spanner::admin::database::v1;
 class DatabaseAdminMetadataTest : public ::testing::Test {
  protected:
   void SetUp() override {
+    GTEST_SKIP();  // DO NOT SUBMIT
     mock_ = std::make_shared<spanner_testing::MockDatabaseAdminStub>();
     DatabaseAdminMetadata stub(mock_);
     expected_api_client_header_ = google::cloud::internal::ApiClientHeader();
