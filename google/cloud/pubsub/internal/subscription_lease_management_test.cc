@@ -65,7 +65,7 @@ TEST(SubscriptionLeaseManagementTest, NormalLifecycle) {
           EXPECT_LE(std::abs((kTestDeadline - extension).count()), 2);
           return make_ready_future(Status{});
         });
-    // Then a message is nacked.
+    // Then a message is Nacked.
     EXPECT_CALL(*mock, NackMessage("ack-0-2", _)).WillOnce(SimpleAckNack);
     EXPECT_CALL(*mock, ExtendLeases)
         // The a simulated timer refreshes the leases.
@@ -75,7 +75,7 @@ TEST(SubscriptionLeaseManagementTest, NormalLifecycle) {
           EXPECT_LE(std::abs((kTestDeadline - extension).count()), 2);
           return make_ready_future(Status{});
         });
-    // Then all unhandled messages are nacked on shutdown.
+    // Then all unhandled messages are Nacked on shutdown.
     EXPECT_CALL(*mock, BulkNack(ElementsAre("ack-0-0"), _))
         .WillOnce([](std::vector<std::string> const&, std::size_t) {
           return make_ready_future(Status{});

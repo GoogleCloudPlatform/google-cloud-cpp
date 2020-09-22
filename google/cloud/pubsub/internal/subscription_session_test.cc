@@ -341,7 +341,7 @@ TEST(SubscriptionSessionTest, UpdateAckDeadlines) {
   for (auto& t : pool) t.join();
 }
 
-/// @test Verify pending callbacks are nacked on shutdown.
+/// @test Verify pending callbacks are Nacked on shutdown.
 TEST(SubscriptionSessionTest, ShutdownNackCallbacks) {
   auto mock = std::make_shared<pubsub_testing::MockSubscriberStub>();
   pubsub::Subscription const subscription("test-project", "test-subscription");
@@ -383,7 +383,7 @@ TEST(SubscriptionSessionTest, ShutdownNackCallbacks) {
       .WillRepeatedly(generate_nack_response);
 
   // Now unto the handler, basically it counts messages and from the second one
-  // onwards it just nacks.
+  // onwards it just Nacks.
   promise<void> enough_messages;
   std::atomic<int> ack_count{0};
   auto constexpr kMaximumAcks = 2;
@@ -473,7 +473,7 @@ TEST(SubscriptionSessionTest, ShutdownWaitsFutures) {
   // Create a scope for the handler and its variables, this makes it easier to
   // discover bugs under TSAN/ASAN.
   {
-    // Now unto the handler, basically it counts messages and nacks starting at
+    // Now unto the handler, basically it counts messages and Nacks starting at
     // kMaximumAcks.
     promise<void> got_one;
     auto handler = [&](pubsub::Message const&, pubsub::AckHandler h) {
@@ -569,7 +569,7 @@ TEST(SubscriptionSessionTest, ShutdownWaitsConditionVars) {
   // Create a scope for the handler and its variables, makes the errors more
   // obvious under TSAN/ASAN.
   {
-    // Now unto the handler, basically it counts messages and nacks starting at
+    // Now unto the handler, basically it counts messages and Nacks starting at
     // kMaximumAcks.
     std::mutex mu;
     std::condition_variable cv;

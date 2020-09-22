@@ -189,7 +189,7 @@ TEST_F(SubscriptionFlowControlTest, Basic) {
   EXPECT_THAT(done.get(), StatusIs(StatusCode::kOk));
 }
 
-/// @test Verify that messages received after a shutdown are nacked.
+/// @test Verify that messages received after a shutdown are Nacked.
 TEST_F(SubscriptionFlowControlTest, NackOnShutdown) {
   auto mock = std::make_shared<pubsub_testing::MockSubscriptionBatchSource>();
   EXPECT_CALL(*mock, Shutdown);
@@ -228,7 +228,7 @@ TEST_F(SubscriptionFlowControlTest, NackOnShutdown) {
   EXPECT_THAT(done.get(), StatusIs(StatusCode::kOk));
 }
 
-/// @test Verify that messages received after a shutdown are nacked.
+/// @test Verify that messages received after a shutdown are Nacked.
 TEST_F(SubscriptionFlowControlTest, HandleOnPullError) {
   auto mock = std::make_shared<pubsub_testing::MockSubscriptionBatchSource>();
   EXPECT_CALL(*mock, Shutdown);
