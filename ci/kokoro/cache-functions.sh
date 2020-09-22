@@ -16,24 +16,7 @@
 readonly CACHE_KEYFILE="${KOKORO_GFILE_DIR:-/dev/shm}/build-results-service-account.json"
 
 cache_download_enabled() {
-  if [[ "${BUILD_NAME:-}" = "msan" ]]; then
-    io::log "EXPERIMENTAL: Skipping build cache for asan builds"
-    return 1
-  fi
-
-  if [[ ! -f "${CACHE_KEYFILE}" ]]; then
-    echo "================================================================"
-    io::log "Service account for cache access is not configured."
-    io::log "No attempt will be made to download the cache, exit with success."
-    return 1
-  fi
-
-  if [[ "${RUNNING_CI:-}" != "yes" ]]; then
-    echo "================================================================"
-    io::log "Cache not downloaded as this is not a CI build."
-    return 1
-  fi
-  return 0
+  return 1
 }
 
 cache_gcloud_cleanup() {
