@@ -28,6 +28,11 @@ set(google_cloud_cpp_generator_golden_files
 export_list_to_bazel("google_cloud_cpp_generator_golden_files.bzl"
                      "google_cloud_cpp_generator_golden_files" YEAR "2020")
 
+add_custom_target(
+    ungolden-directory ALL
+    COMMAND ${CMAKE_COMMAND} -E make_directory
+            ${PROJECT_BINARY_DIR}/google/cloud/test/internal)
+
 # Copy each .golden file to its correct place in the internal subdirectory of
 # the target directory structure and remove the .golden suffix.
 foreach (golden_file ${google_cloud_cpp_generator_golden_files})
@@ -38,7 +43,7 @@ foreach (golden_file ${google_cloud_cpp_generator_golden_files})
             cp
             ${PROJECT_SOURCE_DIR}/generator/integration_tests/golden/${golden_file}
             ${PROJECT_BINARY_DIR}/google/cloud/test/internal/${ungolden_file}
-        DEPENDS ${golden_file})
+        DEPENDS ungolden-directory ${golden_file})
 endforeach ()
 
 # Create a library from the where the golden code was copied to.
