@@ -39,11 +39,9 @@ cc_library(
     name = "google_cloud_cpp_generator_golden",
     srcs = [":ungolden_filegroup"],
     copts = [
-        "-Ibazel-out/k8-fastbuild/bin/generator/integration_tests/golden",
-        "-Ibazel-out/k8-fastbuild/bin/",
-        "-isystem bazel-out/k8-fastbuild/bin/",
+        "-I$(BINDIR)/generator/integration_tests/golden",
+        "-I$(BINDIR)",
     ],
-    data = [":ungolden_filegroup"],
     deps = [
         "//generator/integration_tests:google_cloud_cpp_generator_testing_cc_grpc",
         "//google/cloud:google_cloud_cpp_common",
@@ -61,11 +59,9 @@ load(":google_cloud_cpp_generator_golden_tests.bzl", "google_cloud_cpp_generator
     name = test.replace("/", "_").replace(".cc", ""),
     srcs = [test],
     copts = [
-        "-Ibazel-out/k8-fastbuild/bin/generator/integration_tests/golden",
-        "-Ibazel-out/k8-fastbuild/bin/",
-        "-isystem bazel-out/k8-fastbuild/bin/",
+        "-I$(BINDIR)/generator/integration_tests/golden",
+        "-I$(BINDIR)",
     ],
-    data = [":ungolden_filegroup"],
     deps = [
         ":google_cloud_cpp_generator_golden",
         "//google/cloud:google_cloud_cpp_common",
