@@ -17,16 +17,14 @@
 #include "google/cloud/storage/internal/openssl_util.h"
 #include "google/cloud/internal/format_time_point.h"
 #include <nlohmann/json.hpp>
-#if GOOGLE_CLOUD_CPP_HAVE_CODECVT
 #include <codecvt>
 #include <locale>
-#endif  // GOOGLE_CLOUD_CPP_HAVE_CODECVT
 #include <iomanip>
 #include <sstream>
 
 // Some MSVC versions need this.
 #if (!_DLL) && (_MSC_VER >= 1900) && (_MSC_VER <= 1911)
-std::locale::id std::codecvt<char16_t, char, _Mbstatet>::id;
+std::locale::id std::codecvt<char32_t, char, _Mbstatet>::id;
 #endif
 
 namespace google {
@@ -97,7 +95,7 @@ bool EscapeAsciiChar(std::string& result, char32_t c) {
 }
 }  // namespace
 
-#if GOOGLE_CLOUD_CPP_HAVE_CODECVT && GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
+#if GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
 StatusOr<std::string> PostPolicyV4EscapeUTF8(std::string const& utf8_bytes) {
   std::string result;
 
@@ -122,13 +120,13 @@ StatusOr<std::string> PostPolicyV4EscapeUTF8(std::string const& utf8_bytes) {
   }
   return result;
 }
-#else   // GOOGLE_CLOUD_CPP_HAVE_CODECVT && GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
+#else   // GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
 StatusOr<std::string> PostPolicyV4EscapeUTF8(std::string const&) {
   return Status(StatusCode::kUnimplemented,
                 "Signing POST policies is unavailable with this compiler due "
-                "to the lack of `codecvt` header or exception support.");
+                "to the lack of exception support.");
 }
-#endif  // GOOGLE_CLOUD_CPP_HAVE_CODECVT
+#endif  // GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
 
 StatusOr<std::string> PostPolicyV4Escape(std::string const& utf8_bytes) {
   std::string result;
