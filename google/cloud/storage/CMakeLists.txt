@@ -271,8 +271,13 @@ create_bazel_config(storage_client)
 
 if (GOOGLE_CLOUD_CPP_STORAGE_ENABLE_GRPC)
     find_package(gRPC REQUIRED)
+    google_cloud_cpp_generate_proto(
+        google_cloud_cpp_storage_proto_sources
+        grpc_resumable_upload_session_url.proto PROTO_PATH_DIRECTORIES
+        ${CMAKE_CURRENT_SOURCE_DIR})
     add_library(
         storage_client_grpc
+        ${google_cloud_cpp_storage_proto_sources}
         grpc_plugin.cc
         grpc_plugin.h
         internal/grpc_client.cc
@@ -281,6 +286,8 @@ if (GOOGLE_CLOUD_CPP_STORAGE_ENABLE_GRPC)
         internal/grpc_object_read_source.h
         internal/grpc_resumable_upload_session.cc
         internal/grpc_resumable_upload_session.h
+        internal/grpc_resumable_upload_session_url.cc
+        internal/grpc_resumable_upload_session_url.h
         internal/hybrid_client.cc
         internal/hybrid_client.h)
     target_link_libraries(
@@ -491,7 +498,8 @@ if (GOOGLE_CLOUD_CPP_STORAGE_ENABLE_GRPC)
             internal/grpc_client_object_request_test.cc
             internal/grpc_client_test.cc
             internal/grpc_object_read_source_test.cc
-            internal/grpc_resumable_upload_session_test.cc)
+            internal/grpc_resumable_upload_session_test.cc
+            internal/grpc_resumable_upload_session_url_test.cc)
 
         foreach (fname ${storage_client_grpc_unit_tests})
             google_cloud_cpp_add_executable(target "storage" "${fname}")

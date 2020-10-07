@@ -14,6 +14,8 @@
 
 #include "google/cloud/storage/internal/hybrid_client.h"
 
+#include "google/cloud/storage/internal/grpc_resumable_upload_session_url.h"
+
 namespace google {
 namespace cloud {
 namespace storage {
@@ -146,12 +148,20 @@ HybridClient::CreateResumableSession(ResumableUploadRequest const& request) {
 
 StatusOr<std::unique_ptr<ResumableUploadSession>>
 HybridClient::RestoreResumableSession(std::string const& upload_id) {
-  return grpc_->RestoreResumableSession(upload_id);
+  if (internal::IsGrpcResumableSessionUrl(upload_id)) {
+    return grpc_->RestoreResumableSession(upload_id);
+  } else {
+    return curl_->RestoreResumableSession(upload_id);
+  }
 }
 
 StatusOr<EmptyResponse> HybridClient::DeleteResumableUpload(
     DeleteResumableUploadRequest const& request) {
-  return curl_->DeleteResumableUpload(request);
+  if (internal::IsGrpcResumableSessionUrl(request.upload_session_url())) {
+    return grpc_->DeleteResumableUpload(request);
+  } else {
+    return curl_->DeleteResumableUpload(request);
+  }
 }
 
 StatusOr<ListBucketAclResponse> HybridClient::ListBucketAcl(
