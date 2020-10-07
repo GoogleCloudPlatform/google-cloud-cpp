@@ -177,10 +177,10 @@ target_link_libraries(
                                    Threads::Threads)
 google_cloud_cpp_add_common_options(google_cloud_cpp_common)
 target_include_directories(
-    google_cloud_cpp_common
-    PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
-           $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
-           $<INSTALL_INTERFACE:include>)
+    google_cloud_cpp_common PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+                                   $<INSTALL_INTERFACE:include>)
+target_include_directories(google_cloud_cpp_common SYSTEM
+                           PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>)
 target_compile_options(google_cloud_cpp_common
                        PUBLIC ${GOOGLE_CLOUD_CPP_EXCEPTIONS_FLAG})
 
@@ -378,7 +378,6 @@ if (GOOGLE_CLOUD_CPP_ENABLE_GRPC)
     target_include_directories(
         google_cloud_cpp_grpc_utils
         PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
-               $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
                $<INSTALL_INTERFACE:include>)
     target_compile_options(google_cloud_cpp_grpc_utils
                            PUBLIC ${GOOGLE_CLOUD_CPP_EXCEPTIONS_FLAG})

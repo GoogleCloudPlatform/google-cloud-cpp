@@ -42,6 +42,9 @@ endfunction ()
 # Use the `PROTO_PATH` option to provide one or more directories to search for
 # proto files in the import.
 #
+# If `LOCAL_INCLUDE` is set to true, `file.pb.cc` file generated for
+# `a/b/file.proto` will include `file.pb.h` rather than `a/b/file.pb.h`.
+#
 # @par Example
 #
 # google_cloud_cpp_generate_proto( MY_PB_FILES "foo/bar/baz.proto"
@@ -53,7 +56,8 @@ endfunction ()
 # `foo/bar/baz.proto` then the directory containing `foo` must be in the search
 # path.
 function (google_cloud_cpp_generate_proto SRCS)
-    cmake_parse_arguments(_opt "" "" "PROTO_PATH_DIRECTORIES" ${ARGN})
+    cmake_parse_arguments(_opt "" "LOCAL_INCLUDE" "PROTO_PATH_DIRECTORIES"
+                          ${ARGN})
     if (NOT _opt_UNPARSED_ARGUMENTS)
         message(SEND_ERROR "Error: google_cloud_cpp_generate_proto() called"
                            " without any proto files")
@@ -73,11 +77,12 @@ function (google_cloud_cpp_generate_proto SRCS)
     endforeach ()
 
     set(${SRCS})
-    foreach (filename ${_opt_UNPARSED_ARGUMENTS})
-        get_filename_component(file_directory "${filename}" DIRECTORY)
+    foreach (file_path ${_opt_UNPARSED_ARGUMENTS})
+        get_filename_component(file_directory "${file_path}" DIRECTORY)
+        get_filename_component(file_name "${file_path}" NAME)
         # This gets the filename without the extension, analogous to $(basename
-        # "${filename}" .proto)
-        get_filename_component(file_stem "${filename}" NAME_WE)
+        # "${file_path}" .proto)
+        get_filename_component(file_stem "${file_path}" NAME_WE)
 
         # Strip all the prefixes in ${_opt_PROTO_PATH_DIRECTORIES} from the
         # source proto directory
@@ -91,15 +96,29 @@ function (google_cloud_cpp_generate_proto SRCS)
         set(pb_cc "${CMAKE_CURRENT_BINARY_DIR}/${D}/${file_stem}.pb.cc")
         set(pb_h "${CMAKE_CURRENT_BINARY_DIR}/${D}/${file_stem}.pb.h")
         list(APPEND ${SRCS} "${pb_cc}" "${pb_h}")
-        add_custom_command(
-            OUTPUT "${pb_cc}" "${pb_h}"
-            COMMAND
-                $<TARGET_FILE:protobuf::protoc> ARGS --cpp_out
-                "${CMAKE_CURRENT_BINARY_DIR}" ${protobuf_include_path}
-                "${filename}"
-            DEPENDS "${filename}" protobuf::protoc
-            COMMENT "Running C++ protocol buffer compiler on ${filename}"
-            VERBATIM)
+
+        if (${_opt_LOCAL_INCLUDE})
+            add_custom_command(
+                OUTPUT "${pb_cc}" "${pb_h}"
+                COMMAND
+                    $<TARGET_FILE:protobuf::protoc> ARGS --cpp_out
+                    "${CMAKE_CURRENT_BINARY_DIR}/${D}" ${protobuf_include_path}
+                    "${file_name}"
+                DEPENDS "${file_path}" protobuf::protoc
+                WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${D}"
+                COMMENT "Running C++ protocol buffer compiler on ${file_path}"
+                VERBATIM)
+        else ()
+            add_custom_command(
+                OUTPUT "${pb_cc}" "${pb_h}"
+                COMMAND
+                    $<TARGET_FILE:protobuf::protoc> ARGS --cpp_out
+                    "${CMAKE_CURRENT_BINARY_DIR}" ${protobuf_include_path}
+                    "${file_path}"
+                DEPENDS "${file_path}" protobuf::protoc
+                COMMENT "Running C++ protocol buffer compiler on ${file_path}"
+                VERBATIM)
+        endif ()
     endforeach ()
 
     set_source_files_properties(${${SRCS}} PROPERTIES GENERATED TRUE)
@@ -230,7 +249,8 @@ function (google_cloud_cpp_install_proto_library_protos target)
 endfunction ()
 
 function (google_cloud_cpp_proto_library libname)
-    cmake_parse_arguments(_opt "" "" "PROTO_PATH_DIRECTORIES" ${ARGN})
+    cmake_parse_arguments(_opt "" "LOCAL_INCLUDE" "PROTO_PATH_DIRECTORIES"
+                          ${ARGN})
     if (NOT _opt_UNPARSED_ARGUMENTS)
         message(SEND_ERROR "Error: google_cloud_cpp_proto_library() called"
                            " without any proto files")
@@ -238,7 +258,8 @@ function (google_cloud_cpp_proto_library libname)
     endif ()
 
     google_cloud_cpp_generate_proto(
-        proto_sources ${_opt_UNPARSED_ARGUMENTS} PROTO_PATH_DIRECTORIES
+        proto_sources ${_opt_UNPARSED_ARGUMENTS} LOCAL_INCLUDE
+        ${_opt_LOCAL_INCLUDE} PROTO_PATH_DIRECTORIES
         ${_opt_PROTO_PATH_DIRECTORIES})
 
     add_library(${libname} ${proto_sources})
