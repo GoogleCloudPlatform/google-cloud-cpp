@@ -54,7 +54,7 @@ ThroughputResult ClientDownloadTask::PerformDownload(
                           api_,
                           timer.elapsed_time(),
                           timer.cpu_time(),
-                          reader.status().code()};
+                          reader.status()};
 }
 
 }  // namespace storage_benchmarks
