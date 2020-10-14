@@ -72,7 +72,6 @@ class Bucket:
     def __preprocess_rest(cls, data):
         proxy = scalpl.Cut(data)
         keys = utils.common.nested_key(data)
-        proxy.pop("iamConfiguration.bucketPolicyOnly", None)
         for key in keys:
             if key.endswith("createdBefore"):
                 proxy[key] = proxy[key] + "T00:00:00Z"
