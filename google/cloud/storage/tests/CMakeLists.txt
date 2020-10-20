@@ -50,14 +50,19 @@ set(storage_client_integration_tests
     storage_include_test.cc
     thread_integration_test.cc)
 
+google_cloud_cpp_proto_library(
+    google_cloud_cpp_storage_tests_conformance_protos conformance_tests.proto
+    PROTO_PATH_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR} LOCAL_INCLUDE)
+
 foreach (fname ${storage_client_integration_tests})
     google_cloud_cpp_add_executable(target "storage" "${fname}")
     target_link_libraries(
         ${target}
         PRIVATE storage_client
                 storage_client_testing
-                google_cloud_cpp_testing
                 google_cloud_cpp_common
+                google_cloud_cpp_storage_tests_conformance_protos
+                google_cloud_cpp_testing
                 GTest::gmock_main
                 GTest::gmock
                 GTest::gtest
