@@ -56,9 +56,9 @@ std::string strerror(int errnum) {
   auto constexpr kMaxErrorMessageLength = 1024;
   char error_msg[kMaxErrorMessageLength];
 #ifdef _WIN32
-  auto const result = strerror_s(error_msg, sizeof(error_msg) - 1, errnum);
+  auto const* result = strerror_s(error_msg, sizeof(error_msg) - 1, errnum);
 #else
-  auto const result = strerror_r(errnum, error_msg, sizeof(error_msg) - 1);
+  auto const* result = strerror_r(errnum, error_msg, sizeof(error_msg) - 1);
 #endif  // _WIN32
   return handle_strerror_r_error(error_msg, errnum, result);
 }

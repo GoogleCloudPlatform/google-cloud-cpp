@@ -59,7 +59,7 @@ class BackoffPolicyMock : public bigtable::RPCBackoffPolicy {
 
   void Setup(grpc::ClientContext&) const override {}
 
-  int num_calls_from_last_clone_{0};
+  int num_calls_from_last_clone_ = 0;
 };
 
 // Pretend independent backoff policies, but be only one under the hood.

@@ -329,7 +329,7 @@ StatusOr<int> CurlDownloadRequest::PerformWork() {
     // transfer either failed or was successful. Pull all the messages out of
     // the info queue until we get the message about our handle.
     int remaining;
-    while (auto msg = curl_multi_info_read(multi_.get(), &remaining)) {
+    while (auto* msg = curl_multi_info_read(multi_.get(), &remaining)) {
       if (msg->easy_handle != handle_.handle_.get()) {
         // Return an error if this is the wrong handle. This should never
         // happen, if it does we are using the libcurl API incorrectly. But it
