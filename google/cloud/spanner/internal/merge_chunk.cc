@@ -56,7 +56,7 @@ Status MergeChunk(google::protobuf::Value& value,
       auto chunk_it = chunk_list.begin();
       if (value_it->kind_case() == google::protobuf::Value::kStringValue ||
           value_it->kind_case() == google::protobuf::Value::kListValue) {
-        auto const status = MergeChunk(*value_it, std::move(*chunk_it++));
+        auto status = MergeChunk(*value_it, std::move(*chunk_it++));
         if (!status.ok()) return status;
       }
 
