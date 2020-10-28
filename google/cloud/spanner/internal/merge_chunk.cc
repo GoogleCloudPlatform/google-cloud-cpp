@@ -20,7 +20,7 @@ namespace spanner {
 inline namespace SPANNER_CLIENT_NS {
 namespace internal {
 
-Status MergeChunk(google::protobuf::Value& value,
+Status MergeChunk(google::protobuf::Value& value,  // NOLINT(misc-no-recursion)
                   google::protobuf::Value&& chunk) {
   if (value.kind_case() != chunk.kind_case()) {
     return Status(StatusCode::kInvalidArgument, "mismatched types");
