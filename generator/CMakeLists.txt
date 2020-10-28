@@ -15,9 +15,9 @@
 # ~~~
 
 set(DOXYGEN_EXCLUDE_SYMBOLS "generator_internal")
-
+set(DOXYGEN_EXAMPLE_PATH "")
 include(GoogleCloudCppCommon)
-include(FindProtobufWithTargets)
+
 # TODO(#4146) - remove FPHSA_NAME_MISMATCHED manipulation on next absl release
 set(FPHSA_NAME_MISMATCHED Threads) # Quiet warning caused by Abseil
 find_package(absl CONFIG REQUIRED)
