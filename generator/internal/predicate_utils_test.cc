@@ -115,7 +115,7 @@ TEST(PredicateUtilsTest, IsResponseTypeEmpty) {
   non_empty_method.set_output_type("google.protobuf.Bar");
 
   DescriptorPool pool;
-  const FileDescriptor* service_file_descriptor = pool.BuildFile(service_file);
+  auto const* service_file_descriptor = pool.BuildFile(service_file);
   EXPECT_TRUE(
       IsResponseTypeEmpty(*service_file_descriptor->service(0)->method(0)));
   EXPECT_FALSE(
@@ -143,7 +143,7 @@ TEST(PredicateUtilsTest, IsLongrunningOperation) {
   not_lro_method.set_output_type("google.longrunning.Bar");
 
   DescriptorPool pool;
-  const FileDescriptor* service_file_descriptor = pool.BuildFile(service_file);
+  auto const* service_file_descriptor = pool.BuildFile(service_file);
   EXPECT_TRUE(
       IsLongrunningOperation(*service_file_descriptor->service(0)->method(0)));
   EXPECT_FALSE(
@@ -186,7 +186,7 @@ TEST(PredicateUtilsTest, IsNonStreaming) {
   bidirectional_streaming.set_server_streaming(true);
 
   DescriptorPool pool;
-  const FileDescriptor* service_file_descriptor_lro =
+  auto const* service_file_descriptor_lro =
       pool.BuildFile(service_file);
   EXPECT_TRUE(
       IsNonStreaming(*service_file_descriptor_lro->service(0)->method(0)));
@@ -241,7 +241,7 @@ TEST(PredicateUtilsTest, PaginationSuccess) {
   paginated_method.set_output_type("google.protobuf.Output");
 
   DescriptorPool pool;
-  const FileDescriptor* service_file_descriptor = pool.BuildFile(service_file);
+  auto const* service_file_descriptor = pool.BuildFile(service_file);
   EXPECT_TRUE(IsPaginated(*service_file_descriptor->service(0)->method(0)));
   auto result =
       DeterminePagination(*service_file_descriptor->service(0)->method(0));
@@ -270,7 +270,7 @@ TEST(PredicateUtilsTest, PaginationNoPageSize) {
   no_page_size_method.set_output_type("google.protobuf.Output");
 
   DescriptorPool pool;
-  const FileDescriptor* service_file_descriptor = pool.BuildFile(service_file);
+  auto const* service_file_descriptor = pool.BuildFile(service_file);
   EXPECT_FALSE(IsPaginated(*service_file_descriptor->service(0)->method(0)));
 }
 
@@ -298,7 +298,7 @@ TEST(PredicateUtilsTest, PaginationNoPageToken) {
   no_page_token_method.set_output_type("google.protobuf.Output");
 
   DescriptorPool pool;
-  const FileDescriptor* service_file_descriptor = pool.BuildFile(service_file);
+  auto const* service_file_descriptor = pool.BuildFile(service_file);
   EXPECT_FALSE(IsPaginated(*service_file_descriptor->service(0)->method(0)));
 }
 
@@ -307,7 +307,7 @@ TEST(PredicateUtilsTest, PaginationNoNextPageToken) {
   service_file.set_name("google/foo/v1/service.proto");
   service_file.add_service()->set_name("Service");
   *service_file.mutable_package() = "google.protobuf";
-  auto repeated_message = *service_file.add_message_type();
+  auto& repeated_message = *service_file.add_message_type();
   repeated_message.set_name("Bar");
 
   auto& input_message = *service_file.add_message_type();
@@ -317,12 +317,12 @@ TEST(PredicateUtilsTest, PaginationNoNextPageToken) {
   page_size_field.set_type(protobuf::FieldDescriptorProto_Type_TYPE_INT32);
   page_size_field.set_number(1);
 
-  auto page_token_field = *input_message.add_field();
+  auto& page_token_field = *input_message.add_field();
   page_token_field.set_name("page_token");
   page_token_field.set_type(protobuf::FieldDescriptorProto_Type_TYPE_STRING);
   page_token_field.set_number(2);
 
-  auto output_message = *service_file.add_message_type();
+  auto& output_message = *service_file.add_message_type();
   output_message.set_name("Output");
 
   auto& no_next_page_token_method =
@@ -332,7 +332,7 @@ TEST(PredicateUtilsTest, PaginationNoNextPageToken) {
   no_next_page_token_method.set_output_type("google.protobuf.Output");
 
   DescriptorPool pool;
-  const FileDescriptor* service_file_descriptor = pool.BuildFile(service_file);
+  auto const* service_file_descriptor = pool.BuildFile(service_file);
   EXPECT_FALSE(IsPaginated(*service_file_descriptor->service(0)->method(0)));
 }
 
@@ -341,22 +341,22 @@ TEST(PredicateUtilsTest, PaginationNoRepeatedMessageField) {
   service_file.set_name("google/foo/v1/service.proto");
   service_file.add_service()->set_name("Service");
   *service_file.mutable_package() = "google.protobuf";
-  auto repeated_message = *service_file.add_message_type();
+  auto& repeated_message = *service_file.add_message_type();
   repeated_message.set_name("Bar");
 
   auto& input_message = *service_file.add_message_type();
   input_message.set_name("Input");
-  auto page_size_field = *input_message.add_field();
+  auto& page_size_field = *input_message.add_field();
   page_size_field.set_name("page_size");
   page_size_field.set_type(protobuf::FieldDescriptorProto_Type_TYPE_INT32);
   page_size_field.set_number(1);
 
-  auto page_token_field = *input_message.add_field();
+  auto& page_token_field = *input_message.add_field();
   page_token_field.set_name("page_token");
   page_token_field.set_type(protobuf::FieldDescriptorProto_Type_TYPE_STRING);
   page_token_field.set_number(2);
 
-  auto output_message = *service_file.add_message_type();
+  auto& output_message = *service_file.add_message_type();
   output_message.set_name("Output");
   auto& next_page_token_field = *output_message.add_field();
   next_page_token_field.set_name("next_page_token");
@@ -388,14 +388,14 @@ TEST(PredicateUtilsDeathTest, PaginationRepeatedMessageOrderMismatch) {
   service_file.set_name("google/foo/v1/service.proto");
   service_file.add_service()->set_name("Service");
   *service_file.mutable_package() = "google.protobuf";
-  auto repeated_message = *service_file.add_message_type();
+  auto& repeated_message = *service_file.add_message_type();
   repeated_message.set_name("Bar");
-  auto repeated_message2 = *service_file.add_message_type();
+  auto& repeated_message2 = *service_file.add_message_type();
   repeated_message2.set_name("Foo");
 
   auto& input_message = *service_file.add_message_type();
   input_message.set_name("Input");
-  auto page_size_field = *input_message.add_field();
+  auto& page_size_field = *input_message.add_field();
   page_size_field.set_name("page_size");
   page_size_field.set_type(protobuf::FieldDescriptorProto_Type_TYPE_INT32);
   page_size_field.set_number(1);
