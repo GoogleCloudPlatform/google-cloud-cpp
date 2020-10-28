@@ -245,7 +245,8 @@ void CurlDownloadRequest::SetOptions() {
 void CurlDownloadRequest::DrainSpillBuffer() {
   std::size_t free = buffer_size_ - buffer_offset_;
   auto copy_count = (std::min)(free, spill_offset_);
-  std::memcpy(buffer_ + buffer_offset_, spill_.data(), copy_count);
+  std::copy(spill_.data(), spill_.data() + copy_count,
+            buffer_ + buffer_offset_);
   buffer_offset_ += copy_count;
   std::memmove(spill_.data(), spill_.data() + copy_count,
                spill_.size() - copy_count);

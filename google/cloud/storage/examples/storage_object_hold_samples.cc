@@ -160,7 +160,8 @@ void RunAll(std::vector<std::string> const& argv) {
 
   std::cout << "\nCreating the TemporaryHold object" << std::endl;
   (void)client
-      .InsertObject(bucket_name, object_name_2, text, gcs::IfGenerationMatch(0))
+      .InsertObject(bucket_name, object_name_2, kText,
+                    gcs::IfGenerationMatch(0))
       .value();
 
   std::cout << "\nRunning the SetObjectTemporaryHold() example" << std::endl;
