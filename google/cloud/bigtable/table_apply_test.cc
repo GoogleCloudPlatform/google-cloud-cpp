@@ -44,8 +44,7 @@ class TableApplyTest : public bigtable::testing::TableTestFixture {};
 
 /// @test Verify that Table::Apply() works in a simplest case.
 TEST_F(TableApplyTest, Simple) {
-  EXPECT_CALL(*client_, MutateRow)
-      .WillOnce(mock_mutate_row(grpc::Status::OK));
+  EXPECT_CALL(*client_, MutateRow).WillOnce(mock_mutate_row(grpc::Status::OK));
 
   auto status = table_.Apply(bigtable::SingleRowMutation(
       "bar", {bigtable::SetCell("fam", "col", 0_ms, "val")}));

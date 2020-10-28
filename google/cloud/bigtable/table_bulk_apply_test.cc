@@ -32,7 +32,8 @@ using ::google::cloud::testing_util::chrono_literals::operator"" _us;
 using ::testing::Return;
 
 /// Define types and functions used in the tests.
-class TableBulkApplyTest : public ::google::cloud::bigtable::testing::TableTestFixture {};
+class TableBulkApplyTest
+    : public ::google::cloud::bigtable::testing::TableTestFixture {};
 using google::cloud::bigtable::testing::MockMutateRowsReader;
 
 /// @test Verify that Table::BulkApply() works in the easy case.
@@ -130,8 +131,7 @@ TEST_F(TableBulkApplyTest, PermanentFailure) {
       .WillOnce(Return(false));
   EXPECT_CALL(*r1, Finish()).WillOnce(Return(grpc::Status::OK));
 
-  EXPECT_CALL(*client_, MutateRows)
-      .WillOnce(r1.release()->MakeMockReturner());
+  EXPECT_CALL(*client_, MutateRows).WillOnce(r1.release()->MakeMockReturner());
 
   auto failures = table_.BulkApply(BulkMutation(
       SingleRowMutation("foo", {SetCell("fam", "col", 0_ms, "baz")}),
@@ -265,10 +265,8 @@ TEST_F(TableBulkApplyTest, RetryOnlyIdempotent) {
       .WillOnce(r2.release()->MakeMockReturner());
 
   auto failures = table_.BulkApply(BulkMutation(
-      SingleRowMutation("is-idempotent",
-                            {SetCell("fam", "col", 0_ms, "qux")}),
-      SingleRowMutation("not-idempotent",
-                            {SetCell("fam", "col", "baz")})));
+      SingleRowMutation("is-idempotent", {SetCell("fam", "col", 0_ms, "qux")}),
+      SingleRowMutation("not-idempotent", {SetCell("fam", "col", "baz")})));
   EXPECT_EQ(1UL, failures.size());
   EXPECT_EQ(1, failures.front().original_index());
   EXPECT_FALSE(failures.front().status().ok());

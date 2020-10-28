@@ -24,11 +24,11 @@ namespace bigtable {
 inline namespace BIGTABLE_CLIENT_NS {
 namespace {
 
+using ::google::cloud::bigtable::testing::MockReadRowsReader;
 using ::testing::DoAll;
 using ::testing::Return;
 using ::testing::SetArgPointee;
 using ::testing::WithoutArgs;
-using ::google::cloud::bigtable::testing::MockReadRowsReader;
 
 class TableReadRowsTest : public bigtable::testing::TableTestFixture {};
 
@@ -124,7 +124,8 @@ TEST_F(TableReadRowsTest, ReadRowsCanReadWithRetries) {
 
 TEST_F(TableReadRowsTest, ReadRowsThrowsWhenTooManyErrors) {
   EXPECT_CALL(*client_, ReadRows).WillRepeatedly(WithoutArgs([] {
-    auto stream = absl::make_unique<MockReadRowsReader>("google.bigtable.v2.Bigtable.ReadRows");
+    auto stream = absl::make_unique<MockReadRowsReader>(
+        "google.bigtable.v2.Bigtable.ReadRows");
     EXPECT_CALL(*stream, Read).WillOnce(Return(false));
     EXPECT_CALL(*stream, Finish())
         .WillOnce(

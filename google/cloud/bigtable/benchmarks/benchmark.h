@@ -120,8 +120,7 @@ class Benchmark {
  private:
   /// Populate the table rows in the range [@p begin, @p end)
   google::cloud::StatusOr<BenchmarkResult> PopulateTableShard(
-      bigtable::Table& table, std::int64_t begin,
-      std::int64_t end) const;
+      bigtable::Table& table, std::int64_t begin, std::int64_t end) const;
 
   /**
    * Return how much space to reserve for digits if the table has @p table_size
