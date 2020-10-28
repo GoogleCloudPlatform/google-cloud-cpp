@@ -6,9 +6,6 @@
 #  -google-readability-namespace-comments: the *_CLIENT_NS is a macro, and
 #      clang-tidy fails to match it against the initial value.
 #
-#  -misc-no-recursion: recursive calls are useful in recursive data structures,
-#      which are common in Spanner and other services.
-#
 #  -modernize-use-trailing-return-type: clang-tidy recommends using
 #      `auto Foo() -> std::string { return ...; }`, we think the code is less
 #      readable in this form.
@@ -45,7 +42,6 @@ Checks: >
   -google-readability-braces-around-statements,
   -google-readability-namespace-comments,
   -google-runtime-references,
-  -misc-no-recursion,
   -misc-non-private-member-variables-in-classes,
   -modernize-return-braced-init-list,
   -modernize-use-trailing-return-type,
