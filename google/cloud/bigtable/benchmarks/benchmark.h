@@ -37,7 +37,7 @@ struct OperationResult {
 struct BenchmarkResult {
   std::chrono::milliseconds elapsed;
   std::deque<OperationResult> operations;
-  long row_count;  // NOLINT(google-runtime-int)
+  std::int64_t row_count;
 };
 
 /**
@@ -67,7 +67,7 @@ class Benchmark {
   std::string MakeRandomKey(google::cloud::internal::DefaultPRNG& gen) const;
 
   /// Return the key for row @p id.
-  std::string MakeKey(long id) const;  // NOLINT(google-runtime-int)
+  std::string MakeKey(std::int64_t id) const;
 
   /// Measure the time to compute an operation.
   template <typename Operation>

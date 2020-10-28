@@ -134,12 +134,11 @@ google::cloud::StatusOr<BenchmarkResult> Benchmark::PopulateTable() {
 
 std::string Benchmark::MakeRandomKey(
     google::cloud::internal::DefaultPRNG& gen) const {
-  // NOLINTNEXTLINE(google-runtime-int)
-  std::uniform_int_distribution<long> prng_user(0, setup_.table_size() - 1);
+  std::uniform_int_distribution<std::int64_t> prng_user(0, setup_.table_size() - 1);
   return MakeKey(prng_user(gen));
 }
 
-std::string Benchmark::MakeKey(long id) const {  // NOLINT(google-runtime-int)
+std::string Benchmark::MakeKey(std::int64_t id) const {
   std::ostringstream os;
   os << "user" << std::setw(key_width_) << std::setfill('0') << id;
   return os.str();

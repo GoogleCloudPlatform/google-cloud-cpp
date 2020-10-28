@@ -63,7 +63,7 @@ class BenchmarkSetup {
   /// The randomly generated table id for the benchmark.
   std::string const& table_id() const { return setup_data_.table_id; }
 
-  long table_size() const {  // NOLINT(google-runtime-int)
+  std::int64_t table_size() const {
     return setup_data_.table_size;
   }
   int thread_count() const { return setup_data_.thread_count; }
