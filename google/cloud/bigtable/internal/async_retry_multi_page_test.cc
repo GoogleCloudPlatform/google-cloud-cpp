@@ -123,7 +123,7 @@ class AsyncMultipageFutureTest : public ::testing::Test {
     for (auto exchange_it = interaction.rbegin();
          exchange_it != interaction.rend(); ++exchange_it) {
       auto const& exchange = *exchange_it;
-      auto cluster_reader = new MockAsyncListClustersReader();
+      auto* cluster_reader = new MockAsyncListClustersReader();
       readers_to_delete_.emplace_back(cluster_reader);
 
       // We expect the token to be the same as returned by last exchange

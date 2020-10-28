@@ -120,8 +120,8 @@ class Benchmark {
  private:
   /// Populate the table rows in the range [@p begin, @p end)
   google::cloud::StatusOr<BenchmarkResult> PopulateTableShard(
-      bigtable::Table& table, long begin,  // NOLINT(google-runtime-int)
-      long end);                           // NOLINT(google-runtime-int)
+      bigtable::Table& table, std::int64_t begin,
+      std::int64_t end) const;
 
   /**
    * Return how much space to reserve for digits if the table has @p table_size
@@ -129,7 +129,6 @@ class Benchmark {
    */
   int KeyWidth() const;
 
- private:
   BenchmarkSetup setup_;
   int key_width_;
   bigtable::ClientOptions client_options_;
