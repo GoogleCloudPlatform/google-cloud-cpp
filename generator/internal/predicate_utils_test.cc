@@ -186,8 +186,7 @@ TEST(PredicateUtilsTest, IsNonStreaming) {
   bidirectional_streaming.set_server_streaming(true);
 
   DescriptorPool pool;
-  auto const* service_file_descriptor_lro =
-      pool.BuildFile(service_file);
+  auto const* service_file_descriptor_lro = pool.BuildFile(service_file);
   EXPECT_TRUE(
       IsNonStreaming(*service_file_descriptor_lro->service(0)->method(0)));
   EXPECT_FALSE(
