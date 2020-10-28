@@ -14,6 +14,8 @@
 # limitations under the License.
 # ~~~
 
+set(DOXYGEN_EXCLUDE_SYMBOLS "generator_internal")
+
 include(GoogleCloudCppCommon)
 include(FindProtobufWithTargets)
 # TODO(#4146) - remove FPHSA_NAME_MISMATCHED manipulation on next absl release
