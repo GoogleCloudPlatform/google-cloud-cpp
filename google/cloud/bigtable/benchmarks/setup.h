@@ -36,7 +36,7 @@ struct BenchmarkSetupData {
   std::string app_profile_id;
   std::string table_id;
   int thread_count;
-  long table_size;  // NOLINT(google-runtime-int)
+  std::int64_t table_size;
   std::chrono::seconds test_duration;
   bool use_embedded_server;
 
