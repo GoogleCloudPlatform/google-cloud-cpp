@@ -42,8 +42,8 @@ inline namespace BIGTABLE_CLIENT_NS {
  * @par Thread-safety
  * Instances of this class created via copy-construction or copy-assignment
  * share the underlying pool of connections. Access to these copies via multiple
- * threads is guaranteed to work. Two threads operating on the same instance of
- * this class is not guaranteed to work.
+ * threads is guaranteed to work. Two threads operating concurrently on the same
+ * instance of this class is not guaranteed to work.
  *
  * @par Cost
  * Creating a new object of type `InstanceAdmin` is comparable to creating a few
@@ -208,6 +208,10 @@ class InstanceAdmin {
    * @par Idempotency
    * This operation is always treated as non-idempotent.
    *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
+   *
    * @par Example
    * @snippet bigtable_instance_admin_snippets.cc create instance
    */
@@ -250,6 +254,10 @@ class InstanceAdmin {
    * @par Idempotency
    * This operation is always treated as non-idempotent.
    *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
+   *
    * @par Example
    * @snippet bigtable_instance_admin_snippets.cc create cluster
    */
@@ -279,6 +287,10 @@ class InstanceAdmin {
    * @par Idempotency
    * This operation is always treated as non-idempotent.
    *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
+   *
    * @par Example
    * @snippet instance_admin_async_snippets.cc async create cluster
    */
@@ -305,6 +317,10 @@ class InstanceAdmin {
    * @par Idempotency
    * This operation is always treated as non-idempotent.
    *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
+   *
    * @par Example
    * @snippet bigtable_instance_admin_snippets.cc update instance
    */
@@ -330,6 +346,10 @@ class InstanceAdmin {
    * @par Idempotency
    * This operation is always treated as non-idempotent.
    *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
+   *
    * @par Example
    * @snippet instance_admin_async_snippets.cc async update instance
    */
@@ -348,6 +368,10 @@ class InstanceAdmin {
    *
    * @par Idempotency
    * This operation is read-only and therefore it is always idempotent.
+   *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
    *
    * @par Example
    * @snippet bigtable_instance_admin_snippets.cc list instances
@@ -376,6 +400,10 @@ class InstanceAdmin {
    * list of failed locations in the `projects/<project>/locations/<zone_id>`
    * format.
    *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
+   *
    * @par Idempotency
    * This operation is read-only and therefore it is always idempotent.
    *
@@ -389,6 +417,10 @@ class InstanceAdmin {
    *
    * @par Idempotency
    * This operation is read-only and therefore it is always idempotent.
+   *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
    *
    * @par Example
    * @snippet bigtable_instance_admin_snippets.cc get instance
@@ -418,6 +450,10 @@ class InstanceAdmin {
    * @par Idempotency
    * This operation is read-only and therefore it is always idempotent.
    *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
+   *
    * @par Example
    * @snippet instance_admin_async_snippets.cc async get instance
    */
@@ -432,6 +468,10 @@ class InstanceAdmin {
    *
    * @par Idempotency
    * This operation is always treated as non-idempotent.
+   *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
    *
    * @par Example
    * @snippet bigtable_instance_admin_snippets.cc delete instance
@@ -453,6 +493,10 @@ class InstanceAdmin {
    * @par Idempotency
    * This operation is always treated as non-idempotent.
    *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
+   *
    * @par Example
    * @snippet instance_admin_async_snippets.cc async-delete-instance
    */
@@ -472,6 +516,10 @@ class InstanceAdmin {
    * @par Idempotency
    * This operation is read-only and therefore it is always idempotent.
    *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
+   *
    * @par Example
    * @snippet bigtable_instance_admin_snippets.cc list clusters
    */
@@ -489,6 +537,10 @@ class InstanceAdmin {
    *
    * @par Idempotency
    * This operation is read-only and therefore it is always idempotent.
+   *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
    *
    * @par Example
    * @snippet bigtable_instance_admin_snippets.cc list clusters
@@ -520,6 +572,10 @@ class InstanceAdmin {
    * @par Idempotency
    * This operation is read-only and therefore it is always idempotent.
    *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
+   *
    * @par Example
    * @snippet bigtable_instance_admin_snippets.cc list clusters
    */
@@ -547,6 +603,10 @@ class InstanceAdmin {
    * @par Idempotency
    * This operation is read-only and therefore it is always idempotent.
    *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
+   *
    * @par Example
    * @snippet bigtable_instance_admin_snippets.cc list clusters
    */
@@ -571,6 +631,10 @@ class InstanceAdmin {
    *
    * @par Idempotency
    * This operation is always treated as non-idempotent.
+   *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
    *
    * @par Example
    * @snippet bigtable_instance_admin_snippets.cc update cluster
@@ -597,6 +661,10 @@ class InstanceAdmin {
    * @par Idempotency
    * This operation is always treated as non-idempotent.
    *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
+   *
    * @par Example
    * @snippet instance_admin_async_snippets.cc async update cluster
    */
@@ -612,6 +680,10 @@ class InstanceAdmin {
    *
    * @par Idempotency
    * This operation is always treated as non-idempotent.
+   *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
    *
    * @par Example
    * @snippet bigtable_instance_admin_snippets.cc delete cluster
@@ -639,6 +711,10 @@ class InstanceAdmin {
    * @par Idempotency
    * This operation is always treated as non-idempotent.
    *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
+   *
    * @par Example
    * @snippet instance_admin_async_snippets.cc async delete cluster
    */
@@ -656,6 +732,10 @@ class InstanceAdmin {
    *
    * @par Idempotency
    * This operation is read-only and therefore it is always idempotent.
+   *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
    *
    * @par Example
    * @snippet bigtable_instance_admin_snippets.cc get cluster
@@ -686,6 +766,10 @@ class InstanceAdmin {
    * @par Idempotency
    * This operation is read-only and therefore it is always idempotent.
    *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
+   *
    * @par Example
    * @snippet instance_admin_async_snippets.cc async get cluster
    */
@@ -702,6 +786,10 @@ class InstanceAdmin {
    *
    * @par Idempotency
    * This operation is always treated as non-idempotent.
+   *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
    *
    * @par Multi-cluster Routing Example
    * @snippet bigtable_instance_admin_snippets.cc create app profile
@@ -725,6 +813,10 @@ class InstanceAdmin {
    * @par Idempotency
    * This operation is always treated as non-idempotent.
    *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
+   *
    * @par Example
    * @snippet instance_admin_async_snippets.cc async create app profile
    */
@@ -741,6 +833,10 @@ class InstanceAdmin {
    *
    * @par Idempotency
    * This operation is read-only and therefore it is always idempotent.
+   *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
    *
    * @par Example
    * @snippet bigtable_instance_admin_snippets.cc get app profile
@@ -762,6 +858,10 @@ class InstanceAdmin {
    * @par Idempotency
    * This operation is read-only and therefore it is always idempotent.
    *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
+   *
    * @par Example
    * @snippet instance_admin_async_snippets.cc async get app profile
    */
@@ -779,6 +879,10 @@ class InstanceAdmin {
    *
    * @par Idempotency
    * This operation is always treated as non-idempotent.
+   *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
    *
    * @par Change Description Example
    * @snippet bigtable_instance_admin_snippets.cc update app profile description
@@ -814,6 +918,10 @@ class InstanceAdmin {
    * @par Idempotency
    * This operation is always treated as non-idempotent.
    *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
+   *
    * @par Example
    * @snippet instance_admin_async_snippets.cc async update app profile
    */
@@ -830,6 +938,10 @@ class InstanceAdmin {
    *
    * @par Idempotency
    * This operation is read-only and therefore it is always idempotent.
+   *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
    *
    * @par Example
    * @snippet bigtable_instance_admin_snippets.cc list app profiles
@@ -849,6 +961,10 @@ class InstanceAdmin {
    * @par Idempotency
    * This operation is read-only and therefore it is always idempotent.
    *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
+   *
    * @par Example
    * @snippet bigtable_instance_admin_snippets.cc list clusters
    */
@@ -867,6 +983,10 @@ class InstanceAdmin {
    *
    * @par Idempotency
    * This operation is always treated as non-idempotent.
+   *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
    *
    * @par Example
    * @snippet bigtable_instance_admin_snippets.cc delete app profile
@@ -895,6 +1015,10 @@ class InstanceAdmin {
    * @par Idempotency
    * This operation is always treated as non-idempotent.
    *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
+   *
    * @par Example
    * @snippet instance_admin_async_snippets.cc async delete app profile
    */
@@ -917,6 +1041,10 @@ class InstanceAdmin {
    * @par Idempotency
    * This operation is read-only and therefore it is always idempotent.
    *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
+   *
    * @par Example
    * @snippet bigtable_instance_admin_snippets.cc get iam policy
    */
@@ -935,6 +1063,10 @@ class InstanceAdmin {
    *
    * @par Idempotency
    * This operation is read-only and therefore it is always idempotent.
+   *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
    *
    * @par Example
    * @snippet bigtable_instance_admin_snippets.cc get native iam policy
@@ -960,6 +1092,10 @@ class InstanceAdmin {
    * @par Idempotency
    * This operation is read-only and therefore it is always idempotent.
    *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
+   *
    * @par Example
    * @snippet instance_admin_async_snippets.cc async get iam policy
    */
@@ -982,6 +1118,10 @@ class InstanceAdmin {
    *
    * @par Idempotency
    * This operation is read-only and therefore it is always idempotent.
+   *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
    *
    * @par Example
    * @snippet instance_admin_async_snippets.cc async get native iam policy
@@ -1011,6 +1151,10 @@ class InstanceAdmin {
    * @par Idempotency
    * This operation is always treated as non-idempotent.
    *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
+   *
    * @par Example
    * @snippet bigtable_instance_admin_snippets.cc set iam policy
    */
@@ -1035,6 +1179,10 @@ class InstanceAdmin {
    *
    * @par Idempotency
    * This operation is always treated as non-idempotent.
+   *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
    *
    * @par Example
    * @snippet bigtable_instance_admin_snippets.cc set native iam policy
@@ -1070,6 +1218,10 @@ class InstanceAdmin {
    * @par Idempotency
    * This operation is always treated as non-idempotent.
    *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
+   *
    * @par Example
    * @snippet instance_admin_async_snippets.cc async set iam policy
    */
@@ -1096,6 +1248,10 @@ class InstanceAdmin {
    * @par Idempotency
    * This operation is always treated as non-idempotent.
    *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
+   *
    * @par Example
    * @snippet instance_admin_async_snippets.cc async set native iam policy
    */
@@ -1111,6 +1267,10 @@ class InstanceAdmin {
    *
    * @par Idempotency
    * This operation is read-only and therefore it is always idempotent.
+   *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
    *
    * @par Example
    * @snippet bigtable_instance_admin_snippets.cc test iam permissions
@@ -1134,6 +1294,10 @@ class InstanceAdmin {
    *     `cq.Run()`.
    * @param instance_id the ID of the instance to query.
    * @param permissions set of permissions to check for the resource.
+   *
+   * @par Thread-safety
+   * Two threads concurrently calling this member function on the same instance
+   * of this class are **not** guaranteed to work.
    *
    * @par Example
    * @snippet instance_admin_async_snippets.cc async test iam permissions
