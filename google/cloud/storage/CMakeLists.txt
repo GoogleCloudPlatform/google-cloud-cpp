@@ -351,6 +351,8 @@ if (BUILD_TESTING)
     add_library(
         storage_client_testing # cmake-format: sort
         testing/canonical_errors.h
+        testing/constants.cc
+        testing/constants.h
         testing/mock_client.h
         testing/mock_fake_clock.cc
         testing/mock_fake_clock.h
