@@ -214,8 +214,6 @@ TEST_F(ObjectFileIntegrationTest, UploadFile) {
 }
 
 TEST_F(ObjectFileIntegrationTest, UploadFileBinary) {
-  // The testbench does not support binary payloads.
-  if (UsingEmulator()) GTEST_SKIP();
   StatusOr<Client> client = MakeIntegrationTestClient();
   ASSERT_STATUS_OK(client);
 
