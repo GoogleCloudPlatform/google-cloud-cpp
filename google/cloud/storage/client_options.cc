@@ -33,23 +33,21 @@ using ::google::cloud::internal::GetEnv;
 namespace internal {
 
 std::string JsonEndpoint(ClientOptions const& options) {
-  return GetEnv("CLOUD_STORAGE_TESTBENCH_ENDPOINT")
-             .value_or(options.endpoint_) +
+  return GetEnv("CLOUD_STORAGE_EMULATOR_ENDPOINT").value_or(options.endpoint_) +
          "/storage/" + options.version();
 }
 
 std::string JsonUploadEndpoint(ClientOptions const& options) {
-  return GetEnv("CLOUD_STORAGE_TESTBENCH_ENDPOINT")
-             .value_or(options.endpoint_) +
+  return GetEnv("CLOUD_STORAGE_EMULATOR_ENDPOINT").value_or(options.endpoint_) +
          "/upload/storage/" + options.version();
 }
 
 std::string XmlEndpoint(ClientOptions const& options) {
-  return GetEnv("CLOUD_STORAGE_TESTBENCH_ENDPOINT").value_or(options.endpoint_);
+  return GetEnv("CLOUD_STORAGE_EMULATOR_ENDPOINT").value_or(options.endpoint_);
 }
 
 std::string IamEndpoint(ClientOptions const& options) {
-  auto testbench = GetEnv("CLOUD_STORAGE_TESTBENCH_ENDPOINT");
+  auto testbench = GetEnv("CLOUD_STORAGE_EMULATOR_ENDPOINT");
   if (testbench) return *testbench + "/iamapi";
   return options.iam_endpoint();
 }
@@ -58,7 +56,7 @@ std::string IamEndpoint(ClientOptions const& options) {
 
 namespace {
 StatusOr<std::shared_ptr<oauth2::Credentials>> StorageDefaultCredentials() {
-  auto emulator = cloud::internal::GetEnv("CLOUD_STORAGE_TESTBENCH_ENDPOINT");
+  auto emulator = cloud::internal::GetEnv("CLOUD_STORAGE_EMULATOR_ENDPOINT");
   if (emulator.has_value()) {
     return StatusOr<std::shared_ptr<oauth2::Credentials>>(
         oauth2::CreateAnonymousCredentials());
@@ -125,7 +123,7 @@ ClientOptions::ClientOptions(std::shared_ptr<oauth2::Credentials> credentials,
       download_stall_timeout_(
           GOOGLE_CLOUD_CPP_STORAGE_DEFAULT_DOWNLOAD_STALL_TIMEOUT),
       channel_options_(std::move(channel_options)) {
-  auto emulator = GetEnv("CLOUD_STORAGE_TESTBENCH_ENDPOINT");
+  auto emulator = GetEnv("CLOUD_STORAGE_EMULATOR_ENDPOINT");
   if (emulator.has_value()) {
     endpoint_ = *emulator;
     iam_endpoint_ = *emulator + "/iamapi";
