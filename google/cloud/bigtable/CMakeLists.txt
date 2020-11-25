@@ -109,7 +109,6 @@ add_library(
     internal/bulk_mutator.cc
     internal/bulk_mutator.h
     internal/client_options_defaults.h
-    internal/common_client.cc
     internal/common_client.h
     internal/google_bytes_traits.cc
     internal/google_bytes_traits.h

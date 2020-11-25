@@ -89,7 +89,6 @@ bigtable_client_srcs = [
     "instance_update_config.cc",
     "internal/async_bulk_apply.cc",
     "internal/bulk_mutator.cc",
-    "internal/common_client.cc",
     "internal/google_bytes_traits.cc",
     "internal/prefix_range_end.cc",
     "internal/readrowsparser.cc",

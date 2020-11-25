@@ -17,6 +17,10 @@
 
 #include "google/cloud/bigtable/client_options.h"
 #include "google/cloud/bigtable/version.h"
+#include "google/cloud/connection_options.h"
+#include "google/cloud/internal/random.h"
+#include "google/cloud/log.h"
+#include "google/cloud/status_or.h"
 #include <grpcpp/grpcpp.h>
 
 namespace google {
@@ -24,10 +28,6 @@ namespace cloud {
 namespace bigtable {
 inline namespace BIGTABLE_CLIENT_NS {
 namespace internal {
-
-/// Create a pool of `grpc::Channel` objects based on the client options.
-std::vector<std::shared_ptr<grpc::Channel>> CreateChannelPool(
-    std::string const& endpoint, bigtable::ClientOptions const& options);
 
 /**
  * Refactor implementation of `bigtable::{Data,Admin,InstanceAdmin}Client`.
@@ -54,7 +54,11 @@ class CommonClient {
   //@}
 
   explicit CommonClient(bigtable::ClientOptions options)
-      : options_(std::move(options)), current_index_(0) {}
+      : options_(std::move(options)),
+        rng_(google::cloud::internal::MakeDefaultPRNG()),
+        current_index_(0),
+        background_threads_(
+            google::cloud::internal::DefaultBackgroundThreads(1)) {}
 
   /**
    * Reset the channel and stub.
@@ -84,6 +88,12 @@ class CommonClient {
     return channel;
   }
 
+  ~CommonClient() {
+    // Make sure all timers finish before we start destroying structures which
+    // the timers potentially touch.
+    background_threads_->cq().CancelAll();
+  }
+
  private:
   /// Make sure the connections exit, and create them if needed.
   void CheckConnections(std::unique_lock<std::mutex>& lk) {
@@ -101,7 +111,7 @@ class CommonClient {
     // introduce attributes in the implementation of CreateChannelPool() to
     // create one socket per element in the pool.
     lk.unlock();
-    auto channels = CreateChannelPool(Traits::Endpoint(options_), options_);
+    auto channels = CreateChannelPool();
     std::vector<StubPtr> tmp;
     std::transform(channels.begin(), channels.end(), std::back_inserter(tmp),
                    [](std::shared_ptr<grpc::Channel> ch) {
@@ -123,6 +133,57 @@ class CommonClient {
     }
   }
 
+  std::shared_ptr<grpc::Channel> CreateChannel(std::size_t idx) {
+    auto args = options_.channel_arguments();
+    if (!options_.connection_pool_name().empty()) {
+      args.SetString("cbt-c++/connection-pool-name",
+                     options_.connection_pool_name());
+    }
+    args.SetInt("cbt-c++/connection-pool-id", static_cast<int>(idx));
+    auto res = grpc::CreateCustomChannel(Traits::Endpoint(options_),
+                                         options_.credentials(), args);
+    if (options_.max_conn_refresh_period().count() == 0) {
+      return res;
+    }
+    std::chrono::seconds next_replace_after(
+        std::uniform_int_distribution<std::chrono::seconds::rep>(
+            1, options_.max_conn_refresh_period().count())(rng_));
+    background_threads_->cq()
+        .MakeRelativeTimer(next_replace_after)
+        .then([this, idx](
+                  future<StatusOr<std::chrono::system_clock::time_point>> fut) {
+          if (!fut.get()) {
+            // Timer cancelled.
+            return;
+          }
+          auto channel = CreateChannel(idx);
+          // This is blocking, but it's not a problem given that we're only
+          // blocking a CompletionQueue used solely for refreshing connections.
+          if (!channel->WaitForConnected(std::chrono::system_clock::now() +
+                                         std::chrono::seconds(1))) {
+            GCP_LOG(WARNING)
+                << "Failed to connect to " << Traits::Endpoint(options_)
+                << ". Skipping preemptive connection refresh";
+          }
+          ReplaceChannel(idx, std::move(channel));
+        });
+    return res;
+  }
+
+  std::vector<std::shared_ptr<grpc::Channel>> CreateChannelPool() {
+    std::vector<std::shared_ptr<grpc::Channel>> result;
+    for (std::size_t i = 0; i != options_.connection_pool_size(); ++i) {
+      result.emplace_back(CreateChannel(i));
+    }
+    return result;
+  }
+
+  void ReplaceChannel(std::size_t idx, std::shared_ptr<grpc::Channel> channel) {
+    std::unique_lock<std::mutex> lk(mu_);
+    stubs_[idx] = Interface::NewStub(channel);
+    channels_[idx] = std::move(channel);
+  }
+
   /// Get the current index for round-robin over connections.
   std::size_t GetIndex() {
     std::size_t current = current_index_++;
@@ -135,9 +196,11 @@ class CommonClient {
 
   std::mutex mu_;
   ClientOptions options_;
+  google::cloud::internal::DefaultPRNG rng_;
   std::vector<ChannelPtr> channels_;
   std::vector<StubPtr> stubs_;
   std::size_t current_index_;
+  std::unique_ptr<BackgroundThreads> background_threads_;
 };
 
 }  // namespace internal

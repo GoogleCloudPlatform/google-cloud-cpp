@@ -296,6 +296,24 @@ class ClientOptions {
   /// Return the user agent prefix used by the library.
   static std::string UserAgentPrefix();
 
+  /**
+   * Maximum connection refresh period, as set via `set_max_conn_refresh_period`
+   */
+  std::chrono::seconds max_conn_refresh_period() {
+    return max_conn_refresh_period_;
+  }
+
+  /**
+   * If set to a positive number, the client will replace connections at random
+   * moments not larger than this moment. This is necessary to avoid all
+   * connections simultaneously expiring and causing latency spikes.
+   */
+  ClientOptions& set_max_conn_refresh_period(
+      std::chrono::seconds max_conn_refresh_period) {
+    max_conn_refresh_period_ = max_conn_refresh_period;
+    return *this;
+  }
+
  private:
   friend struct internal::InstanceAdminTraits;
   friend struct ClientOptionsTestTraits;
@@ -316,6 +334,7 @@ class ClientOptions {
   // testing, where the emulator for instance admin operations may be different
   // than the emulator for admin and data operations.
   std::string instance_admin_endpoint_;
+  std::chrono::seconds max_conn_refresh_period_;
 };
 }  // namespace BIGTABLE_CLIENT_NS
 }  // namespace bigtable

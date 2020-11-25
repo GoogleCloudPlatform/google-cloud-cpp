@@ -80,7 +80,9 @@ ClientOptions::ClientOptions(std::shared_ptr<grpc::ChannelCredentials> creds)
       connection_pool_size_(CalculateDefaultConnectionPoolSize()),
       data_endpoint_("bigtable.googleapis.com"),
       admin_endpoint_("bigtableadmin.googleapis.com"),
-      instance_admin_endpoint_("bigtableadmin.googleapis.com") {
+      instance_admin_endpoint_("bigtableadmin.googleapis.com"),
+      // Refresh connections before they expire themselves.
+      max_conn_refresh_period_(std::chrono::seconds(50 * 60)) {
   static std::string const kUserAgentPrefix = UserAgentPrefix();
   channel_arguments_.SetUserAgentPrefix(kUserAgentPrefix);
   channel_arguments_.SetMaxSendMessageSize(

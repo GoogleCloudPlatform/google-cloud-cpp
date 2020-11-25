@@ -557,6 +557,39 @@ TEST_F(DataIntegrationTest, TableReadMultipleCellsBigValue) {
   CheckEqualUnordered(expected_ignore_timestamp, actual_ignore_timestamp);
 }
 
+TEST(ConnectionRefresh, Disabled) {
+  auto data_client = bigtable::CreateDefaultDataClient(
+      testing::TableTestEnvironment::project_id(),
+      testing::TableTestEnvironment::instance_id(),
+      bigtable::ClientOptions().set_max_conn_refresh_period(
+          std::chrono::seconds(0)));
+  // Make sure something would have failed if were in fact replacing
+  // connections.
+  std::this_thread::sleep_for(std::chrono::seconds(1));
+
+  bigtable::Table table(data_client, testing::TableTestEnvironment::table_id());
+  std::string const row_key = "row-key-1";
+  std::vector<Cell> created{{row_key, kFamily4, "c0", 1000, "v1000"},
+                            {row_key, kFamily4, "c1", 2000, "v2000"}};
+  Apply(table, row_key, created);
+}
+
+TEST(ConnectionRefresh, Frequent) {
+  auto data_client = bigtable::CreateDefaultDataClient(
+      testing::TableTestEnvironment::project_id(),
+      testing::TableTestEnvironment::instance_id(),
+      bigtable::ClientOptions().set_max_conn_refresh_period(
+          std::chrono::seconds(1)));
+  // Make sure something would have failed if replacing was broken.
+  std::this_thread::sleep_for(std::chrono::seconds(2));
+
+  bigtable::Table table(data_client, testing::TableTestEnvironment::table_id());
+  std::string const row_key = "row-key-1";
+  std::vector<Cell> created{{row_key, kFamily4, "c0", 1000, "v1000"},
+                            {row_key, kFamily4, "c1", 2000, "v2000"}};
+  Apply(table, row_key, created);
+}
+
 }  // namespace
 }  // namespace BIGTABLE_CLIENT_NS
 }  // namespace bigtable
