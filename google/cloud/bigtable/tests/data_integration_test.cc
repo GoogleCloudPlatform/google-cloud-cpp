@@ -600,6 +600,54 @@ TEST_F(DataIntegrationTest, TableApplyWithLogging) {
   google::cloud::LogSink::Instance().RemoveBackend(id);
 }
 
+TEST(ConnectionRefresh, Disabled) {
+  auto data_client = bigtable::CreateDefaultDataClient(
+      testing::TableTestEnvironment::project_id(),
+      testing::TableTestEnvironment::instance_id(),
+      bigtable::ClientOptions().set_max_conn_refresh_period(
+          std::chrono::seconds(0)));
+  // Make sure something would have failed if were in fact actively warming up
+  // connections.
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+  for (std::size_t i = 0; i < 10U; ++i) {
+    auto channel = data_client->Channel();
+    // It's not a proof but none of the selected channels was actively warmed
+    // up, it makes it likely we're not doing it.
+    EXPECT_EQ(GRPC_CHANNEL_IDLE, channel->GetState(false));
+  }
+  // Make sure things still work.
+  bigtable::Table table(data_client, testing::TableTestEnvironment::table_id());
+  std::string const row_key = "row-key-1";
+  std::vector<Cell> created{{row_key, kFamily4, "c0", 1000, "v1000"},
+                            {row_key, kFamily4, "c1", 2000, "v2000"}};
+  Apply(table, row_key, created);
+}
+
+TEST(ConnectionRefresh, Frequent) {
+  auto data_client = bigtable::CreateDefaultDataClient(
+      testing::TableTestEnvironment::project_id(),
+      testing::TableTestEnvironment::instance_id(),
+      bigtable::ClientOptions().set_max_conn_refresh_period(
+          std::chrono::milliseconds(100)));
+
+  for (;;) {
+    if (data_client->Channel()->GetState(false) == GRPC_CHANNEL_READY) {
+      // We've found a channel which changed its state from IDLE to READY, which
+      // means that our refreshing mechanism works.
+      break;
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+
+  // Make sure things still work.
+  bigtable::Table table(data_client, testing::TableTestEnvironment::table_id());
+  std::string const row_key = "row-key-1";
+  std::vector<Cell> created{{row_key, kFamily4, "c0", 1000, "v1000"},
+                            {row_key, kFamily4, "c1", 2000, "v2000"}};
+  Apply(table, row_key, created);
+}
+
 }  // namespace
 }  // namespace BIGTABLE_CLIENT_NS
 }  // namespace bigtable
