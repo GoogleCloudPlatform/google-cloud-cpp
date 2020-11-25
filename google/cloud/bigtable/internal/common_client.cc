@@ -18,21 +18,64 @@ namespace cloud {
 namespace bigtable {
 inline namespace BIGTABLE_CLIENT_NS {
 namespace internal {
+namespace {
 
-std::vector<std::shared_ptr<grpc::Channel>> CreateChannelPool(
-    std::string const& endpoint, bigtable::ClientOptions const& options) {
-  std::vector<std::shared_ptr<grpc::Channel>> result;
-  for (std::size_t i = 0; i != options.connection_pool_size(); ++i) {
-    auto args = options.channel_arguments();
-    if (!options.connection_pool_name().empty()) {
-      args.SetString("cbt-c++/connection-pool-name",
-                     options.connection_pool_name());
-    }
-    args.SetInt("cbt-c++/connection-pool-id", static_cast<int>(i));
-    result.push_back(
-        grpc::CreateCustomChannel(endpoint, options.credentials(), args));
-  }
-  return result;
+std::chrono::milliseconds RandomizedRefreshDelay(
+    std::chrono::milliseconds max_conn_refresh_period) {
+  static google::cloud::internal::DefaultPRNG rng(std::random_device{}());
+  return std::chrono::milliseconds(
+      std::uniform_int_distribution<decltype(max_conn_refresh_period)::rep>(
+          1, max_conn_refresh_period.count())(rng));
+}
+
+}  // namespace
+
+void ScheduleChannelRefresh(std::shared_ptr<CompletionQueue> const& cq,
+                            std::shared_ptr<grpc::Channel> const& channel,
+                            std::chrono::milliseconds max_conn_refresh_period) {
+  // The timers will only hold weak pointers to the channel or to the
+  // completion queue, so if either of them are destroyed, the timer chain
+  // will simply not continue. Unfortunately, that means that some stray
+  // timers may remain in the `CompletionQueue` for a while, but this is
+  // generally unavoidable because there is no way to cancel individual
+  // timers.
+  std::weak_ptr<grpc::Channel> weak_channel(channel);
+  std::weak_ptr<CompletionQueue> weak_cq(cq);
+  using TimerFuture = future<StatusOr<std::chrono::system_clock::time_point>>;
+  cq->MakeRelativeTimer(RandomizedRefreshDelay(max_conn_refresh_period))
+      .then([weak_channel, weak_cq, max_conn_refresh_period](TimerFuture fut) {
+        if (!fut.get()) {
+          // Timer cancelled.
+          return;
+        }
+        auto channel = weak_channel.lock();
+        if (!channel) {
+          return;
+        }
+        auto cq = weak_cq.lock();
+        if (!cq) {
+          return;
+        }
+        cq->AsyncWaitConnectionReady(channel, std::chrono::system_clock::now() +
+                                                  kConnectionReadyTimeout)
+            .then([weak_channel, weak_cq,
+                   max_conn_refresh_period](future<Status> fut) {
+              auto conn_status = fut.get();
+              if (!conn_status.ok()) {
+                GCP_LOG(WARNING)
+                    << "Failed to refresh connection. Error: " << conn_status;
+              }
+              auto channel = weak_channel.lock();
+              if (!channel) {
+                return;
+              }
+              auto cq = weak_cq.lock();
+              if (!cq) {
+                return;
+              }
+              ScheduleChannelRefresh(cq, channel, max_conn_refresh_period);
+            });
+      });
 }
 
 }  // namespace internal
