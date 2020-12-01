@@ -17,6 +17,7 @@
 
 #include "google/cloud/future.h"
 #include "google/cloud/internal/completion_queue_impl.h"
+#include "google/cloud/internal/default_completion_queue_impl.h"
 #include "google/cloud/status_or.h"
 #include "google/cloud/version.h"
 #include <chrono>
@@ -46,6 +47,11 @@ class FakeCompletionQueueImpl
   future<StatusOr<std::chrono::system_clock::time_point>> MakeRelativeTimer(
       std::chrono::nanoseconds duration) override;
   void RunAsync(std::unique_ptr<internal::RunAsyncBase> function) override;
+
+  future<bool> AsyncWaitForConnectionStateChange(
+      std::shared_ptr<grpc::Channel> channel,
+      std::chrono::system_clock::time_point deadline,
+      grpc_connectivity_state last_observed) override;
 
   void StartOperation(std::shared_ptr<internal::AsyncGrpcOperation> op,
                       absl::FunctionRef<void(void*)> start) override;

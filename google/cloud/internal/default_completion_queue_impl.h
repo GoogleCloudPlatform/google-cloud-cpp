@@ -57,6 +57,12 @@ class DefaultCompletionQueueImpl
   /// Enqueue a new asynchronous function.
   void RunAsync(std::unique_ptr<RunAsyncBase> function) override;
 
+  /// Asynchronously wait for connection state change.
+  future<bool> AsyncWaitForConnectionStateChange(
+      std::shared_ptr<grpc::Channel> channel,
+      std::chrono::system_clock::time_point deadline,
+      grpc_connectivity_state last_observed) override;
+
   /// Atomically add a new operation to the completion queue and start it.
   void StartOperation(std::shared_ptr<AsyncGrpcOperation> op,
                       absl::FunctionRef<void(void*)> start) override;
@@ -112,6 +118,35 @@ class DefaultCompletionQueueImpl
   std::atomic<std::int64_t> notify_counter_{0};
   std::size_t thread_pool_hwm_ = 0;
   std::size_t run_async_pool_hwm_ = 0;
+};
+
+/**
+ * Underlies `DefaultCompletionQueueImpl::AsyncWaitForConnectionStateChange`.
+ *
+ * Objects of this class handles connection state changes events. This could
+ * well be hidden away from the header, but is useful in
+ * `FakeCompletionQueueImpl`.
+ */
+class AsyncConnectionStateChangeFuture : public internal::AsyncGrpcOperation {
+ public:
+  AsyncConnectionStateChangeFuture(
+      std::shared_ptr<grpc::Channel> channel,
+      std::chrono::system_clock::time_point deadline,
+      grpc_connectivity_state last_observed);
+
+  void Start(grpc::CompletionQueue& cq, void* tag);
+  // There doesn't seem to be a way to cancel this operation.
+  void Cancel() override {}
+  /// The future will be set to whether the state changed (false means timeout).
+  future<bool> GetFuture() { return promise_.get_future(); }
+
+ private:
+  bool Notify(bool ok) override;
+
+  std::shared_ptr<grpc::Channel> channel_;
+  std::chrono::system_clock::time_point deadline_;
+  grpc_connectivity_state last_observed_;
+  promise<bool> promise_;
 };
 
 }  // namespace internal

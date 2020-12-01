@@ -89,6 +89,24 @@ class AsyncTimerFuture : public internal::AsyncGrpcOperation {
 
 }  // namespace
 
+AsyncConnectionStateChangeFuture::AsyncConnectionStateChangeFuture(
+    std::shared_ptr<grpc::Channel> channel,
+    std::chrono::system_clock::time_point deadline,
+    grpc_connectivity_state last_observed)
+    : channel_(std::move(channel)),
+      deadline_(deadline),
+      last_observed_(last_observed) {}
+
+void AsyncConnectionStateChangeFuture::Start(grpc::CompletionQueue& cq,
+                                             void* tag) {
+  channel_->NotifyOnStateChange(last_observed_, deadline_, &cq, tag);
+}
+
+bool AsyncConnectionStateChangeFuture::Notify(bool ok) {
+  promise_.set_value(ok);
+  return true;
+}
+
 // A helper class to wake up the asynchronous thread and drain the RunAsync()
 // queue in a loop.
 class DefaultCompletionQueueImpl::WakeUpRunAsyncLoop
@@ -217,6 +235,17 @@ void DefaultCompletionQueueImpl::RunAsync(
   std::unique_lock<std::mutex> lk(mu_);
   run_async_queue_.push_back(std::move(function));
   WakeUpRunAsyncThread(std::move(lk));
+}
+
+future<bool> DefaultCompletionQueueImpl::AsyncWaitForConnectionStateChange(
+    std::shared_ptr<grpc::Channel> channel,
+    std::chrono::system_clock::time_point deadline,
+    grpc_connectivity_state last_observed) {
+  auto op = std::make_shared<AsyncConnectionStateChangeFuture>(
+      std::move(channel), deadline, last_observed);
+  auto res = op->GetFuture();
+  StartOperation(op, [&](void* tag) { op->Start(cq(), tag); });
+  return res;
 }
 
 void DefaultCompletionQueueImpl::StartOperation(

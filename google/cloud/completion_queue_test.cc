@@ -825,6 +825,89 @@ TEST(CompletionQueueTest, ImplStartOperationDuplicate) {
 #endif  // GOOGLE_CLOUD_CPP_HAVE_EXCEPTIONS
 }
 
+TEST(CompletionQueueTest, ConnectionIsntEstablishedByItself) {
+  auto channel = grpc::CreateChannel("some_nonexistent.address",
+                                     grpc::InsecureChannelCredentials());
+  CompletionQueue cq;
+  std::thread t([&cq] { cq.Run(); });
+
+  auto state = channel->GetState(false);
+  EXPECT_EQ(GRPC_CHANNEL_IDLE, state);
+
+  auto test_start = std::chrono::steady_clock::now();
+  auto future = cq.AsyncWaitForConnectionStateChange(
+      channel, std::chrono::system_clock::now() + std::chrono::seconds(1),
+      state);
+  auto res = future.get();
+  EXPECT_FALSE(res);
+  auto test_duration = std::chrono::steady_clock::now() - test_start;
+  EXPECT_GE(test_duration, std::chrono::seconds(1));
+  cq.Shutdown();
+  t.join();
+}
+
+TEST(CompletionQueueTest, WaitingForFailingConnection) {
+  auto channel = grpc::CreateChannel("some_nonexistent.address",
+                                     grpc::InsecureChannelCredentials());
+  CompletionQueue cq;
+  std::thread t([&cq] { cq.Run(); });
+
+  auto state = channel->GetState(true);
+  EXPECT_EQ(GRPC_CHANNEL_IDLE, state);
+
+  EXPECT_TRUE(cq.AsyncWaitForConnectionStateChange(
+                    channel,
+                    std::chrono::system_clock::now() + std::chrono::seconds(1),
+                    state)
+                  .get());
+
+  EXPECT_EQ(GRPC_CHANNEL_CONNECTING, channel->GetState(true));
+
+  cq.Shutdown();
+  t.join();
+}
+
+TEST(CompletionQueueTest, SuccessfulWaitingForConnection) {
+  grpc::ServerBuilder builder;
+  grpc::AsyncGenericService generic_service;
+  builder.RegisterAsyncGenericService(&generic_service);
+  int selected_port;
+  builder.AddListeningPort("localhost:0", grpc::InsecureServerCredentials(),
+                           &selected_port);
+  auto srv_cq = builder.AddCompletionQueue();
+  std::thread srv_thread([&srv_cq] {
+    bool ok;
+    void* dummy;
+    while (srv_cq->Next(&dummy, &ok))
+      ;
+  });
+  auto server = builder.BuildAndStart();
+
+  CompletionQueue cli_cq;
+  std::thread cli_thread([&cli_cq] { cli_cq.Run(); });
+
+  auto channel =
+      grpc::CreateChannel("localhost:" + std::to_string(selected_port),
+                          grpc::InsecureChannelCredentials());
+
+  EXPECT_EQ(GRPC_CHANNEL_IDLE, channel->GetState(false));
+  for (auto state = channel->GetState(true); state != GRPC_CHANNEL_READY;
+       state = channel->GetState(false)) {
+    std::cout << state << std::endl;
+    EXPECT_TRUE(
+        cli_cq
+            .AsyncWaitForConnectionStateChange(
+                channel,
+                std::chrono::system_clock::now() + std::chrono::seconds(1),
+                state)
+            .get());
+  }
+  cli_cq.Shutdown();
+  cli_thread.join();
+  srv_cq->Shutdown();
+  srv_thread.join();
+}
+
 }  // namespace
 }  // namespace GOOGLE_CLOUD_CPP_NS
 }  // namespace cloud

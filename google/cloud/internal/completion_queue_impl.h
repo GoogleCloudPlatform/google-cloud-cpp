@@ -66,6 +66,12 @@ class CompletionQueueImpl {
   /// Enqueue a new asynchronous function.
   virtual void RunAsync(std::unique_ptr<RunAsyncBase> function) = 0;
 
+  /// Asynchronously wait for connection state change.
+  virtual future<bool> AsyncWaitForConnectionStateChange(
+      std::shared_ptr<grpc::Channel> channel,
+      std::chrono::system_clock::time_point deadline,
+      grpc_connectivity_state last_observed) = 0;
+
   /// Atomically add a new operation to the completion queue and start it.
   virtual void StartOperation(std::shared_ptr<AsyncGrpcOperation> op,
                               absl::FunctionRef<void(void*)> start) = 0;

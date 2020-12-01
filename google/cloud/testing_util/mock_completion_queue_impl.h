@@ -40,6 +40,10 @@ class MockCompletionQueueImpl : public internal::CompletionQueueImpl {
   MOCK_METHOD2(StartOperation,
                void(std::shared_ptr<internal::AsyncGrpcOperation>,
                     absl::FunctionRef<void(void*)>));
+  MOCK_METHOD3(AsyncWaitForConnectionStateChange,
+               future<bool>(std::shared_ptr<grpc::Channel> channel,
+                            std::chrono::system_clock::time_point deadline,
+                            grpc_connectivity_state last_observed));
 
   MOCK_METHOD0(cq, grpc::CompletionQueue&());
 };

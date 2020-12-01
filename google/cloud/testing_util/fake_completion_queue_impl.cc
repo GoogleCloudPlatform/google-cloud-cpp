@@ -121,6 +121,18 @@ void FakeCompletionQueueImpl::RunAsync(
   pending_ops_.push_back(op);
 }
 
+future<bool> FakeCompletionQueueImpl::AsyncWaitForConnectionStateChange(
+    std::shared_ptr<grpc::Channel> channel,
+    std::chrono::system_clock::time_point deadline,
+    grpc_connectivity_state last_observed) {
+  // There's nothing fake in this implementation, currently.
+  auto op = std::make_shared<internal::AsyncConnectionStateChangeFuture>(
+      std::move(channel), deadline, last_observed);
+  auto res = op->GetFuture();
+  StartOperation(op, [&](void* tag) { op->Start(cq(), tag); });
+  return res;
+}
+
 void FakeCompletionQueueImpl::StartOperation(
     std::shared_ptr<internal::AsyncGrpcOperation> op,
     absl::FunctionRef<void(void*)> start) {

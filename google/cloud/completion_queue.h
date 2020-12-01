@@ -231,6 +231,30 @@ class CompletionQueue {
     impl_->RunAsync(absl::make_unique<Wrapper>(std::forward<Functor>(functor)));
   }
 
+  /**
+   * Asynchronously wait for a connection state change.
+   *
+   * @param channel the channel on which to wait for state changes
+   * @param deadline give up waiting for the state change if this deadline
+   *     passes
+   * @param last_observed last observed connection state as returned by
+   *     `channel->GetState()`; the returned `future<>` will be satisfied once
+   *     the state transitions to something different than this value; this
+   *     parameter is necessary to allow the user for waiting for a specific
+   *     value and avoid the lost wake-up problem
+   * @return `future<>` which will be specified when the connection state
+   *     transitions from `last_observed` to something else or when the deadline
+   *     passes; if state changes, the `future<>` will be satisfied with `true`
+   *     -  otherwise with `false`
+   */
+  future<bool> AsyncWaitForConnectionStateChange(
+      std::shared_ptr<grpc::Channel> channel,
+      std::chrono::system_clock::time_point deadline,
+      grpc_connectivity_state last_observed) {
+    return impl_->AsyncWaitForConnectionStateChange(std::move(channel),
+                                                    deadline, last_observed);
+  }
+
  private:
   friend std::shared_ptr<internal::CompletionQueueImpl>
   internal::GetCompletionQueueImpl(CompletionQueue& cq);
