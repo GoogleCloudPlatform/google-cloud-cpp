@@ -355,9 +355,9 @@ Cloud Platform proto files. We manually install it using:
 
 ```bash
 cd $HOME/Downloads
-wget -q https://github.com/grpc/grpc/archive/v1.29.1.tar.gz && \
-    tar -xf v1.29.1.tar.gz && \
-    cd grpc-1.29.1 && \
+wget -q https://github.com/grpc/grpc/archive/v1.34.0.tar.gz && \
+    tar -xf v1.34.0.tar.gz && \
+    cd grpc-1.34.0 && \
     cmake \
         -DCMAKE_BUILD_TYPE=Release \
         -DgRPC_INSTALL=ON \
@@ -481,9 +481,9 @@ Google Cloud Platform proto files:
 
 ```bash
 cd $HOME/Downloads
-wget -q https://github.com/google/protobuf/archive/v3.11.3.tar.gz && \
-    tar -xf v3.11.3.tar.gz && \
-    cd protobuf-3.11.3/cmake && \
+wget -q https://github.com/google/protobuf/archive/v3.14.0.tar.gz && \
+    tar -xf v3.14.0.tar.gz && \
+    cd protobuf-3.14.0/cmake && \
     cmake \
         -DCMAKE_BUILD_TYPE=Release \
         -DBUILD_SHARED_LIBS=yes \
@@ -516,9 +516,9 @@ Cloud Platform proto files. We manually install it using:
 
 ```bash
 cd $HOME/Downloads
-wget -q https://github.com/grpc/grpc/archive/v1.29.1.tar.gz && \
-    tar -xf v1.29.1.tar.gz && \
-    cd grpc-1.29.1 && \
+wget -q https://github.com/grpc/grpc/archive/v1.34.0.tar.gz && \
+    tar -xf v1.34.0.tar.gz && \
+    cd grpc-1.34.0 && \
     cmake \
         -DCMAKE_BUILD_TYPE=Release \
         -DgRPC_INSTALL=ON \
@@ -630,9 +630,9 @@ Google Cloud Platform proto files:
 
 ```bash
 cd $HOME/Downloads
-wget -q https://github.com/google/protobuf/archive/v3.11.3.tar.gz && \
-    tar -xf v3.11.3.tar.gz && \
-    cd protobuf-3.11.3/cmake && \
+wget -q https://github.com/google/protobuf/archive/v3.14.0.tar.gz && \
+    tar -xf v3.14.0.tar.gz && \
+    cd protobuf-3.14.0/cmake && \
     cmake \
         -DCMAKE_BUILD_TYPE=Release \
         -DBUILD_SHARED_LIBS=yes \
@@ -650,9 +650,9 @@ Cloud Platform proto files. We install it using:
 
 ```bash
 cd $HOME/Downloads
-wget -q https://github.com/grpc/grpc/archive/v1.29.1.tar.gz && \
-    tar -xf v1.29.1.tar.gz && \
-    cd grpc-1.29.1 && \
+wget -q https://github.com/grpc/grpc/archive/v1.34.0.tar.gz && \
+    tar -xf v1.34.0.tar.gz && \
+    cd grpc-1.34.0 && \
     cmake \
         -DCMAKE_BUILD_TYPE=Release \
         -DgRPC_INSTALL=ON \
@@ -763,9 +763,9 @@ Google Cloud Platform proto files:
 
 ```bash
 cd $HOME/Downloads
-wget -q https://github.com/google/protobuf/archive/v3.11.3.tar.gz && \
-    tar -xf v3.11.3.tar.gz && \
-    cd protobuf-3.11.3/cmake && \
+wget -q https://github.com/google/protobuf/archive/v3.14.0.tar.gz && \
+    tar -xf v3.14.0.tar.gz && \
+    cd protobuf-3.14.0/cmake && \
     cmake \
         -DCMAKE_BUILD_TYPE=Release \
         -DBUILD_SHARED_LIBS=yes \
@@ -783,9 +783,9 @@ Cloud Platform proto files. We install it using:
 
 ```bash
 cd $HOME/Downloads
-wget -q https://github.com/grpc/grpc/archive/v1.29.1.tar.gz && \
-    tar -xf v1.29.1.tar.gz && \
-    cd grpc-1.29.1 && \
+wget -q https://github.com/grpc/grpc/archive/v1.34.0.tar.gz && \
+    tar -xf v1.34.0.tar.gz && \
+    cd grpc-1.34.0 && \
     cmake \
         -DCMAKE_BUILD_TYPE=Release \
         -DgRPC_INSTALL=ON \
@@ -896,9 +896,9 @@ Google Cloud Platform proto files:
 
 ```bash
 cd $HOME/Downloads
-wget -q https://github.com/google/protobuf/archive/v3.11.3.tar.gz && \
-    tar -xf v3.11.3.tar.gz && \
-    cd protobuf-3.11.3/cmake && \
+wget -q https://github.com/google/protobuf/archive/v3.14.0.tar.gz && \
+    tar -xf v3.14.0.tar.gz && \
+    cd protobuf-3.14.0/cmake && \
     cmake \
         -DCMAKE_BUILD_TYPE=Release \
         -DBUILD_SHARED_LIBS=yes \
@@ -931,9 +931,9 @@ Cloud Platform proto files. We can install gRPC from source using:
 
 ```bash
 cd $HOME/Downloads
-wget -q https://github.com/grpc/grpc/archive/v1.29.1.tar.gz && \
-    tar -xf v1.29.1.tar.gz && \
-    cd grpc-1.29.1 && \
+wget -q https://github.com/grpc/grpc/archive/v1.34.0.tar.gz && \
+    tar -xf v1.34.0.tar.gz && \
+    cd grpc-1.34.0 && \
     cmake \
         -DCMAKE_BUILD_TYPE=Release \
         -DgRPC_INSTALL=ON \
@@ -1152,9 +1152,9 @@ Google Cloud Platform proto files:
 
 ```bash
 cd $HOME/Downloads
-wget -q https://github.com/google/protobuf/archive/v3.11.3.tar.gz && \
-    tar -xf v3.11.3.tar.gz && \
-    cd protobuf-3.11.3/cmake && \
+wget -q https://github.com/google/protobuf/archive/v3.14.0.tar.gz && \
+    tar -xf v3.14.0.tar.gz && \
+    cd protobuf-3.14.0/cmake && \
     cmake \
         -DCMAKE_BUILD_TYPE=Release \
         -DBUILD_SHARED_LIBS=yes \
@@ -1187,9 +1187,9 @@ Protobuf we just installed in `/usr/local`:
 
 ```bash
 cd $HOME/Downloads
-wget -q https://github.com/grpc/grpc/archive/v1.29.1.tar.gz && \
-    tar -xf v1.29.1.tar.gz && \
-    cd grpc-1.29.1 && \
+wget -q https://github.com/grpc/grpc/archive/v1.34.0.tar.gz && \
+    tar -xf v1.34.0.tar.gz && \
+    cd grpc-1.34.0 && \
     cmake \
         -DCMAKE_BUILD_TYPE=Release \
         -DgRPC_INSTALL=ON \
@@ -1317,9 +1317,9 @@ Google Cloud Platform proto files:
 
 ```bash
 cd $HOME/Downloads
-wget -q https://github.com/google/protobuf/archive/v3.11.3.tar.gz && \
-    tar -xf v3.11.3.tar.gz && \
-    cd protobuf-3.11.3/cmake && \
+wget -q https://github.com/google/protobuf/archive/v3.14.0.tar.gz && \
+    tar -xf v3.14.0.tar.gz && \
+    cd protobuf-3.14.0/cmake && \
     cmake \
         -DCMAKE_BUILD_TYPE=Release \
         -DBUILD_SHARED_LIBS=yes \
@@ -1337,9 +1337,9 @@ Cloud Platform proto files. We manually install it using:
 
 ```bash
 cd $HOME/Downloads
-wget -q https://github.com/grpc/grpc/archive/v1.29.1.tar.gz && \
-    tar -xf v1.29.1.tar.gz && \
-    cd grpc-1.29.1 && \
+wget -q https://github.com/grpc/grpc/archive/v1.34.0.tar.gz && \
+    tar -xf v1.34.0.tar.gz && \
+    cd grpc-1.34.0 && \
     cmake \
         -DCMAKE_BUILD_TYPE=Release \
         -DgRPC_INSTALL=ON \
@@ -1474,9 +1474,9 @@ Google Cloud Platform proto files:
 
 ```bash
 cd $HOME/Downloads
-wget -q https://github.com/google/protobuf/archive/v3.11.3.tar.gz && \
-    tar -xf v3.11.3.tar.gz && \
-    cd protobuf-3.11.3/cmake && \
+wget -q https://github.com/google/protobuf/archive/v3.14.0.tar.gz && \
+    tar -xf v3.14.0.tar.gz && \
+    cd protobuf-3.14.0/cmake && \
     cmake \
         -DCMAKE_BUILD_TYPE=Release \
         -DBUILD_SHARED_LIBS=yes \
@@ -1509,9 +1509,9 @@ Cloud Platform proto files. We manually install it using:
 
 ```bash
 cd $HOME/Downloads
-wget -q https://github.com/grpc/grpc/archive/v1.29.1.tar.gz && \
-    tar -xf v1.29.1.tar.gz && \
-    cd grpc-1.29.1 && \
+wget -q https://github.com/grpc/grpc/archive/v1.34.0.tar.gz && \
+    tar -xf v1.34.0.tar.gz && \
+    cd grpc-1.34.0 && \
     cmake \
         -DCMAKE_BUILD_TYPE=Release \
         -DgRPC_INSTALL=ON \
