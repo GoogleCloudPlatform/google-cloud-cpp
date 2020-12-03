@@ -24,8 +24,8 @@ ARG NCPU=4
 RUN apt-get update && \
     apt-get --no-install-recommends install -y apt-transport-https apt-utils \
         automake build-essential ccache cmake ca-certificates git gcc g++ \
-        libc-ares-dev libc-ares2 libcurl4-openssl-dev libre2-dev libssl-dev m4 \
-        make pkg-config tar wget zlib1g-dev
+        libc-ares-dev libc-ares2 libcurl4-openssl-dev libssl-dev m4 make \
+        pkg-config tar wget zlib1g-dev
 # ```
 
 # #### Abseil
@@ -63,6 +63,24 @@ RUN wget -q https://github.com/google/protobuf/archive/v3.14.0.tar.gz && \
         -DCMAKE_BUILD_TYPE=Release \
         -DBUILD_SHARED_LIBS=yes \
         -Dprotobuf_BUILD_TESTS=OFF \
+        -H. -Bcmake-out && \
+    cmake --build cmake-out -- -j ${NCPU:-4} && \
+    cmake --build cmake-out --target install -- -j ${NCPU:-4} && \
+    ldconfig
+# ```
+
+# #### RE2
+
+# We need a newer version of RE2 than Bionic provides.
+
+# ```bash
+WORKDIR /var/tmp/build
+RUN wget -q https://github.com/google/re2/archive/2020-11-01.tar.gz && \
+    tar -xf 2020-11-01.tar.gz && \
+    cd re2-2020-11-01 && \
+    cmake -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_SHARED_LIBS=ON \
+        -DRE2_BUILD_TESTING=OFF \
         -H. -Bcmake-out && \
     cmake --build cmake-out -- -j ${NCPU:-4} && \
     cmake --build cmake-out --target install -- -j ${NCPU:-4} && \

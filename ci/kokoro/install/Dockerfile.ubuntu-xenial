@@ -93,8 +93,12 @@ WORKDIR /var/tmp/build
 RUN wget -q https://github.com/google/re2/archive/2020-11-01.tar.gz && \
     tar -xf 2020-11-01.tar.gz && \
     cd re2-2020-11-01 && \
-    make -j ${NCPU:-4} && \
-    make -j ${NCPU:-4} install && \
+    cmake -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_SHARED_LIBS=ON \
+        -DRE2_BUILD_TESTING=OFF \
+        -H. -Bcmake-out && \
+    cmake --build cmake-out -- -j ${NCPU:-4} && \
+    cmake --build cmake-out --target install -- -j ${NCPU:-4} && \
     ldconfig
 # ```
 
