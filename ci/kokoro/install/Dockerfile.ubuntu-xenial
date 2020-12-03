@@ -86,7 +86,7 @@ RUN wget -q https://github.com/c-ares/c-ares/archive/cares-1_14_0.tar.gz && \
 
 # #### RE2
 
-# We need a newer version of RE2 than Xenial provides.
+# We need a newer version of RE2 than the system package provides.
 
 # ```bash
 WORKDIR /var/tmp/build

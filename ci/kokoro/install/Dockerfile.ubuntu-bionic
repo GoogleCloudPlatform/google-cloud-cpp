@@ -71,7 +71,7 @@ RUN wget -q https://github.com/google/protobuf/archive/v3.14.0.tar.gz && \
 
 # #### RE2
 
-# We need a newer version of RE2 than Bionic provides.
+# We need a newer version of RE2 than the system package provides.
 
 # ```bash
 WORKDIR /var/tmp/build
