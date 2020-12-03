@@ -31,8 +31,8 @@ ARG NCPU=4
 RUN apt-get update && \
     apt-get --no-install-recommends install -y apt-transport-https apt-utils \
         automake build-essential ccache cmake ca-certificates git gcc g++ \
-        libcurl4-openssl-dev libssl1.0-dev libtool make m4 pkg-config tar wget \
-        zlib1g-dev
+        libcurl4-openssl-dev libre2-dev libssl1.0-dev libtool make m4 \
+        pkg-config tar wget zlib1g-dev
 # ```
 
 # #### Abseil
@@ -108,6 +108,7 @@ RUN wget -q https://github.com/grpc/grpc/archive/v1.34.0.tar.gz && \
         -DgRPC_ABSL_PROVIDER=package \
         -DgRPC_CARES_PROVIDER=package \
         -DgRPC_PROTOBUF_PROVIDER=package \
+        -DgRPC_RE2_PROVIDER=package \
         -DgRPC_SSL_PROVIDER=package \
         -DgRPC_ZLIB_PROVIDER=package \
         -H. -Bcmake-out && \
