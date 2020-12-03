@@ -306,7 +306,8 @@ Install the minimal development tools, libcurl and OpenSSL:
 ```bash
 sudo zypper refresh && \
 sudo zypper install --allow-downgrade -y c-ares-devel ccache cmake gcc gcc-c++ \
-        git gzip libcurl-devel libopenssl-devel make tar wget zlib-devel
+        git gzip libcurl-devel libopenssl-devel make re2-devel tar wget \
+        zlib-devel
 ```
 
 The version of Protobuf packaged with openSUSE/Tumbleweed is recent enough to
@@ -365,6 +366,7 @@ wget -q https://github.com/grpc/grpc/archive/v1.34.0.tar.gz && \
         -DgRPC_ABSL_PROVIDER=package \
         -DgRPC_CARES_PROVIDER=package \
         -DgRPC_PROTOBUF_PROVIDER=package \
+        -DgRPC_RE2_PROVIDER=package \
         -DgRPC_SSL_PROVIDER=package \
         -DgRPC_ZLIB_PROVIDER=package \
         -H. -Bcmake-out && \
@@ -438,8 +440,8 @@ workstation or build server.
 ```bash
 sudo zypper refresh && \
 sudo zypper install --allow-downgrade -y automake ccache cmake gcc gcc-c++ git \
-        gzip libcurl-devel libopenssl-devel libtool make tar wget which \
-        zlib zlib-devel-static
+        gzip libcurl-devel libopenssl-devel libtool make re2-devel tar wget \
+        which zlib zlib-devel-static
 ```
 
 The following steps will install libraries and tools in `/usr/local`. openSUSE
@@ -526,6 +528,7 @@ wget -q https://github.com/grpc/grpc/archive/v1.34.0.tar.gz && \
         -DgRPC_ABSL_PROVIDER=package \
         -DgRPC_CARES_PROVIDER=package \
         -DgRPC_PROTOBUF_PROVIDER=package \
+        -DgRPC_RE2_PROVIDER=package \
         -DgRPC_SSL_PROVIDER=package \
         -DgRPC_ZLIB_PROVIDER=package \
         -H. -Bcmake-out && \
@@ -598,8 +601,8 @@ export DEBIAN_FRONTEND=noninteractive
 sudo apt-get update && \
 sudo apt-get --no-install-recommends install -y apt-transport-https apt-utils \
         automake build-essential ccache cmake ca-certificates git gcc g++ \
-        libc-ares-dev libc-ares2 libcurl4-openssl-dev libssl-dev m4 make \
-        pkg-config tar wget zlib1g-dev
+        libc-ares-dev libc-ares2 libcurl4-openssl-dev libre2-dev libssl-dev m4 \
+        make pkg-config tar wget zlib1g-dev
 ```
 
 #### Abseil
@@ -660,6 +663,7 @@ wget -q https://github.com/grpc/grpc/archive/v1.34.0.tar.gz && \
         -DgRPC_ABSL_PROVIDER=package \
         -DgRPC_CARES_PROVIDER=package \
         -DgRPC_PROTOBUF_PROVIDER=package \
+        -DgRPC_RE2_PROVIDER=package \
         -DgRPC_SSL_PROVIDER=package \
         -DgRPC_ZLIB_PROVIDER=package \
         -H. -Bcmake-out && \
@@ -776,6 +780,24 @@ sudo cmake --build cmake-out --target install -- -j ${NCPU:-4} && \
 sudo ldconfig
 ```
 
+#### RE2
+
+We need a newer version of RE2 than the system package provides.
+
+```bash
+cd $HOME/Downloads
+wget -q https://github.com/google/re2/archive/2020-11-01.tar.gz && \
+    tar -xf 2020-11-01.tar.gz && \
+    cd re2-2020-11-01 && \
+    cmake -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_SHARED_LIBS=ON \
+        -DRE2_BUILD_TESTING=OFF \
+        -H. -Bcmake-out && \
+    cmake --build cmake-out -- -j ${NCPU:-4} && \
+sudo cmake --build cmake-out --target install -- -j ${NCPU:-4} && \
+sudo ldconfig
+```
+
 #### gRPC
 
 We also need a version of gRPC that is recent enough to support the Google
@@ -793,6 +815,7 @@ wget -q https://github.com/grpc/grpc/archive/v1.34.0.tar.gz && \
         -DgRPC_ABSL_PROVIDER=package \
         -DgRPC_CARES_PROVIDER=package \
         -DgRPC_PROTOBUF_PROVIDER=package \
+        -DgRPC_RE2_PROVIDER=package \
         -DgRPC_SSL_PROVIDER=package \
         -DgRPC_ZLIB_PROVIDER=package \
         -H. -Bcmake-out && \
@@ -924,6 +947,24 @@ sudo make install && \
 sudo ldconfig
 ```
 
+#### RE2
+
+We need a newer version of RE2 than the system package provides.
+
+```bash
+cd $HOME/Downloads
+wget -q https://github.com/google/re2/archive/2020-11-01.tar.gz && \
+    tar -xf 2020-11-01.tar.gz && \
+    cd re2-2020-11-01 && \
+    cmake -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_SHARED_LIBS=ON \
+        -DRE2_BUILD_TESTING=OFF \
+        -H. -Bcmake-out && \
+    cmake --build cmake-out -- -j ${NCPU:-4} && \
+sudo cmake --build cmake-out --target install -- -j ${NCPU:-4} && \
+sudo ldconfig
+```
+
 #### gRPC
 
 We also need a version of gRPC that is recent enough to support the Google
@@ -941,6 +982,7 @@ wget -q https://github.com/grpc/grpc/archive/v1.34.0.tar.gz && \
         -DgRPC_ABSL_PROVIDER=package \
         -DgRPC_CARES_PROVIDER=package \
         -DgRPC_PROTOBUF_PROVIDER=package \
+        -DgRPC_RE2_PROVIDER=package \
         -DgRPC_SSL_PROVIDER=package \
         -DgRPC_ZLIB_PROVIDER=package \
         -H. -Bcmake-out && \
@@ -1180,6 +1222,24 @@ sudo make install && \
 sudo ldconfig
 ```
 
+#### RE2
+
+We need a newer version of RE2 than the system package provides.
+
+```bash
+cd $HOME/Downloads
+wget -q https://github.com/google/re2/archive/2020-11-01.tar.gz && \
+    tar -xf 2020-11-01.tar.gz && \
+    cd re2-2020-11-01 && \
+    cmake -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_SHARED_LIBS=ON \
+        -DRE2_BUILD_TESTING=OFF \
+        -H. -Bcmake-out && \
+    cmake --build cmake-out -- -j ${NCPU:-4} && \
+sudo cmake --build cmake-out --target install -- -j ${NCPU:-4} && \
+sudo ldconfig
+```
+
 #### gRPC
 
 To install gRPC we first need to configure pkg-config to find the version of
@@ -1197,6 +1257,7 @@ wget -q https://github.com/grpc/grpc/archive/v1.34.0.tar.gz && \
         -DgRPC_ABSL_PROVIDER=package \
         -DgRPC_CARES_PROVIDER=package \
         -DgRPC_PROTOBUF_PROVIDER=package \
+        -DgRPC_RE2_PROVIDER=package \
         -DgRPC_SSL_PROVIDER=package \
         -DgRPC_ZLIB_PROVIDER=package \
         -H. -Bcmake-out && \
@@ -1274,7 +1335,7 @@ sudo dnf makecache && \
 sudo dnf install -y epel-release && \
 sudo dnf makecache && \
 sudo dnf install -y ccache cmake gcc-c++ git make openssl-devel pkgconfig \
-        zlib-devel libcurl-devel c-ares-devel tar wget which
+        re2-devel zlib-devel libcurl-devel c-ares-devel tar wget which
 ```
 
 The following steps will install libraries and tools in `/usr/local`. By
@@ -1347,6 +1408,7 @@ wget -q https://github.com/grpc/grpc/archive/v1.34.0.tar.gz && \
         -DgRPC_ABSL_PROVIDER=package \
         -DgRPC_CARES_PROVIDER=package \
         -DgRPC_PROTOBUF_PROVIDER=package \
+        -DgRPC_RE2_PROVIDER=package \
         -DgRPC_SSL_PROVIDER=package \
         -DgRPC_ZLIB_PROVIDER=package \
         -H. -Bcmake-out && \
@@ -1423,7 +1485,8 @@ sudo yum install -y centos-release-scl yum-utils
 sudo yum-config-manager --enable rhel-server-rhscl-7-rpms
 sudo yum makecache && \
 sudo yum install -y automake ccache cmake3 curl-devel devtoolset-7 gcc gcc-c++ \
-        git libtool make openssl-devel pkgconfig tar wget which zlib-devel
+        git libtool make openssl-devel pkgconfig re2-devel tar wget which \
+        zlib-devel
 sudo ln -sf /usr/bin/cmake3 /usr/bin/cmake && sudo ln -sf /usr/bin/ctest3 /usr/bin/ctest
 ```
 
@@ -1519,6 +1582,7 @@ wget -q https://github.com/grpc/grpc/archive/v1.34.0.tar.gz && \
         -DgRPC_ABSL_PROVIDER=package \
         -DgRPC_CARES_PROVIDER=package \
         -DgRPC_PROTOBUF_PROVIDER=package \
+        -DgRPC_RE2_PROVIDER=package \
         -DgRPC_SSL_PROVIDER=package \
         -DgRPC_ZLIB_PROVIDER=package \
         -H. -Bcmake-out && \
