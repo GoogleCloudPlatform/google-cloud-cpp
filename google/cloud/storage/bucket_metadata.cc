@@ -51,15 +51,20 @@ std::ostream& operator<<(std::ostream& os, BucketPolicyOnly const& rhs) {
 
 std::ostream& operator<<(std::ostream& os, BucketIamConfiguration const& rhs) {
   os << "BucketIamConfiguration={";
+  char const* sep = "";
+  if (rhs.public_access_prevention.has_value()) {
+    os << "public_access_prevention=" << *rhs.public_access_prevention;
+    sep = ", ";
+  }
   if (rhs.uniform_bucket_level_access.has_value()) {
-    os << "uniform_bucket_level_access=" << *rhs.uniform_bucket_level_access
-       << ", ";
-    os << "bucket_policy_only=" << *rhs.uniform_bucket_level_access;
+    os << sep
+       << "uniform_bucket_level_access=" << *rhs.uniform_bucket_level_access
+       << ", bucket_policy_only=" << *rhs.uniform_bucket_level_access;
     return os << "}";
-  };
+  }
   if (rhs.bucket_policy_only.has_value()) {
-    os << "uniform_bucket_level_access=" << *rhs.bucket_policy_only << ", ";
-    os << "bucket_policy_only=" << *rhs.bucket_policy_only;
+    os << sep << "uniform_bucket_level_access=" << *rhs.bucket_policy_only
+       << ", bucket_policy_only=" << *rhs.bucket_policy_only;
   }
   return os << "}";
 }
@@ -314,6 +319,10 @@ BucketMetadataPatchBuilder& BucketMetadataPatchBuilder::SetIamConfiguration(
     BucketIamConfiguration const& v) {
   internal::PatchBuilder iam_configuration;
 
+  if (v.public_access_prevention.has_value()) {
+    iam_configuration.SetStringField("publicAccessPrevention",
+                                     *v.public_access_prevention);
+  }
   if (v.uniform_bucket_level_access.has_value()) {
     internal::PatchBuilder uniform_bucket_level_access;
     internal::PatchBuilder bucket_policy_only;
