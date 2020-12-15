@@ -442,7 +442,8 @@ void SetPublicAccessPreventionEnforced(google::cloud::storage::Client client,
   using google::cloud::StatusOr;
   [](gcs::Client client, std::string const& bucket_name) {
     gcs::BucketIamConfiguration configuration;
-    configuration.public_access_prevention = "enforced";
+    configuration.public_access_prevention =
+        gcs::PublicAccessPreventionEnforced();
     StatusOr<gcs::BucketMetadata> updated_metadata = client.PatchBucket(
         bucket_name, gcs::BucketMetadataPatchBuilder().SetIamConfiguration(
                          std::move(configuration)));
@@ -466,7 +467,8 @@ void SetPublicAccessPreventionUnspecified(
   using google::cloud::StatusOr;
   [](gcs::Client client, std::string const& bucket_name) {
     gcs::BucketIamConfiguration configuration;
-    configuration.public_access_prevention = "unspecified";
+    configuration.public_access_prevention =
+        gcs::PublicAccessPreventionUnspecified();
     StatusOr<gcs::BucketMetadata> updated_metadata = client.PatchBucket(
         bucket_name, gcs::BucketMetadataPatchBuilder().SetIamConfiguration(
                          std::move(configuration)));
