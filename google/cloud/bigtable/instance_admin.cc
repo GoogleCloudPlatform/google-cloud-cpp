@@ -84,8 +84,7 @@ StatusOr<InstanceList> InstanceAdmin::ListInstances() {
   return result;
 }
 
-future<StatusOr<InstanceList>> InstanceAdmin::AsyncListInstances(
-    CompletionQueue& cq) {
+future<StatusOr<InstanceList>> InstanceAdmin::AsyncListInstances() {
   promise<StatusOr<InstanceList>> instance_list_promise;
   future<StatusOr<InstanceList>> result = instance_list_promise.get_future();
   auto client = client_;
@@ -117,7 +116,7 @@ future<StatusOr<InstanceList>> InstanceAdmin::AsyncListInstances(
                          std::back_inserter(acc.instances));
                return acc;
              },
-             cq)
+             background_threads_->cq())
       .then([](future<StatusOr<Accumulator>> acc_future)
                 -> StatusOr<InstanceList> {
         auto acc = acc_future.get();
@@ -134,19 +133,11 @@ future<StatusOr<InstanceList>> InstanceAdmin::AsyncListInstances(
 
 future<StatusOr<btadmin::Instance>> InstanceAdmin::CreateInstance(
     InstanceConfig instance_config) {
-  CompletionQueue cq;
-  std::thread([](CompletionQueue cq) { cq.Run(); }, cq).detach();
-
-  return AsyncCreateInstance(cq, std::move(instance_config))
-      .then([cq](future<StatusOr<btadmin::Instance>> f) mutable {
-        cq.Shutdown();
-        return f.get();
-      });
+  return AsyncCreateInstance(std::move(instance_config));
 }
 
 future<StatusOr<google::bigtable::admin::v2::Instance>>
-InstanceAdmin::AsyncCreateInstance(CompletionQueue& cq,
-                                   bigtable::InstanceConfig instance_config) {
+InstanceAdmin::AsyncCreateInstance(bigtable::InstanceConfig instance_config) {
   auto request = std::move(instance_config).as_proto();
   request.set_parent(project_name());
   for (auto& kv : *request.mutable_clusters()) {
@@ -166,26 +157,17 @@ InstanceAdmin::AsyncCreateInstance(CompletionQueue& cq,
           grpc::CompletionQueue* cq) {
         return client->AsyncCreateInstance(context, request, cq);
       },
-      std::move(request), cq);
+      std::move(request), background_threads_->cq());
 }
 
 future<StatusOr<btadmin::Cluster>> InstanceAdmin::CreateCluster(
     ClusterConfig cluster_config, std::string const& instance_id,
     std::string const& cluster_id) {
-  CompletionQueue cq;
-  std::thread([](CompletionQueue cq) { cq.Run(); }, cq).detach();
-
-  return AsyncCreateCluster(cq, std::move(cluster_config), instance_id,
-                            cluster_id)
-      .then([cq](future<StatusOr<btadmin::Cluster>> f) mutable {
-        cq.Shutdown();
-        return f.get();
-      });
+  return AsyncCreateCluster(std::move(cluster_config), instance_id, cluster_id);
 }
 
 future<StatusOr<google::bigtable::admin::v2::Cluster>>
-InstanceAdmin::AsyncCreateCluster(CompletionQueue& cq,
-                                  ClusterConfig cluster_config,
+InstanceAdmin::AsyncCreateCluster(ClusterConfig cluster_config,
                                   std::string const& instance_id,
                                   std::string const& cluster_id) {
   auto cluster = std::move(cluster_config).as_proto();
@@ -208,24 +190,17 @@ InstanceAdmin::AsyncCreateCluster(CompletionQueue& cq,
                grpc::CompletionQueue* cq) {
         return client->AsyncCreateCluster(context, request, cq);
       },
-      std::move(request), cq);
+      std::move(request), background_threads_->cq());
 }
 
 future<StatusOr<google::bigtable::admin::v2::Instance>>
 InstanceAdmin::UpdateInstance(InstanceUpdateConfig instance_update_config) {
-  CompletionQueue cq;
-  std::thread([](CompletionQueue cq) { cq.Run(); }, cq).detach();
-
-  return AsyncUpdateInstance(cq, std::move(instance_update_config))
-      .then([cq](future<StatusOr<btadmin::Instance>> f) mutable {
-        cq.Shutdown();
-        return f.get();
-      });
+  return AsyncUpdateInstance(std::move(instance_update_config));
 }
 
 future<StatusOr<google::bigtable::admin::v2::Instance>>
 InstanceAdmin::AsyncUpdateInstance(
-    CompletionQueue& cq, InstanceUpdateConfig instance_update_config) {
+    InstanceUpdateConfig instance_update_config) {
   auto name = instance_update_config.GetName();
   auto request = std::move(instance_update_config).as_proto();
 
@@ -242,7 +217,7 @@ InstanceAdmin::AsyncUpdateInstance(
                grpc::CompletionQueue* cq) {
         return client->AsyncUpdateInstance(context, request, cq);
       },
-      std::move(request), cq);
+      std::move(request), background_threads_->cq());
 }
 
 StatusOr<btadmin::Instance> InstanceAdmin::GetInstance(
@@ -270,15 +245,15 @@ StatusOr<btadmin::Instance> InstanceAdmin::GetInstance(
 }
 
 future<StatusOr<btadmin::Instance>> InstanceAdmin::AsyncGetInstance(
-    CompletionQueue& cq, std::string const& instance_id) {
+    std::string const& instance_id) {
   btadmin::GetInstanceRequest request;
   auto name = InstanceName(instance_id);
   request.set_name(name);
 
   auto client = client_;
   return google::cloud::internal::StartRetryAsyncUnaryRpc(
-      cq, __func__, clone_rpc_retry_policy(), clone_rpc_backoff_policy(),
-      Idempotency::kIdempotent,
+      background_threads_->cq(), __func__, clone_rpc_retry_policy(),
+      clone_rpc_backoff_policy(), Idempotency::kIdempotent,
       [client, name](grpc::ClientContext* context,
                      btadmin::GetInstanceRequest const& request,
                      grpc::CompletionQueue* cq) {
@@ -304,16 +279,15 @@ Status InstanceAdmin::DeleteInstance(std::string const& instance_id) {
 }
 
 future<Status> InstanceAdmin::AsyncDeleteCluster(
-    CompletionQueue& cq, std::string const& instance_id,
-    std::string const& cluster_id) {
+    std::string const& instance_id, std::string const& cluster_id) {
   btadmin::DeleteClusterRequest request;
   auto name = ClusterName(instance_id, cluster_id);
   request.set_name(name);
 
   auto client = client_;
   return google::cloud::internal::StartRetryAsyncUnaryRpc(
-             cq, __func__, clone_rpc_retry_policy(), clone_rpc_backoff_policy(),
-             Idempotency::kNonIdempotent,
+             background_threads_->cq(), __func__, clone_rpc_retry_policy(),
+             clone_rpc_backoff_policy(), Idempotency::kNonIdempotent,
              [client, name](grpc::ClientContext* context,
                             btadmin::DeleteClusterRequest const& request,
                             grpc::CompletionQueue* cq) {
@@ -332,15 +306,15 @@ future<Status> InstanceAdmin::AsyncDeleteCluster(
 }
 
 future<Status> InstanceAdmin::AsyncDeleteInstance(
-    std::string const& instance_id, CompletionQueue& cq) {
+    std::string const& instance_id) {
   google::bigtable::admin::v2::DeleteInstanceRequest request;
   auto name = InstanceName(instance_id);
   request.set_name(name);
 
   auto client = client_;
   return google::cloud::internal::StartRetryAsyncUnaryRpc(
-             cq, __func__, clone_rpc_retry_policy(), clone_rpc_backoff_policy(),
-             Idempotency::kIdempotent,
+             background_threads_->cq(), __func__, clone_rpc_retry_policy(),
+             clone_rpc_backoff_policy(), Idempotency::kIdempotent,
              [client, name](
                  grpc::ClientContext* context,
                  google::bigtable::admin::v2::DeleteInstanceRequest const&
@@ -378,8 +352,7 @@ StatusOr<btadmin::Cluster> InstanceAdmin::GetCluster(
 }
 
 future<StatusOr<btadmin::Cluster>> InstanceAdmin::AsyncGetCluster(
-    CompletionQueue& cq, std::string const& instance_id,
-    std::string const& cluster_id) {
+    std::string const& instance_id, std::string const& cluster_id) {
   promise<StatusOr<btadmin::Cluster>> p;
   auto result = p.get_future();
   btadmin::GetClusterRequest request;
@@ -387,8 +360,8 @@ future<StatusOr<btadmin::Cluster>> InstanceAdmin::AsyncGetCluster(
   request.set_name(name);
   auto client = client_;
   return google::cloud::internal::StartRetryAsyncUnaryRpc(
-      cq, __func__, clone_rpc_retry_policy(), clone_rpc_backoff_policy(),
-      Idempotency::kIdempotent,
+      background_threads_->cq(), __func__, clone_rpc_retry_policy(),
+      clone_rpc_backoff_policy(), Idempotency::kIdempotent,
       [client, name](grpc::ClientContext* context,
                      btadmin::GetClusterRequest const& request,
                      grpc::CompletionQueue* cq) {
@@ -448,13 +421,12 @@ StatusOr<ClusterList> InstanceAdmin::ListClusters(
   return result;
 }
 
-future<StatusOr<ClusterList>> InstanceAdmin::AsyncListClusters(
-    CompletionQueue& cq) {
-  return AsyncListClusters(cq, "-");
+future<StatusOr<ClusterList>> InstanceAdmin::AsyncListClusters() {
+  return AsyncListClusters("-");
 }
 
 future<StatusOr<ClusterList>> InstanceAdmin::AsyncListClusters(
-    CompletionQueue& cq, std::string const& instance_id) {
+    std::string const& instance_id) {
   auto client = client_;
   btadmin::ListClustersRequest request;
   auto parent = InstanceName(instance_id);
@@ -484,7 +456,7 @@ future<StatusOr<ClusterList>> InstanceAdmin::AsyncListClusters(
                          std::back_inserter(acc.clusters));
                return acc;
              },
-             cq)
+             background_threads_->cq())
       .then([](future<StatusOr<Accumulator>> acc_future)
                 -> StatusOr<ClusterList> {
         auto acc = acc_future.get();
@@ -501,19 +473,11 @@ future<StatusOr<ClusterList>> InstanceAdmin::AsyncListClusters(
 
 future<StatusOr<google::bigtable::admin::v2::Cluster>>
 InstanceAdmin::UpdateCluster(ClusterConfig cluster_config) {
-  CompletionQueue cq;
-  std::thread([](CompletionQueue cq) { cq.Run(); }, cq).detach();
-
-  return AsyncUpdateCluster(cq, std::move(cluster_config))
-      .then([cq](future<StatusOr<btadmin::Cluster>> f) mutable {
-        cq.Shutdown();
-        return f.get();
-      });
+  return AsyncUpdateCluster(std::move(cluster_config));
 }
 
 future<StatusOr<google::bigtable::admin::v2::Cluster>>
-InstanceAdmin::AsyncUpdateCluster(CompletionQueue& cq,
-                                  ClusterConfig cluster_config) {
+InstanceAdmin::AsyncUpdateCluster(ClusterConfig cluster_config) {
   auto request = std::move(cluster_config).as_proto();
   auto name = request.name();
 
@@ -529,7 +493,7 @@ InstanceAdmin::AsyncUpdateCluster(CompletionQueue& cq,
                grpc::CompletionQueue* cq) {
         return client->AsyncUpdateCluster(context, request, cq);
       },
-      std::move(request), cq);
+      std::move(request), background_threads_->cq());
 }
 
 Status InstanceAdmin::DeleteCluster(std::string const& instance_id,
@@ -572,8 +536,7 @@ StatusOr<btadmin::AppProfile> InstanceAdmin::CreateAppProfile(
 }
 
 future<StatusOr<google::bigtable::admin::v2::AppProfile>>
-InstanceAdmin::AsyncCreateAppProfile(CompletionQueue& cq,
-                                     std::string const& instance_id,
+InstanceAdmin::AsyncCreateAppProfile(std::string const& instance_id,
                                      AppProfileConfig config) {
   auto request = std::move(config).as_proto();
   auto parent = InstanceName(instance_id);
@@ -581,8 +544,8 @@ InstanceAdmin::AsyncCreateAppProfile(CompletionQueue& cq,
 
   std::shared_ptr<InstanceAdminClient> client(client_);
   return google::cloud::internal::StartRetryAsyncUnaryRpc(
-      cq, __func__, clone_rpc_retry_policy(), clone_rpc_backoff_policy(),
-      Idempotency::kNonIdempotent,
+      background_threads_->cq(), __func__, clone_rpc_retry_policy(),
+      clone_rpc_backoff_policy(), Idempotency::kNonIdempotent,
       [client, parent](grpc::ClientContext* context,
                        btadmin::CreateAppProfileRequest const& request,
                        grpc::CompletionQueue* cq) {
@@ -613,8 +576,7 @@ StatusOr<btadmin::AppProfile> InstanceAdmin::GetAppProfile(
 }
 
 future<StatusOr<google::bigtable::admin::v2::AppProfile>>
-InstanceAdmin::AsyncGetAppProfile(CompletionQueue& cq,
-                                  std::string const& instance_id,
+InstanceAdmin::AsyncGetAppProfile(std::string const& instance_id,
                                   std::string const& profile_id) {
   btadmin::GetAppProfileRequest request;
   auto name = AppProfileName(instance_id, profile_id);
@@ -622,8 +584,8 @@ InstanceAdmin::AsyncGetAppProfile(CompletionQueue& cq,
 
   std::shared_ptr<InstanceAdminClient> client(client_);
   return google::cloud::internal::StartRetryAsyncUnaryRpc(
-      cq, __func__, clone_rpc_retry_policy(), clone_rpc_backoff_policy(),
-      Idempotency::kIdempotent,
+      background_threads_->cq(), __func__, clone_rpc_retry_policy(),
+      clone_rpc_backoff_policy(), Idempotency::kIdempotent,
       [client, name](grpc::ClientContext* context,
                      btadmin::GetAppProfileRequest const& request,
                      grpc::CompletionQueue* cq) {
@@ -636,19 +598,11 @@ InstanceAdmin::AsyncGetAppProfile(CompletionQueue& cq,
 future<StatusOr<btadmin::AppProfile>> InstanceAdmin::UpdateAppProfile(
     std::string const& instance_id, std::string const& profile_id,
     AppProfileUpdateConfig config) {
-  CompletionQueue cq;
-  std::thread([](CompletionQueue cq) { cq.Run(); }, cq).detach();
-
-  return AsyncUpdateAppProfile(cq, instance_id, profile_id, std::move(config))
-      .then([cq](future<StatusOr<btadmin::AppProfile>> f) mutable {
-        cq.Shutdown();
-        return f.get();
-      });
+  return AsyncUpdateAppProfile(instance_id, profile_id, std::move(config));
 }
 
 future<StatusOr<google::bigtable::admin::v2::AppProfile>>
-InstanceAdmin::AsyncUpdateAppProfile(CompletionQueue& cq,
-                                     std::string const& instance_id,
+InstanceAdmin::AsyncUpdateAppProfile(std::string const& instance_id,
                                      std::string const& profile_id,
                                      AppProfileUpdateConfig config) {
   auto request = std::move(config).as_proto();
@@ -668,7 +622,7 @@ InstanceAdmin::AsyncUpdateAppProfile(CompletionQueue& cq,
           grpc::CompletionQueue* cq) {
         return client->AsyncUpdateAppProfile(context, request, cq);
       },
-      std::move(request), cq);
+      std::move(request), background_threads_->cq());
 }
 
 StatusOr<std::vector<btadmin::AppProfile>> InstanceAdmin::ListAppProfiles(
@@ -709,8 +663,7 @@ StatusOr<std::vector<btadmin::AppProfile>> InstanceAdmin::ListAppProfiles(
 }
 
 future<StatusOr<std::vector<btadmin::AppProfile>>>
-InstanceAdmin::AsyncListAppProfiles(CompletionQueue& cq,
-                                    std::string const& instance_id) {
+InstanceAdmin::AsyncListAppProfiles(std::string const& instance_id) {
   auto client = client_;
   btadmin::ListAppProfilesRequest request;
   auto parent = InstanceName(instance_id);
@@ -731,7 +684,7 @@ InstanceAdmin::AsyncListAppProfiles(CompletionQueue& cq,
                   response.app_profiles().end(), std::back_inserter(acc));
         return acc;
       },
-      cq);
+      background_threads_->cq());
 }
 
 Status InstanceAdmin::DeleteAppProfile(std::string const& instance_id,
@@ -753,8 +706,8 @@ Status InstanceAdmin::DeleteAppProfile(std::string const& instance_id,
 }
 
 future<Status> InstanceAdmin::AsyncDeleteAppProfile(
-    CompletionQueue& cq, std::string const& instance_id,
-    std::string const& profile_id, bool ignore_warnings) {
+    std::string const& instance_id, std::string const& profile_id,
+    bool ignore_warnings) {
   btadmin::DeleteAppProfileRequest request;
   auto name = AppProfileName(instance_id, profile_id);
   request.set_name(name);
@@ -762,8 +715,8 @@ future<Status> InstanceAdmin::AsyncDeleteAppProfile(
 
   std::shared_ptr<InstanceAdminClient> client(client_);
   return google::cloud::internal::StartRetryAsyncUnaryRpc(
-             cq, __func__, clone_rpc_retry_policy(), clone_rpc_backoff_policy(),
-             Idempotency::kNonIdempotent,
+             background_threads_->cq(), __func__, clone_rpc_retry_policy(),
+             clone_rpc_backoff_policy(), Idempotency::kNonIdempotent,
              [client, name](grpc::ClientContext* context,
                             btadmin::DeleteAppProfileRequest const& request,
                             grpc::CompletionQueue* cq) {
@@ -832,7 +785,7 @@ StatusOr<google::iam::v1::Policy> InstanceAdmin::GetNativeIamPolicy(
 }
 
 future<StatusOr<google::cloud::IamPolicy>> InstanceAdmin::AsyncGetIamPolicy(
-    CompletionQueue& cq, std::string const& instance_id) {
+    std::string const& instance_id) {
   ::google::iam::v1::GetIamPolicyRequest request;
 
   auto resource = InstanceName(instance_id);
@@ -840,8 +793,8 @@ future<StatusOr<google::cloud::IamPolicy>> InstanceAdmin::AsyncGetIamPolicy(
 
   std::shared_ptr<InstanceAdminClient> client(client_);
   return google::cloud::internal::StartRetryAsyncUnaryRpc(
-             cq, __func__, clone_rpc_retry_policy(), clone_rpc_backoff_policy(),
-             Idempotency::kIdempotent,
+             background_threads_->cq(), __func__, clone_rpc_retry_policy(),
+             clone_rpc_backoff_policy(), Idempotency::kIdempotent,
              [client, resource](
                  grpc::ClientContext* context,
                  ::google::iam::v1::GetIamPolicyRequest const& request,
@@ -862,16 +815,15 @@ future<StatusOr<google::cloud::IamPolicy>> InstanceAdmin::AsyncGetIamPolicy(
 }
 
 future<StatusOr<google::iam::v1::Policy>>
-InstanceAdmin::AsyncGetNativeIamPolicy(CompletionQueue& cq,
-                                       std::string const& instance_id) {
+InstanceAdmin::AsyncGetNativeIamPolicy(std::string const& instance_id) {
   ::google::iam::v1::GetIamPolicyRequest request;
   auto resource = InstanceName(instance_id);
   request.set_resource(resource);
 
   std::shared_ptr<InstanceAdminClient> client(client_);
   return google::cloud::internal::StartRetryAsyncUnaryRpc(
-      cq, __func__, clone_rpc_retry_policy(), clone_rpc_backoff_policy(),
-      Idempotency::kIdempotent,
+      background_threads_->cq(), __func__, clone_rpc_retry_policy(),
+      clone_rpc_backoff_policy(), Idempotency::kIdempotent,
       [client, resource](grpc::ClientContext* context,
                          ::google::iam::v1::GetIamPolicyRequest const& request,
                          grpc::CompletionQueue* cq) {
@@ -947,7 +899,7 @@ StatusOr<google::iam::v1::Policy> InstanceAdmin::SetIamPolicy(
 }
 
 future<StatusOr<google::cloud::IamPolicy>> InstanceAdmin::AsyncSetIamPolicy(
-    CompletionQueue& cq, std::string const& instance_id,
+    std::string const& instance_id,
     google::cloud::IamBindings const& iam_bindings, std::string const& etag) {
   ::google::iam::v1::Policy policy;
   policy.set_etag(etag);
@@ -967,8 +919,8 @@ future<StatusOr<google::cloud::IamPolicy>> InstanceAdmin::AsyncSetIamPolicy(
 
   std::shared_ptr<InstanceAdminClient> client(client_);
   return google::cloud::internal::StartRetryAsyncUnaryRpc(
-             cq, __func__, clone_rpc_retry_policy(), clone_rpc_backoff_policy(),
-             Idempotency::kNonIdempotent,
+             background_threads_->cq(), __func__, clone_rpc_retry_policy(),
+             clone_rpc_backoff_policy(), Idempotency::kNonIdempotent,
              [client, resource](
                  grpc::ClientContext* context,
                  ::google::iam::v1::SetIamPolicyRequest const& request,
@@ -989,8 +941,7 @@ future<StatusOr<google::cloud::IamPolicy>> InstanceAdmin::AsyncSetIamPolicy(
 }
 
 future<StatusOr<google::iam::v1::Policy>> InstanceAdmin::AsyncSetIamPolicy(
-    CompletionQueue& cq, std::string const& instance_id,
-    google::iam::v1::Policy const& iam_policy) {
+    std::string const& instance_id, google::iam::v1::Policy const& iam_policy) {
   ::google::iam::v1::SetIamPolicyRequest request;
   auto resource = InstanceName(instance_id);
   request.set_resource(resource);
@@ -998,8 +949,8 @@ future<StatusOr<google::iam::v1::Policy>> InstanceAdmin::AsyncSetIamPolicy(
 
   std::shared_ptr<InstanceAdminClient> client(client_);
   return google::cloud::internal::StartRetryAsyncUnaryRpc(
-      cq, __func__, clone_rpc_retry_policy(), clone_rpc_backoff_policy(),
-      Idempotency::kNonIdempotent,
+      background_threads_->cq(), __func__, clone_rpc_retry_policy(),
+      clone_rpc_backoff_policy(), Idempotency::kNonIdempotent,
       [client, resource](grpc::ClientContext* context,
                          ::google::iam::v1::SetIamPolicyRequest const& request,
                          grpc::CompletionQueue* cq) {
@@ -1049,7 +1000,7 @@ StatusOr<std::vector<std::string>> InstanceAdmin::TestIamPermissions(
 
 future<StatusOr<std::vector<std::string>>>
 InstanceAdmin::AsyncTestIamPermissions(
-    CompletionQueue& cq, std::string const& instance_id,
+    std::string const& instance_id,
     std::vector<std::string> const& permissions) {
   ::google::iam::v1::TestIamPermissionsRequest request;
   auto resource = InstanceName(instance_id);
@@ -1060,8 +1011,8 @@ InstanceAdmin::AsyncTestIamPermissions(
 
   auto client = client_;
   return google::cloud::internal::StartRetryAsyncUnaryRpc(
-             cq, __func__, clone_rpc_retry_policy(), clone_rpc_backoff_policy(),
-             Idempotency::kIdempotent,
+             background_threads_->cq(), __func__, clone_rpc_retry_policy(),
+             clone_rpc_backoff_policy(), Idempotency::kIdempotent,
              [client, resource](
                  grpc::ClientContext* context,
                  ::google::iam::v1::TestIamPermissionsRequest const& request,

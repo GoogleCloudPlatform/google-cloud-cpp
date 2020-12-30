@@ -674,7 +674,8 @@ class AsyncGetIamPolicyTest : public ::testing::Test {
   AsyncGetIamPolicyTest()
       : cq_impl_(new FakeCompletionQueueImpl),
         cq_(cq_impl_),
-        client_(new MockAdminClient),
+        client_(
+            new MockAdminClient(ClientOptions().DisableBackgroundThreads(cq_))),
         reader_(new MockAsyncIamPolicyReader) {
     EXPECT_CALL(*client_, project()).WillRepeatedly(ReturnRef(kProjectId));
     EXPECT_CALL(*client_, AsyncGetIamPolicy(_, _, _))
@@ -696,12 +697,12 @@ class AsyncGetIamPolicyTest : public ::testing::Test {
  protected:
   void Start() {
     InstanceAdmin instance_admin(client_);
-    user_future_ = instance_admin.AsyncGetIamPolicy(cq_, "test-instance");
+    user_future_ = instance_admin.AsyncGetIamPolicy("test-instance");
   }
   void StartNative() {
     InstanceAdmin instance_admin(client_);
     user_native_future_ =
-        instance_admin.AsyncGetNativeIamPolicy(cq_, "test-instance");
+        instance_admin.AsyncGetNativeIamPolicy("test-instance");
   }
 
   std::shared_ptr<FakeCompletionQueueImpl> cq_impl_;
@@ -1042,7 +1043,8 @@ class AsyncDeleteClusterTest : public ::testing::Test {
   AsyncDeleteClusterTest()
       : cq_impl_(new FakeCompletionQueueImpl),
         cq_(cq_impl_),
-        client_(new MockAdminClient),
+        client_(
+            new MockAdminClient(ClientOptions().DisableBackgroundThreads(cq_))),
         reader_(new MockAsyncDeleteClusterReader) {
     EXPECT_CALL(*client_, project()).WillRepeatedly(ReturnRef(kProjectId));
     EXPECT_CALL(*client_, AsyncDeleteCluster(_, _, _))
@@ -1067,7 +1069,7 @@ class AsyncDeleteClusterTest : public ::testing::Test {
   void Start() {
     InstanceAdmin instance_admin(client_);
     user_future_ =
-        instance_admin.AsyncDeleteCluster(cq_, "test-instance", "the-cluster");
+        instance_admin.AsyncDeleteCluster("test-instance", "the-cluster");
   }
 
   std::shared_ptr<FakeCompletionQueueImpl> cq_impl_;
@@ -1127,7 +1129,8 @@ class AsyncSetIamPolicyTest : public ::testing::Test {
   AsyncSetIamPolicyTest()
       : cq_impl_(new FakeCompletionQueueImpl),
         cq_(cq_impl_),
-        client_(new MockAdminClient),
+        client_(
+            new MockAdminClient(ClientOptions().DisableBackgroundThreads(cq_))),
         reader_(new MockAsyncSetIamPolicyReader) {
     EXPECT_CALL(*client_, project()).WillRepeatedly(ReturnRef(kProjectId));
     EXPECT_CALL(*client_, AsyncSetIamPolicy(_, _, _))
@@ -1150,7 +1153,7 @@ class AsyncSetIamPolicyTest : public ::testing::Test {
   void Start() {
     InstanceAdmin instance_admin(client_);
     user_future_ = instance_admin.AsyncSetIamPolicy(
-        cq_, "test-instance",
+        "test-instance",
         google::cloud::IamBindings("writer",
                                    {"abc@gmail.com", "xyz@gmail.com"}),
         "test-tag");
@@ -1159,7 +1162,7 @@ class AsyncSetIamPolicyTest : public ::testing::Test {
   void StartNative() {
     InstanceAdmin instance_admin(client_);
     user_native_future_ = instance_admin.AsyncSetIamPolicy(
-        cq_, "test-instance",
+        "test-instance",
         IamPolicy({IamBinding("writer", {"abc@gmail.com", "xyz@gmail.com"})},
                   "test-tag", 0));
   }
@@ -1287,7 +1290,8 @@ class AsyncTestIamPermissionsTest : public ::testing::Test {
   AsyncTestIamPermissionsTest()
       : cq_impl_(new FakeCompletionQueueImpl),
         cq_(cq_impl_),
-        client_(new MockAdminClient),
+        client_(
+            new MockAdminClient(ClientOptions().DisableBackgroundThreads(cq_))),
         reader_(new MockAsyncTestIamPermissionsReader) {
     EXPECT_CALL(*client_, project()).WillRepeatedly(ReturnRef(kProjectId));
     EXPECT_CALL(*client_, AsyncTestIamPermissions(_, _, _))
@@ -1312,8 +1316,8 @@ class AsyncTestIamPermissionsTest : public ::testing::Test {
  protected:
   void Start(std::vector<std::string> const& permissions) {
     InstanceAdmin instance_admin(client_);
-    user_future_ = instance_admin.AsyncTestIamPermissions(cq_, "the-resource",
-                                                          permissions);
+    user_future_ =
+        instance_admin.AsyncTestIamPermissions("the-resource", permissions);
   }
 
   std::shared_ptr<FakeCompletionQueueImpl> cq_impl_;
@@ -1377,7 +1381,8 @@ class ValidContextMdAsyncTest : public ::testing::Test {
   ValidContextMdAsyncTest()
       : cq_impl_(new FakeCompletionQueueImpl),
         cq_(cq_impl_),
-        client_(new MockAdminClient) {
+        client_(new MockAdminClient(
+            ClientOptions().DisableBackgroundThreads(cq_))) {
     EXPECT_CALL(*client_, project()).WillRepeatedly(ReturnRef(kProjectId));
     instance_admin_ = absl::make_unique<InstanceAdmin>(client_);
   }
@@ -1414,7 +1419,7 @@ TEST_F(ValidContextMdAsyncTest, AsyncCreateAppProfile) {
           )""",
           "google.bigtable.admin.v2.BigtableInstanceAdmin.CreateAppProfile"));
   FinishTest(instance_admin_->AsyncCreateAppProfile(
-      cq_, "the-instance", AppProfileConfig::MultiClusterUseAny("prof")));
+      "the-instance", AppProfileConfig::MultiClusterUseAny("prof")));
 }
 
 TEST_F(ValidContextMdAsyncTest, AsyncDeleteAppProfile) {
@@ -1429,8 +1434,8 @@ TEST_F(ValidContextMdAsyncTest, AsyncDeleteAppProfile) {
               ignore_warnings: true
           )""",
           "google.bigtable.admin.v2.BigtableInstanceAdmin.DeleteAppProfile"));
-  auto res_future = instance_admin_->AsyncDeleteAppProfile(cq_, "the-instance",
-                                                           "the-profile");
+  auto res_future =
+      instance_admin_->AsyncDeleteAppProfile("the-instance", "the-profile");
   EXPECT_EQ(1U, cq_impl_->size());
   cq_impl_->SimulateCompletion(true);
   EXPECT_EQ(0U, cq_impl_->size());
@@ -1449,7 +1454,7 @@ TEST_F(ValidContextMdAsyncTest, AsyncDeleteInstance) {
               name: "projects/the-project/instances/the-instance"
           )""",
           "google.bigtable.admin.v2.BigtableInstanceAdmin.DeleteInstance"));
-  auto res_future = instance_admin_->AsyncDeleteInstance("the-instance", cq_);
+  auto res_future = instance_admin_->AsyncDeleteInstance("the-instance");
   EXPECT_EQ(1U, cq_impl_->size());
   cq_impl_->SimulateCompletion(true);
   EXPECT_EQ(0U, cq_impl_->size());
@@ -1469,7 +1474,7 @@ TEST_F(ValidContextMdAsyncTest, AsyncGetAppProfile) {
           )""",
           "google.bigtable.admin.v2.BigtableInstanceAdmin.GetAppProfile"));
   FinishTest(
-      instance_admin_->AsyncGetAppProfile(cq_, "the-instance", "the-profile"));
+      instance_admin_->AsyncGetAppProfile("the-instance", "the-profile"));
 }
 
 TEST_F(ValidContextMdAsyncTest, AsyncGetCluster) {
@@ -1483,8 +1488,7 @@ TEST_F(ValidContextMdAsyncTest, AsyncGetCluster) {
               name: "projects/the-project/instances/the-instance/clusters/the-cluster"
           )""",
           "google.bigtable.admin.v2.BigtableInstanceAdmin.GetCluster"));
-  FinishTest(
-      instance_admin_->AsyncGetCluster(cq_, "the-instance", "the-cluster"));
+  FinishTest(instance_admin_->AsyncGetCluster("the-instance", "the-cluster"));
 }
 
 TEST_F(ValidContextMdAsyncTest, AsyncGetInstance) {
@@ -1498,7 +1502,7 @@ TEST_F(ValidContextMdAsyncTest, AsyncGetInstance) {
               name: "projects/the-project/instances/the-instance"
           )""",
           "google.bigtable.admin.v2.BigtableInstanceAdmin.GetInstance"));
-  FinishTest(instance_admin_->AsyncGetInstance(cq_, "the-instance"));
+  FinishTest(instance_admin_->AsyncGetInstance("the-instance"));
 }
 
 TEST_F(ValidContextMdAsyncTest, AsyncCreateCluster) {
@@ -1519,7 +1523,7 @@ TEST_F(ValidContextMdAsyncTest, AsyncCreateCluster) {
           )""",
           "google.bigtable.admin.v2.BigtableInstanceAdmin.CreateCluster"));
   FinishTest(instance_admin_->AsyncCreateCluster(
-      cq_, ClusterConfig("loc1", 3, ClusterConfig::SSD), "the-instance",
+      ClusterConfig("loc1", 3, ClusterConfig::SSD), "the-instance",
       "the-cluster"));
 }
 
@@ -1537,7 +1541,7 @@ TEST_F(ValidContextMdAsyncTest, AsyncCreateInstance) {
           )""",
           "google.bigtable.admin.v2.BigtableInstanceAdmin.CreateInstance"));
   FinishTest(instance_admin_->AsyncCreateInstance(
-      cq_, InstanceConfig("the-instance", "Displayed instance", {})));
+      InstanceConfig("the-instance", "Displayed instance", {})));
 }
 
 TEST_F(ValidContextMdAsyncTest, AsyncUpdateAppProfile) {
@@ -1554,7 +1558,7 @@ TEST_F(ValidContextMdAsyncTest, AsyncUpdateAppProfile) {
           )""",
           "google.bigtable.admin.v2.BigtableInstanceAdmin.UpdateAppProfile"));
   FinishTest(instance_admin_->AsyncUpdateAppProfile(
-      cq_, "the-instance", "the-profile", AppProfileUpdateConfig()));
+      "the-instance", "the-profile", AppProfileUpdateConfig()));
 }
 
 TEST_F(ValidContextMdAsyncTest, AsyncUpdateCluster) {
@@ -1574,8 +1578,8 @@ TEST_F(ValidContextMdAsyncTest, AsyncUpdateCluster) {
   auto cluster = ClusterConfig("loc1", 3, ClusterConfig::SSD).as_proto();
   cluster.set_name(
       "projects/the-project/instances/the-instance/clusters/the-cluster");
-  FinishTest(instance_admin_->AsyncUpdateCluster(
-      cq_, ClusterConfig(std::move(cluster))));
+  FinishTest(
+      instance_admin_->AsyncUpdateCluster(ClusterConfig(std::move(cluster))));
 }
 
 TEST_F(ValidContextMdAsyncTest, AsyncUpdateInstance) {
@@ -1595,7 +1599,7 @@ TEST_F(ValidContextMdAsyncTest, AsyncUpdateInstance) {
   Instance instance;
   instance.set_name("projects/the-project/instances/the-instance");
   FinishTest(instance_admin_->AsyncUpdateInstance(
-      cq_, InstanceUpdateConfig(std::move(instance))));
+      InstanceUpdateConfig(std::move(instance))));
 }
 
 TEST_F(InstanceAdminTest, CreateAppProfile) {
