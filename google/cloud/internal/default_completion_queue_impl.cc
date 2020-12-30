@@ -239,6 +239,10 @@ void DefaultCompletionQueueImpl::StartOperation(
   }
   auto ins = pending_ops_.emplace(tag, std::move(op));
   if (ins.second) {
+    lk.unlock();
+    // Do not start the operation with the `CompletionQueue`'s lock held. This
+    // may trigger a deadlock if that operation schedules some more work on the
+    // completion queue (e.g. a timer).
     start(tag);
     return;
   }

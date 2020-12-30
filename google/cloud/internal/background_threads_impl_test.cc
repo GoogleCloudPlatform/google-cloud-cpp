@@ -123,6 +123,24 @@ TEST(AutomaticallyCreatedBackgroundThreads, ManualShutdown) {
   actual.Shutdown();
 }
 
+/// @test Verify that automatically created completion queue cancells on dtor.
+TEST(AutomaticallyCreatedBackgroundThreads, OutstandingOpsAreCancelledOnDtor) {
+  std::atomic<bool> timer_fired(false);
+  {
+    AutomaticallyCreatedBackgroundThreads threads(1);
+
+    threads.cq()
+        .MakeRelativeTimer(std::chrono::hours(10))
+        .then([&](future<StatusOr<std::chrono::system_clock::time_point>> fut) {
+          timer_fired = true;
+          auto res = fut.get();
+          EXPECT_FALSE(res);
+          EXPECT_EQ(StatusCode::kCancelled, res.status().code());
+        });
+  }
+  EXPECT_TRUE(timer_fired);
+}
+
 }  // namespace
 }  // namespace internal
 }  // namespace GOOGLE_CLOUD_CPP_NS

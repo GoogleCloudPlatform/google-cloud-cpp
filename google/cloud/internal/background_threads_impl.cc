@@ -37,6 +37,7 @@ AutomaticallyCreatedBackgroundThreads::AutomaticallyCreatedBackgroundThreads(
 
 AutomaticallyCreatedBackgroundThreads::
     ~AutomaticallyCreatedBackgroundThreads() {
+  cq_.CancelAll();
   Shutdown();
 }
 

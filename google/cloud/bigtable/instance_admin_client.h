@@ -84,6 +84,8 @@ class InstanceAdminClient {
    */
   virtual void reset() = 0;
 
+  virtual CompletionQueue cq() = 0;
+
   // The member functions of this class are not intended for general use by
   // application developers (they are simply a dependency injection point). Make
   // them protected, so the mock classes can override them, and then make the
