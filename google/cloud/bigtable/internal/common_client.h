@@ -22,6 +22,7 @@
 #include "google/cloud/log.h"
 #include "google/cloud/status_or.h"
 #include <grpcpp/grpcpp.h>
+#include <list>
 
 namespace google {
 namespace cloud {
@@ -38,6 +39,23 @@ namespace internal {
  */
 std::chrono::seconds constexpr kConnectionReadyTimeout(10);
 
+class OutstandingTimers
+    : public std::enable_shared_from_this<OutstandingTimers> {
+ public:
+  // A dummy object whose destruction will remove the timer from this
+  // registry.
+  using TimerDeleter = std::shared_ptr<void>;
+
+  // Register a timer. Deleting all copies of the returned object will
+  // deregister it. It's ok for the returned object to outlive this object.
+  TimerDeleter RegisterTimer(future<void> fut);
+  void CancelAll();
+
+ private:
+  std::mutex mu_;
+  std::list<future<void>> timers_;  // GUARDED_BY(mu_)
+};
+
 /**
  * State required by timers scheduled by `CommonClient`.
  *
@@ -49,11 +67,13 @@ class ConnectionRefreshState {
   explicit ConnectionRefreshState(
       std::chrono::milliseconds max_conn_refresh_period);
   std::chrono::milliseconds RandomizedRefreshDelay();
+  OutstandingTimers& timers() { return *timers_; }
 
  private:
   std::mutex mu_;
   std::chrono::milliseconds max_conn_refresh_period_;
   google::cloud::internal::DefaultPRNG rng_;
+  std::shared_ptr<OutstandingTimers> timers_;
 };
 
 /**
@@ -100,9 +120,8 @@ class CommonClient {
   ~CommonClient() {
     // This will stop the refresh of the channels.
     channels_.clear();
-    // TODO(2567): remove this call when the user will have to provide their own
-    // `CompletionQueues`
-    background_threads_->cq().CancelAll();
+    // This will cancel all pending timers.
+    refresh_state_->timers().CancelAll();
   }
 
   /**
