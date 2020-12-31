@@ -162,6 +162,11 @@ class DefaultDataClient : public DataClient {
   }
 
  private:
+  /// The thread factory from `ClientOptions` this client was created with.
+  virtual ClientOptions::BackgroundThreadsFactory BackgroundThreadsFactory()
+      override {
+    return impl_.Options().background_threads_factory();
+  }
   std::string project_;
   std::string instance_;
   Impl impl_;
