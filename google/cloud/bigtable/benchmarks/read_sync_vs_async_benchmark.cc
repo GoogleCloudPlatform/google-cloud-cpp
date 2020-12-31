@@ -99,13 +99,16 @@ google::cloud::StatusOr<BenchmarkResult> RunSyncBenchmark(
 class AsyncBenchmark {
  public:
   AsyncBenchmark(bigtable::benchmarks::Benchmark& benchmark,
+                 google::cloud::CompletionQueue cq,
                  std::string const& app_profile_id, std::string const& table_id)
-      : benchmark_(benchmark),
+      : cq_(std::move(cq)),
+        benchmark_(benchmark),
         table_(benchmark_.MakeDataClient(), app_profile_id, table_id),
         generator_(std::random_device{}()) {}
 
   ~AsyncBenchmark() {
     cq_.Shutdown();
+    cq_.CancelAll();
     for (auto& t : cq_threads_) {
       t.join();
     }
@@ -147,6 +150,8 @@ int main(int argc, char* argv[]) {
   }
 
   Benchmark benchmark(*setup);
+  google::cloud::CompletionQueue cq;
+  benchmark.ClientOptionsRef().DisableBackgroundThreads(cq);
 
   // Create and populate the table for the benchmark.
   benchmark.CreateTable();
@@ -159,15 +164,11 @@ int main(int argc, char* argv[]) {
   Benchmark::PrintThroughputResult(std::cout, "perf", "Upload",
                                    *populate_results);
 
-  google::cloud::CompletionQueue cq;
-  std::vector<std::thread> cq_threads;
-
-  auto data_client = benchmark.MakeDataClient();
   // Start the threads running the latency test.
   std::cout << "# Running ReadRow/AsyncReadRow Throughput Benchmark "
             << std::flush;
 
-  AsyncBenchmark async_benchmark(benchmark, setup->app_profile_id(),
+  AsyncBenchmark async_benchmark(benchmark, cq, setup->app_profile_id(),
                                  setup->table_id());
   // Start the benchmark threads.
   auto test_start = std::chrono::steady_clock::now();
@@ -188,7 +189,7 @@ int main(int argc, char* argv[]) {
   auto async_results =
       async_benchmark.Run(setup->test_duration(),
                           setup->thread_count() * setup->parallel_requests());
-
+  std::cout << "ASYNC COMPLETE" << std::endl << std::flush;
   int count = 0;
   auto append_ops = [](BenchmarkResult& d, BenchmarkResult const& s) {
     d.row_count += s.row_count;
@@ -207,6 +208,7 @@ int main(int argc, char* argv[]) {
     }
     ++count;
   }
+  std::cout << "SYNC COMPLETE" << std::endl << std::flush;
   sync_results.elapsed = elapsed();
   async_results.elapsed = elapsed();
   std::cout << " DONE. Elapsed=" << FormatDuration(sync_results.elapsed)
@@ -226,11 +228,8 @@ int main(int argc, char* argv[]) {
                            sync_results);
 
   benchmark.DeleteTable();
-  cq.Shutdown();
-  for (auto& t : cq_threads) {
-    t.join();
-  }
 
+  std::cout << "EXITING" << std::endl << std::flush;
   return 0;
 }
 
@@ -264,10 +263,10 @@ void AsyncBenchmark::RunOneAsyncReadRow() {
   }();
 
   auto request_start = std::chrono::steady_clock::now();
+  std::cout << "RUN" << std::endl << std::flush;
   table_
-      .AsyncReadRow(cq_, row_key,
-                    bigtable::Filter::ColumnRangeClosed(kColumnFamily, "field0",
-                                                        "field9"))
+      .AsyncReadRow(row_key, bigtable::Filter::ColumnRangeClosed(
+                                 kColumnFamily, "field0", "field9"))
       .then([this, request_start](
                 future<StatusOr<std::pair<bool, bigtable::Row>>> f) {
         OnReadRow(request_start, f.get());
@@ -283,6 +282,8 @@ void AsyncBenchmark::OnReadRow(
 
   std::unique_lock<std::mutex> lk(mu_);
   outstanding_requests_--;
+  std::cout << "COMPLETED, LEFT=" << outstanding_requests_ << std::endl
+            << std::flush;
   results_.operations.push_back({row.status(), usecs});
   ++results_.row_count;
   if (now < deadline_) {
