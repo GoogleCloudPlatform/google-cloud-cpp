@@ -26,7 +26,6 @@ set(DOXYGEN_EXAMPLE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/samples)
 
 include(GoogleCloudCppCommon)
 
-configure_file(version_info.h.in ${CMAKE_CURRENT_SOURCE_DIR}/version_info.h)
 add_library(
     bigquery_client # cmake-format: sort
     client.cc
