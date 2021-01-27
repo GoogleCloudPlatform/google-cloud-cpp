@@ -18,7 +18,7 @@ set -eu
 source "$(dirname "$0")/lib/init.sh"
 source module lib/io.sh
 
-source "${PROJECT_ROOT}/.generator-googleapis-commit-hash"
+source "${PROJECT_ROOT}/ci/etc/generator-googleapis-commit-hash.sh"
 
 if [[ "${CHECK_GENERATED_CODE_HASH}" != "yes" ]]; then
   echo "Skipping the generated code hash check as it is disabled for this build."
@@ -26,7 +26,6 @@ if [[ "${CHECK_GENERATED_CODE_HASH}" != "yes" ]]; then
 fi
 
 readonly BAZEL_BIN=${BAZEL_BIN:-/usr/local/bin/bazel}
-readonly GOOGLEAPIS_HASH_LAST_USED=${GOOGLEAPIS_HASH_LAST_USED}
 readonly BAZEL_DEPS_GOOGLEAPIS_HASH=$("${BAZEL_BIN}" query 'kind(http_archive, //external:com_google_googleapis)' --output=build | sed -n 's/^.*strip_prefix = "googleapis-\(\S*\)"\,.*$/\1/p')
 
 if [[ "${BAZEL_DEPS_GOOGLEAPIS_HASH}" != "${GOOGLEAPIS_HASH_LAST_USED}" ]]; then

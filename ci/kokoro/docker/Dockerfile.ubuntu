@@ -23,7 +23,6 @@ RUN apt-get update && \
         ccache \
         clang \
         clang-9 \
-        clang-format-9 \
         cmake \
         ctags \
         curl \
@@ -49,9 +48,6 @@ RUN apt-get update && \
         apt-utils \
         ca-certificates \
         apt-transport-https
-
-# Provide access to clang-format in a well known place.
-RUN ln -s /usr/bin/clang-format-9 /usr/local/bin/clang-format
 
 # Install Python packages used in the integration tests.
 RUN update-alternatives --install /usr/bin/python python $(which python3) 10
