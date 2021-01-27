@@ -58,7 +58,7 @@ for pair in "${product_path_proto_path_to_generate[@]}"; do
 done
 
 io::log_yellow "Update generator-googlapis-commit-hash.sh file."
-cat > "${PROJECT_ROOT}"/ci/etc/generator-googleapis-commit-hash.sh <<EOF
+cat >"${PROJECT_ROOT}"/ci/etc/generator-googleapis-commit-hash.sh <<EOF
 #!/usr/bin/env bash
 # Copyright 2021 Google LLC
 #
