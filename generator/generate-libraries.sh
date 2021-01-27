@@ -54,7 +54,7 @@ for pair in "${product_path_proto_path_to_generate[@]}"; do
     --cpp_codegen_opt=googleapis_commit_hash="${BAZEL_DEPS_GOOGLEAPIS_HASH}" \
     "${BAZEL_OUTPUT_BASE}"/external/com_google_googleapis/"${proto_file}"
 
-  find ${product_path} \( -name '*.cc' -o -name '*.h' \) -exec clang-format -i {} \;
+  find "${product_path}" \( -name '*.cc' -o -name '*.h' \) -exec clang-format -i {} \;
 done
 
 io::log_yellow "Update .generator-googlapis-commit-hash file."
