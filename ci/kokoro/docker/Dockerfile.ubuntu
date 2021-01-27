@@ -50,6 +50,9 @@ RUN apt-get update && \
         ca-certificates \
         apt-transport-https
 
+# Provide access to clang-format in a well known place.
+RUN ln -s /usr/bin/clang-format-9 /usr/local/bin/clang-format
+
 # Install Python packages used in the integration tests.
 RUN update-alternatives --install /usr/bin/python python $(which python3) 10
 RUN pip3 install setuptools wheel
