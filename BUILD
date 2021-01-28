@@ -78,7 +78,7 @@ cc_library(
     deprecation = "this target will be removed on or around 2022-02-15, please use //:spanner instead.",
     tags = ["manual"],
     deps = [
-        "//google/cloud/spanner:google_cloud_cpp_pubsub",
+        "//google/cloud/spanner:spanner_client_internal",
     ],
 )
 
