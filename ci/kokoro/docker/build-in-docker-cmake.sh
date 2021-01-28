@@ -462,7 +462,7 @@ if [[ "${TEST_INSTALL:-}" = "yes" ]]; then
       "google_cloud_cpp_common"
       "google_cloud_cpp_grpc_utils"
       "spanner_client"
-      "storage_client"
+      "google_cloud_cpp_storage"
       "pubsub_client"
     )
     echo "${libraries[@]}" | xargs -n 1 -P "${NCPU}" \
