@@ -39,14 +39,14 @@ cc_library(
 cc_library(
     name = "pubsub",
     deps = [
-        "//google/cloud/pubsub:pubsub_client_internal",
+        "//google/cloud/pubsub:google_cloud_cpp_pubsub",
     ],
 )
 
 cc_library(
     name = "pubsub_mocks",
     deps = [
-        "//google/cloud/pubsub:pubsub_mocks_internal",
+        "//google/cloud/pubsub:google_cloud_cpp_pubsub_mocks",
     ],
 )
 
@@ -55,7 +55,7 @@ cc_library(
     deprecation = "this target will be removed on or around 2022-02-15, please use //:pubsub instead.",
     tags = ["manual"],
     deps = [
-        "//google/cloud/pubsub:pubsub_client_internal",
+        "//google/cloud/pubsub:google_cloud_cpp_pubsub",
     ],
 )
 
@@ -78,7 +78,7 @@ cc_library(
     deprecation = "this target will be removed on or around 2022-02-15, please use //:spanner instead.",
     tags = ["manual"],
     deps = [
-        "//google/cloud/spanner:spanner_client_internal",
+        "//google/cloud/spanner:google_cloud_cpp_pubsub",
     ],
 )
 
