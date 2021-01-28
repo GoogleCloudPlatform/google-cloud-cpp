@@ -32,7 +32,7 @@ find_package(bigtable_client REQUIRED)
 find_package(firestore_client REQUIRED)
 find_package(pubsub_client REQUIRED)
 find_package(spanner_client REQUIRED)
-find_package(storage_client REQUIRED)
+find_package(google_cloud_cpp_storage REQUIRED)
 
 include(CTest)
 
@@ -47,11 +47,11 @@ add_test_case(t020 google-cloud-cpp::grpc_utils)
 add_test_case(t030 bigtable_client)
 add_test_case(t100 pubsub_client)
 add_test_case(t110 spanner_client)
-add_test_case(t120 storage_client)
+add_test_case(t120 google-cloud-cpp::storage)
 
 set(pkg_config_modules
     google_cloud_cpp_common google_cloud_cpp_grpc_utils bigtable_client
-    pubsub_client spanner_client storage_client)
+    google_cloud_cpp_pubsub spanner_client google_cloud_cpp_storage)
 foreach (module ${pkg_config_modules})
     pkg_check_modules(${module} IMPORTED_TARGET REQUIRED ${module})
     add_test_case(test_pc_${module} PkgConfig::${module})
