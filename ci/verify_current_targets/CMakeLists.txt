@@ -50,8 +50,9 @@ add_test_case(t110 spanner_client)
 add_test_case(t120 google-cloud-cpp::storage)
 
 set(pkg_config_modules
+    # cmake-format: sortable
     google_cloud_cpp_common google_cloud_cpp_grpc_utils bigtable_client
-    google_cloud_cpp_pubsub spanner_client google_cloud_cpp_storage)
+    pubsub_client spanner_client google_cloud_cpp_storage)
 foreach (module ${pkg_config_modules})
     pkg_check_modules(${module} IMPORTED_TARGET REQUIRED ${module})
     add_test_case(test_pc_${module} PkgConfig::${module})
