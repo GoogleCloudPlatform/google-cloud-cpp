@@ -461,7 +461,7 @@ if [[ "${TEST_INSTALL:-}" = "yes" ]]; then
       "bigtable_client"
       "google_cloud_cpp_common"
       "google_cloud_cpp_grpc_utils"
-      "spanner_client"
+      "google_cloud_cpp_spanner"
       "storage_client"
       "pubsub_client"
     )
