@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "generator/integration_tests/golden/database_admin_client.gcpcxx.pb.h"
-#include "generator/integration_tests/golden/mocks/mock_database_admin_connection.gcpcxx.pb.h"
 #include "google/cloud/internal/time_utils.h"
 #include "google/cloud/testing_util/assert_ok.h"
 #include "google/cloud/testing_util/is_proto_equal.h"
 #include "google/cloud/testing_util/status_matchers.h"
-#include <gmock/gmock.h>
+#include "generator/integration_tests/golden/database_admin_client.gcpcxx.pb.h"
+#include "generator/integration_tests/golden/mocks/mock_database_admin_connection.gcpcxx.pb.h"
 #include <google/iam/v1/policy.pb.h>
 #include <google/protobuf/util/field_mask_util.h>
+#include <gmock/gmock.h>
 #include <memory>
 
 namespace google {
@@ -67,19 +67,19 @@ TEST(GoldenClientTest, ListDatabases) {
   EXPECT_CALL(*mock, ListDatabases)
       .Times(2)
       .WillRepeatedly([expected_instance](::google::test::admin::database::v1::
-                                              ListDatabasesRequest const &r) {
+                                              ListDatabasesRequest const& r) {
         EXPECT_EQ(expected_instance, r.parent());
 
         return google::cloud::internal::MakePaginationRange<ListDatabasesRange>(
             ::google::test::admin::database::v1::ListDatabasesRequest{},
-            [](::google::test::admin::database::v1::ListDatabasesRequest const
-                   &) {
+            [](::google::test::admin::database::v1::
+                   ListDatabasesRequest const&) {
               return StatusOr<
                   ::google::test::admin::database::v1::ListDatabasesResponse>(
                   Status(StatusCode::kPermissionDenied, "uh-oh"));
             },
-            [](::google::test::admin::database::v1::ListDatabasesResponse const
-                   &) {
+            [](::google::test::admin::database::v1::
+                   ListDatabasesResponse const&) {
               return std::vector<
                   ::google::test::admin::database::v1::Database>{};
             });
@@ -108,8 +108,8 @@ TEST(GoldenClientTest, CreateDatabase) {
       .Times(2)
       .WillRepeatedly(
           [expected_instance](
-              ::google::test::admin::database::v1::CreateDatabaseRequest const
-                  &r) {
+              ::google::test::admin::database::v1::CreateDatabaseRequest const&
+                  r) {
             EXPECT_EQ(expected_instance, r.parent());
             EXPECT_THAT(r.create_statement(),
                         HasSubstr("create database test-db"));
@@ -148,8 +148,8 @@ TEST(GoldenClientTest, GetDatabase) {
       .Times(2)
       .WillRepeatedly(
           [expected_database](
-              ::google::test::admin::database::v1::GetDatabaseRequest const
-                  &request) {
+              ::google::test::admin::database::v1::GetDatabaseRequest const&
+                  request) {
             EXPECT_EQ(expected_database, request.name());
             ::google::test::admin::database::v1::Database response;
             response.set_name(request.name());
@@ -174,7 +174,7 @@ TEST(GoldenClientTest, UpdateDatabase) {
       .Times(2)
       .WillRepeatedly([expected_database](
                           ::google::test::admin::database::v1::
-                              UpdateDatabaseDdlRequest const &r) {
+                              UpdateDatabaseDdlRequest const& r) {
         EXPECT_EQ(expected_database, r.database());
         EXPECT_THAT(r.statements(), ElementsAre("-- test only: NOT SQL"));
         ::google::test::admin::database::v1::UpdateDatabaseDdlMetadata metadata;
@@ -206,8 +206,8 @@ TEST(GoldenClientTest, DropDatabase) {
       .Times(2)
       .WillRepeatedly(
           [expected_database](
-              ::google::test::admin::database::v1::DropDatabaseRequest const
-                  &request) {
+              ::google::test::admin::database::v1::DropDatabaseRequest const&
+                  request) {
             EXPECT_EQ(expected_database, request.database());
             return Status();
           });
@@ -227,7 +227,7 @@ TEST(GoldenClientTest, GetDatabaseDdl) {
   EXPECT_CALL(*mock, GetDatabaseDdl)
       .Times(2)
       .WillRepeatedly([expected_database](::google::test::admin::database::v1::
-                                              GetDatabaseDdlRequest const &r) {
+                                              GetDatabaseDdlRequest const& r) {
         EXPECT_EQ(expected_database, r.database());
         ::google::test::admin::database::v1::GetDatabaseDdlResponse response;
         response.add_statements("CREATE DATABASE test-db");
@@ -253,7 +253,7 @@ TEST(GoldenClientTest, SetIamPolicy) {
   EXPECT_CALL(*mock, SetIamPolicy)
       .Times(2)
       .WillRepeatedly(
-          [expected_database](::google::iam::v1::SetIamPolicyRequest const &r) {
+          [expected_database](::google::iam::v1::SetIamPolicyRequest const& r) {
             EXPECT_EQ(expected_database, r.resource());
             return r.policy();
           });
@@ -277,10 +277,10 @@ TEST(GoldenClientTest, GetIamPolicy) {
   EXPECT_CALL(*mock, GetIamPolicy)
       .Times(2)
       .WillRepeatedly([expected_database, expected_role, expected_member](
-                          ::google::iam::v1::GetIamPolicyRequest const &r) {
+                          ::google::iam::v1::GetIamPolicyRequest const& r) {
         EXPECT_EQ(expected_database, r.resource());
         google::iam::v1::Policy response;
-        auto &binding = *response.add_bindings();
+        auto& binding = *response.add_bindings();
         binding.set_role(expected_role);
         *binding.add_members() = expected_member;
         return response;
@@ -311,7 +311,7 @@ TEST(GoldenClientTest, TestIamPermissions) {
       .Times(2)
       .WillRepeatedly(
           [expected_database, expected_permission](
-              ::google::iam::v1::TestIamPermissionsRequest const &r) {
+              ::google::iam::v1::TestIamPermissionsRequest const& r) {
             EXPECT_EQ(expected_database, r.resource());
             EXPECT_EQ(1, r.permissions().size());
             EXPECT_EQ(expected_permission, r.permissions(0));
@@ -349,8 +349,8 @@ TEST(GoldenClientTest, CreateBackup) {
       .Times(2)
       .WillRepeatedly(
           [expected_database, expire_time, backup_id, expected_backup_name](
-              ::google::test::admin::database::v1::CreateBackupRequest const
-                  &r) {
+              ::google::test::admin::database::v1::CreateBackupRequest const&
+                  r) {
             EXPECT_EQ(expected_database, r.backup().database());
             EXPECT_THAT(google::cloud::internal::ToProtoTimestamp(expire_time),
                         IsProtoEqual(r.backup().expire_time()));
@@ -393,7 +393,7 @@ TEST(GoldenClientTest, GetBackup) {
       .Times(2)
       .WillRepeatedly(
           [expected_backup_name](
-              ::google::test::admin::database::v1::GetBackupRequest const &r) {
+              ::google::test::admin::database::v1::GetBackupRequest const& r) {
             EXPECT_EQ(expected_backup_name, r.name());
             ::google::test::admin::database::v1::Backup response;
             response.set_name(r.name());
@@ -428,8 +428,8 @@ TEST(GoldenClientTest, UpdateBackupExpireTime) {
       .Times(2)
       .WillRepeatedly(
           [expected_backup_name, proto_expire_time](
-              ::google::test::admin::database::v1::UpdateBackupRequest const
-                  &r) {
+              ::google::test::admin::database::v1::UpdateBackupRequest const&
+                  r) {
             EXPECT_EQ(expected_backup_name, r.backup().name());
             EXPECT_THAT(proto_expire_time,
                         IsProtoEqual(r.backup().expire_time()));
@@ -474,8 +474,8 @@ TEST(GoldenClientTest, DeleteBackup) {
       .Times(2)
       .WillRepeatedly(
           [expected_backup_name](
-              ::google::test::admin::database::v1::DeleteBackupRequest const
-                  &r) {
+              ::google::test::admin::database::v1::DeleteBackupRequest const&
+                  r) {
             EXPECT_EQ(expected_backup_name, r.name());
             return Status();
           });
@@ -495,18 +495,17 @@ TEST(GoldenClientTest, ListBackups) {
   EXPECT_CALL(*mock, ListBackups)
       .Times(2)
       .WillRepeatedly([expected_instance](::google::test::admin::database::v1::
-                                              ListBackupsRequest const &r) {
+                                              ListBackupsRequest const& r) {
         EXPECT_EQ(expected_instance, r.parent());
         return google::cloud::internal::MakePaginationRange<ListBackupsRange>(
             ::google::test::admin::database::v1::ListBackupsRequest{},
-            [](::google::test::admin::database::v1::ListBackupsRequest const
-                   &) {
+            [](::google::test::admin::database::v1::ListBackupsRequest const&) {
               return StatusOr<
                   ::google::test::admin::database::v1::ListBackupsResponse>(
                   Status(StatusCode::kPermissionDenied, "uh-oh"));
             },
-            [](::google::test::admin::database::v1::ListBackupsResponse const
-                   &) {
+            [](::google::test::admin::database::v1::
+                   ListBackupsResponse const&) {
               return std::vector<::google::test::admin::database::v1::Backup>{};
             });
       });
@@ -535,7 +534,7 @@ TEST(GoldenClientTest, RestoreDatabase) {
       .Times(2)
       .WillRepeatedly([expected_backup_name, expected_database,
                        expected_instance](::google::test::admin::database::v1::
-                                              RestoreDatabaseRequest const &r) {
+                                              RestoreDatabaseRequest const& r) {
         EXPECT_EQ(expected_instance, r.parent());
         EXPECT_EQ(expected_database, r.database_id());
         EXPECT_EQ(expected_backup_name, r.backup());
@@ -575,20 +574,20 @@ TEST(GoldenClientTest, ListDatabaseOperations) {
       .Times(2)
       .WillRepeatedly(
           [expected_instance](::google::test::admin::database::v1::
-                                  ListDatabaseOperationsRequest const &r) {
+                                  ListDatabaseOperationsRequest const& r) {
             EXPECT_EQ(expected_instance, r.parent());
             return google::cloud::internal::MakePaginationRange<
                 ListDatabaseOperationsRange>(
                 ::google::test::admin::database::v1::
                     ListDatabaseOperationsRequest{},
                 [](::google::test::admin::database::v1::
-                       ListDatabaseOperationsRequest const &) {
+                       ListDatabaseOperationsRequest const&) {
                   return StatusOr<::google::test::admin::database::v1::
                                       ListDatabaseOperationsResponse>(
                       Status(StatusCode::kPermissionDenied, "uh-oh"));
                 },
                 [](::google::test::admin::database::v1::
-                       ListDatabaseOperationsResponse const &) {
+                       ListDatabaseOperationsResponse const&) {
                   return std::vector<google::longrunning::Operation>{};
                 });
           });
@@ -613,19 +612,19 @@ TEST(GoldenClientTest, ListBackupOperations) {
       .Times(2)
       .WillRepeatedly([expected_instance](
                           ::google::test::admin::database::v1::
-                              ListBackupOperationsRequest const &r) {
+                              ListBackupOperationsRequest const& r) {
         EXPECT_EQ(expected_instance, r.parent());
         return google::cloud::internal::MakePaginationRange<
             ListBackupOperationsRange>(
             ::google::test::admin::database::v1::ListBackupOperationsRequest{},
             [](::google::test::admin::database::v1::
-                   ListBackupOperationsRequest const &) {
+                   ListBackupOperationsRequest const&) {
               return StatusOr<::google::test::admin::database::v1::
                                   ListBackupOperationsResponse>(
                   Status(StatusCode::kPermissionDenied, "uh-oh"));
             },
             [](::google::test::admin::database::v1::
-                   ListBackupOperationsResponse const &) {
+                   ListBackupOperationsResponse const&) {
               return std::vector<google::longrunning::Operation>{};
             });
       });
@@ -642,8 +641,8 @@ TEST(GoldenClientTest, ListBackupOperations) {
   EXPECT_THAT(*begin, StatusIs(StatusCode::kPermissionDenied));
 }
 
-} // namespace
-} // namespace golden
-} // namespace GOOGLE_CLOUD_CPP_NS
-} // namespace cloud
-} // namespace google
+}  // namespace
+}  // namespace golden
+}  // namespace GOOGLE_CLOUD_CPP_NS
+}  // namespace cloud
+}  // namespace google
