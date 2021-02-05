@@ -577,7 +577,8 @@ TEST(GoldenClientTest, ListDatabaseOperations) {
           [expected_instance](::google::test::admin::database::v1::
                                   ListDatabaseOperationsRequest const &r) {
             EXPECT_EQ(expected_instance, r.parent());
-            return google::cloud::internal::MakePaginationRange<ListDatabaseOperationsRange>(
+            return google::cloud::internal::MakePaginationRange<
+                ListDatabaseOperationsRange>(
                 ::google::test::admin::database::v1::
                     ListDatabaseOperationsRequest{},
                 [](::google::test::admin::database::v1::
@@ -614,7 +615,8 @@ TEST(GoldenClientTest, ListBackupOperations) {
                           ::google::test::admin::database::v1::
                               ListBackupOperationsRequest const &r) {
         EXPECT_EQ(expected_instance, r.parent());
-        return google::cloud::internal::MakePaginationRange<ListBackupOperationsRange>(
+        return google::cloud::internal::MakePaginationRange<
+            ListBackupOperationsRange>(
             ::google::test::admin::database::v1::ListBackupOperationsRequest{},
             [](::google::test::admin::database::v1::
                    ListBackupOperationsRequest const &) {
