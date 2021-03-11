@@ -47,6 +47,12 @@ struct SpannerBackoffPolicyOption {
 };
 
 /**
+ * A type list of internal-only options that our customers should not use.
+ */
+using SpannerInternalOptions =
+    std::tuple<SpannerRetryPolicyOption, SpannerBackoffPolicyOption>;
+
+/**
  * Returns an `Options` with the appropriate defaults for Spanner.
  *
  * Environment variables and the optional @p opts argument may be consulted to
