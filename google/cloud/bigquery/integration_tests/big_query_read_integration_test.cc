@@ -73,7 +73,8 @@ TEST_F(BigQueryReadIntegrationTest, CreateReadSessionProtoFailure) {
 }
 
 TEST_F(BigQueryReadIntegrationTest, ReadRowsFailure) {
-  connection_options_.set<internal::TracingComponentsOption>({"rpc", "rpc-streams"});
+  connection_options_.set<internal::TracingComponentsOption>(
+      {"rpc", "rpc-streams"});
   auto client = BigQueryReadClient(MakeBigQueryReadConnection(
       connection_options_, retry_policy_->clone(), backoff_policy_->clone(),
       idempotency_policy_->clone()));

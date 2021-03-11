@@ -112,7 +112,7 @@ Status StubFactoryGenerator::GenerateCc() {
     "\n"
     "  return options;\n"
     "}\n\n"
-      // clang-format on
+            // clang-format on
   );
 
   // factory function implementation
