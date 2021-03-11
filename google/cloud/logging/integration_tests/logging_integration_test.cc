@@ -14,6 +14,7 @@
 
 #include "google/cloud/logging/internal/logging_service_v2_stub_factory.gcpcxx.pb.h"
 #include "google/cloud/logging/logging_service_v2_client.gcpcxx.pb.h"
+#include "google/cloud/internal/common_options.h"
 #include "google/cloud/internal/getenv.h"
 #include "google/cloud/log.h"
 #include "google/cloud/testing_util/assert_ok.h"
@@ -34,13 +35,13 @@ using ::testing::HasSubstr;
 class LoggingIntegrationTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    connection_options_.enable_tracing("rpc");
+    connection_options_.set<internal::TracingComponentsOption>({"rpc"});
     retry_policy_ =
         absl::make_unique<LoggingServiceV2LimitedErrorCountRetryPolicy>(1);
     backoff_policy_ = absl::make_unique<ExponentialBackoffPolicy>(
         std::chrono::seconds(1), std::chrono::seconds(1), 2.0);
   }
-  LoggingServiceV2ConnectionOptions connection_options_;
+  internal::Options connection_options_;
   std::unique_ptr<LoggingServiceV2RetryPolicy> retry_policy_;
   std::unique_ptr<BackoffPolicy> backoff_policy_;
   testing_util::ScopedLog log_;
@@ -67,7 +68,7 @@ TEST_F(LoggingIntegrationTest, WriteLogEntries) {
 }
 
 TEST_F(LoggingIntegrationTest, ListLogEntriesFailure) {
-  connection_options_.set_endpoint("localhost:1");
+  connection_options_.set<internal::EndpointOption>("localhost:1");
   auto client = LoggingServiceV2Client(MakeLoggingServiceV2Connection(
       connection_options_, retry_policy_->clone(), backoff_policy_->clone(),
       MakeDefaultLoggingServiceV2ConnectionIdempotencyPolicy()));

@@ -14,6 +14,7 @@
 
 #include "google/cloud/iam/iam_credentials_client.gcpcxx.pb.h"
 #include "google/cloud/iam/internal/iam_credentials_stub_factory.gcpcxx.pb.h"
+#include "google/cloud/internal/common_options.h"
 #include "google/cloud/internal/getenv.h"
 #include "google/cloud/log.h"
 #include "google/cloud/testing_util/assert_ok.h"
@@ -32,8 +33,7 @@ using ::testing::HasSubstr;
 class IamCredentialsIntegrationTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    rpc_tracing_options_.enable_tracing("rpc");
-
+    rpc_tracing_options_.set<internal::TracingComponentsOption>({"rpc"});
     iam_service_account_ = google::cloud::internal::GetEnv(
                                "GOOGLE_CLOUD_CPP_IAM_TEST_SERVICE_ACCOUNT")
                                .value_or("");
@@ -46,7 +46,7 @@ class IamCredentialsIntegrationTest : public ::testing::Test {
     ASSERT_FALSE(invalid_iam_service_account_.empty());
   }
   std::vector<std::string> ClearLogLines() { return log_.ExtractLines(); }
-  IAMCredentialsConnectionOptions rpc_tracing_options_;
+  internal::Options rpc_tracing_options_;
   std::string iam_service_account_;
   std::string invalid_iam_service_account_;
 
@@ -80,7 +80,7 @@ TEST_F(IamCredentialsIntegrationTest, GenerateAccessTokenFailure) {
 
 TEST_F(IamCredentialsIntegrationTest, GenerateIdTokenSuccess) {
   auto client = IAMCredentialsClient(MakeIAMCredentialsConnection(
-      IAMCredentialsConnectionOptions(),
+      internal::Options(),
       std::unique_ptr<IAMCredentialsRetryPolicy>(
           new IAMCredentialsLimitedTimeRetryPolicy(std::chrono::minutes(30))),
       std::unique_ptr<BackoffPolicy>(new ExponentialBackoffPolicy(
