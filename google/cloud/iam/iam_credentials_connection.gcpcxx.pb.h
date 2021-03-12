@@ -65,7 +65,7 @@ class IAMCredentialsConnection {
 };
 
 std::shared_ptr<IAMCredentialsConnection> MakeIAMCredentialsConnection(
-    internal::Options const& options = internal::Options());
+    internal::Options const& options = {});
 
 std::shared_ptr<IAMCredentialsConnection> MakeIAMCredentialsConnection(
     internal::Options const& options,

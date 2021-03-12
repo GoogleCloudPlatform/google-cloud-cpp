@@ -59,7 +59,7 @@ internal::Options ResolveIAMCredentialsOptions(internal::Options options) {
 
 std::shared_ptr<IAMCredentialsStub> CreateDefaultIAMCredentialsStub(
     internal::Options options) {
-  options = ResolveIAMCredentialsOptions(options);
+  options = ResolveIAMCredentialsOptions(std::move(options));
   auto channel =
       grpc::CreateCustomChannel(options.get<internal::EndpointOption>(),
                                 options.get<internal::GrpcCredentialOption>(),

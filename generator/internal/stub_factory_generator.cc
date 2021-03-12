@@ -119,7 +119,7 @@ Status StubFactoryGenerator::GenerateCc() {
   CcPrint(  // clang-format off
     "std::shared_ptr<$stub_class_name$>\n"
     "CreateDefault$stub_class_name$(internal::Options options) {\n"
-    "  options = Resolve$service_name$Options(options);\n"
+    "  options = Resolve$service_name$Options(std::move(options));\n"
     "  auto channel = grpc::CreateCustomChannel(\n"
     "      options.get<internal::EndpointOption>(),\n"
     "      options.get<internal::GrpcCredentialOption>(),\n"

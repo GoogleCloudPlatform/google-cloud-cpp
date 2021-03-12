@@ -57,7 +57,7 @@ internal::Options ResolveGoldenThingAdminOptions(internal::Options options) {
 
 std::shared_ptr<GoldenThingAdminStub>
 CreateDefaultGoldenThingAdminStub(internal::Options options) {
-  options = ResolveGoldenThingAdminOptions(options);
+  options = ResolveGoldenThingAdminOptions(std::move(options));
   auto channel = grpc::CreateCustomChannel(
       options.get<internal::EndpointOption>(),
       options.get<internal::GrpcCredentialOption>(),

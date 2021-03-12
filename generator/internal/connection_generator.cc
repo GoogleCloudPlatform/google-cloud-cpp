@@ -152,7 +152,7 @@ Status ConnectionGenerator::GenerateHeader() {
 
   HeaderPrint(  // clang-format off
     "std::shared_ptr<$connection_class_name$> Make$connection_class_name$(\n"
-    "    internal::Options const& options = internal::Options());\n\n");
+    "    internal::Options const& options = {});\n\n");
   // clang-format on
 
   HeaderPrint({// clang-format off

@@ -59,7 +59,7 @@ internal::Options ResolveBigQueryReadOptions(internal::Options options) {
 
 std::shared_ptr<BigQueryReadStub> CreateDefaultBigQueryReadStub(
     internal::Options options) {
-  options = ResolveBigQueryReadOptions(options);
+  options = ResolveBigQueryReadOptions(std::move(options));
   auto channel =
       grpc::CreateCustomChannel(options.get<internal::EndpointOption>(),
                                 options.get<internal::GrpcCredentialOption>(),

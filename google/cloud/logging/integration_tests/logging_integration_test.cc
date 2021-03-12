@@ -35,21 +35,21 @@ using ::testing::HasSubstr;
 class LoggingIntegrationTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    connection_options_.set<internal::TracingComponentsOption>({"rpc"});
+    options_.set<internal::TracingComponentsOption>({"rpc"});
     retry_policy_ =
         absl::make_unique<LoggingServiceV2LimitedErrorCountRetryPolicy>(1);
     backoff_policy_ = absl::make_unique<ExponentialBackoffPolicy>(
         std::chrono::seconds(1), std::chrono::seconds(1), 2.0);
   }
-  internal::Options connection_options_;
+  internal::Options options_;
   std::unique_ptr<LoggingServiceV2RetryPolicy> retry_policy_;
   std::unique_ptr<BackoffPolicy> backoff_policy_;
   testing_util::ScopedLog log_;
 };
 
 TEST_F(LoggingIntegrationTest, DeleteLogFailure) {
-  auto client = LoggingServiceV2Client(
-      MakeLoggingServiceV2Connection(connection_options_));
+  auto client =
+      LoggingServiceV2Client(MakeLoggingServiceV2Connection(options_));
   ::google::logging::v2::DeleteLogRequest request;
   auto response = client.DeleteLog(request);
   EXPECT_FALSE(response.ok());
@@ -58,8 +58,8 @@ TEST_F(LoggingIntegrationTest, DeleteLogFailure) {
 }
 
 TEST_F(LoggingIntegrationTest, WriteLogEntries) {
-  auto client = LoggingServiceV2Client(
-      MakeLoggingServiceV2Connection(connection_options_));
+  auto client =
+      LoggingServiceV2Client(MakeLoggingServiceV2Connection(options_));
   ::google::logging::v2::WriteLogEntriesRequest request;
   auto response = client.WriteLogEntries(request);
   EXPECT_TRUE(response.ok());
@@ -68,9 +68,9 @@ TEST_F(LoggingIntegrationTest, WriteLogEntries) {
 }
 
 TEST_F(LoggingIntegrationTest, ListLogEntriesFailure) {
-  connection_options_.set<internal::EndpointOption>("localhost:1");
+  options_.set<internal::EndpointOption>("localhost:1");
   auto client = LoggingServiceV2Client(MakeLoggingServiceV2Connection(
-      connection_options_, retry_policy_->clone(), backoff_policy_->clone(),
+      options_, retry_policy_->clone(), backoff_policy_->clone(),
       MakeDefaultLoggingServiceV2ConnectionIdempotencyPolicy()));
   ::google::logging::v2::ListLogEntriesRequest request;
   auto range = client.ListLogEntries(request);
@@ -83,7 +83,7 @@ TEST_F(LoggingIntegrationTest, ListLogEntriesFailure) {
 
 TEST_F(LoggingIntegrationTest, ListMonitoredResourceDescriptors) {
   auto client = LoggingServiceV2Client(MakeLoggingServiceV2Connection(
-      connection_options_, retry_policy_->clone(), backoff_policy_->clone(),
+      options_, retry_policy_->clone(), backoff_policy_->clone(),
       MakeDefaultLoggingServiceV2ConnectionIdempotencyPolicy()));
   ::google::logging::v2::ListMonitoredResourceDescriptorsRequest request;
   auto range = client.ListMonitoredResourceDescriptors(request);
@@ -97,7 +97,7 @@ TEST_F(LoggingIntegrationTest, ListMonitoredResourceDescriptors) {
 
 TEST_F(LoggingIntegrationTest, ListLogsFailure) {
   auto client = LoggingServiceV2Client(MakeLoggingServiceV2Connection(
-      connection_options_, retry_policy_->clone(), backoff_policy_->clone(),
+      options_, retry_policy_->clone(), backoff_policy_->clone(),
       MakeDefaultLoggingServiceV2ConnectionIdempotencyPolicy()));
   ::google::logging::v2::ListLogsRequest request;
   auto range = client.ListLogs(request);

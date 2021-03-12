@@ -59,7 +59,7 @@ internal::Options ResolveLoggingServiceV2Options(internal::Options options) {
 
 std::shared_ptr<LoggingServiceV2Stub> CreateDefaultLoggingServiceV2Stub(
     internal::Options options) {
-  options = ResolveLoggingServiceV2Options(options);
+  options = ResolveLoggingServiceV2Options(std::move(options));
   auto channel =
       grpc::CreateCustomChannel(options.get<internal::EndpointOption>(),
                                 options.get<internal::GrpcCredentialOption>(),

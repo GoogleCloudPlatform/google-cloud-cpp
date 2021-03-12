@@ -69,7 +69,7 @@ class BigQueryReadConnection {
 };
 
 std::shared_ptr<BigQueryReadConnection> MakeBigQueryReadConnection(
-    internal::Options const& options = internal::Options());
+    internal::Options const& options = {});
 
 std::shared_ptr<BigQueryReadConnection> MakeBigQueryReadConnection(
     internal::Options const& options,

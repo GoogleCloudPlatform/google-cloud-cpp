@@ -69,7 +69,7 @@ class GoldenKitchenSinkConnection {
 };
 
 std::shared_ptr<GoldenKitchenSinkConnection> MakeGoldenKitchenSinkConnection(
-    internal::Options const& options = internal::Options());
+    internal::Options const& options = {});
 
 std::shared_ptr<GoldenKitchenSinkConnection> MakeGoldenKitchenSinkConnection(
     internal::Options const& options,

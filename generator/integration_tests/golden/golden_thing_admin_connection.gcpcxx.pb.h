@@ -104,7 +104,7 @@ class GoldenThingAdminConnection {
 };
 
 std::shared_ptr<GoldenThingAdminConnection> MakeGoldenThingAdminConnection(
-    internal::Options const& options = internal::Options());
+    internal::Options const& options = {});
 
 std::shared_ptr<GoldenThingAdminConnection> MakeGoldenThingAdminConnection(
     internal::Options const& options,

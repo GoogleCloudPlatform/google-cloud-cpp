@@ -67,7 +67,7 @@ class LoggingServiceV2Connection {
 };
 
 std::shared_ptr<LoggingServiceV2Connection> MakeLoggingServiceV2Connection(
-    internal::Options const& options = internal::Options());
+    internal::Options const& options = {});
 
 std::shared_ptr<LoggingServiceV2Connection> MakeLoggingServiceV2Connection(
     internal::Options const& options,

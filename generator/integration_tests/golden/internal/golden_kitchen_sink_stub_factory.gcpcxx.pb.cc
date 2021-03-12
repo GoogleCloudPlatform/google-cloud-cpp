@@ -57,7 +57,7 @@ internal::Options ResolveGoldenKitchenSinkOptions(internal::Options options) {
 
 std::shared_ptr<GoldenKitchenSinkStub>
 CreateDefaultGoldenKitchenSinkStub(internal::Options options) {
-  options = ResolveGoldenKitchenSinkOptions(options);
+  options = ResolveGoldenKitchenSinkOptions(std::move(options));
   auto channel = grpc::CreateCustomChannel(
       options.get<internal::EndpointOption>(),
       options.get<internal::GrpcCredentialOption>(),
