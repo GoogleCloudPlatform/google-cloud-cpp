@@ -20,7 +20,6 @@ if ((CI_ETC_QUICKSTART_CONFIG_SH__++ != 0)); then
 fi # include guard
 
 function quickstart::libraries() {
-  echo "bigquery"
   echo "bigtable"
   echo "spanner"
   echo "storage"
@@ -30,11 +29,6 @@ function quickstart::libraries() {
 function quickstart::arguments() {
   local -r library="$1"
   case "${library}" in
-  "bigquery")
-    echo "${GOOGLE_CLOUD_PROJECT}"
-    echo "${GOOGLE_CLOUD_CPP_BIGQUERY_TEST_QUICKSTART_TABLE}"
-    return 0
-    ;;
   "bigtable")
     echo "${GOOGLE_CLOUD_PROJECT}"
     echo "${GOOGLE_CLOUD_CPP_BIGTABLE_TEST_INSTANCE_ID}"
