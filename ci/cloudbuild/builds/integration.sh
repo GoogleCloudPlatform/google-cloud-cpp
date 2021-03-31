@@ -70,11 +70,15 @@ env \
   ./ci/retry-command.sh 3 0 \
   "./google/cloud/bigtable/ci/${EMULATOR_SCRIPT}" \
   bazel test "${args[@]}" "${bigtable_args[@]}"
-
 # TODO(#6083): Run //google/cloud/bigtable/examples:bigtable_grpc_credentials
 # separately w/ an access token.
 
 io::log_h2 "Running Storage integration tests (with emulator)"
+STORAGE_KEYFILE_DIR="$(mktemp -d /dev/shm/storage-key-files.XXXXXXXX)"
+readonly STORAGE_KEYFILE_DIR
+trap 'rm -rf -- "${STORAGE_KEYFILE_DIR}"' EXIT
+readonly GCS_KEYFILE_JSON="${STORAGE_KEYFILE_DIR}/key.json"
+readonly GCS_KEYFILE_P12="${STORAGE_KEYFILE_DIR}/key.p12"
 storage_args=(
   "--test_env=GOOGLE_CLOUD_CPP_STORAGE_GRPC_CONFIG=${GOOGLE_CLOUD_CPP_STORAGE_GRPC_CONFIG:-}"
   "--test_env=GOOGLE_CLOUD_CPP_STORAGE_TEST_BUCKET_NAME=${GOOGLE_CLOUD_CPP_STORAGE_TEST_BUCKET_NAME}"
@@ -86,12 +90,8 @@ storage_args=(
   "--test_env=GOOGLE_CLOUD_CPP_STORAGE_TEST_CMEK_KEY=${GOOGLE_CLOUD_CPP_STORAGE_TEST_CMEK_KEY}"
   "--test_env=GOOGLE_CLOUD_CPP_STORAGE_TEST_SIGNING_KEYFILE=${PROJECT_ROOT}/google/cloud/storage/tests/test_service_account.not-a-test.json"
   "--test_env=GOOGLE_CLOUD_CPP_STORAGE_TEST_SIGNING_CONFORMANCE_FILENAME=${PROJECT_ROOT}/google/cloud/storage/tests/v4_signatures.json"
-
-  # TODO(#6083): Enable tests that require
-  # GOOGLE_CLOUD_CPP_TEST_KEY_FILE_{JSON,P12} files.
-  # "--test_env=GOOGLE_CLOUD_CPP_STORAGE_TEST_KEY_FILE_JSON=${TEST_KEY_FILE_JSON}"
-  # "--test_env=GOOGLE_CLOUD_CPP_STORAGE_TEST_KEY_FILE_P12=${TEST_KEY_FILE_P12}"
-  "-//google/cloud/storage/tests:key_file_integration_test"
+  "--test_env=GOOGLE_CLOUD_CPP_STORAGE_TEST_KEY_FILE_JSON=${GCS_KEYFILE_JSON}"
+  "--test_env=GOOGLE_CLOUD_CPP_STORAGE_TEST_KEY_FILE_P12=${GCS_KEYFILE_P12}"
 
   # Skip these tests until we can figure out how to get them to work. These run
   # against production, not the emulator.
@@ -99,6 +99,20 @@ storage_args=(
   "-//google/cloud/storage/examples:storage_signed_url_v2_samples"
   "-//google/cloud/storage/examples:storage_signed_url_v4_samples"
 )
+# Writes the json and p12 keyfiles that are needed by
+# //google/cloud/storage/tests:key_file_integration_test.
+for type in "JSON" "P12"; do
+  env_var="GOOGLE_CLOUD_CPP_STORAGE_TEST_KEY_FILE_${type}_BASE64"
+  file_var="GCS_KEYFILE_${type}"
+  if [[ -n "${!env_var}" ]]; then
+    io::log "Decoding ${env_var} into ${!file_var}"
+    echo "${!env_var}" | base64 --decode > "${!file_var}"
+    ls -lh "${!file_var}"
+  else
+    io::log "!! WARNING: ${env_var} not found, ${!file_var} will not exist"
+  fi
+done
+echo
 "./google/cloud/storage/ci/${EMULATOR_SCRIPT}" \
   bazel test "${args[@]}" "${storage_args[@]}"
 

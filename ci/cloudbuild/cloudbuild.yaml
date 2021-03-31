@@ -30,6 +30,13 @@ substitutions:
   _CACHE_TYPE: '${_PR_NUMBER:-main}'
   _IMAGE: 'cloudbuild/${_DISTRO}'
 
+availableSecrets:
+  secretManager:
+    - versionName: 'projects/936212892354/secrets/GOOGLE_CLOUD_CPP_STORAGE_TEST_KEY_FILE_JSON_BASE64/versions/latest'
+      env: 'GOOGLE_CLOUD_CPP_STORAGE_TEST_KEY_FILE_JSON_BASE64'
+    - versionName: 'projects/936212892354/secrets/GOOGLE_CLOUD_CPP_STORAGE_TEST_KEY_FILE_P12_BASE64/versions/latest'
+      env: 'GOOGLE_CLOUD_CPP_STORAGE_TEST_KEY_FILE_P12_BASE64'
+
 timeout: 3600s
 
 steps:
@@ -61,6 +68,10 @@ steps:
   env: [
     'BAZEL_REMOTE_CACHE=https://storage.googleapis.com/${_CACHE_BUCKET}/bazel-cache/${_DISTRO}-${_BUILD_NAME}',
     'VCPKG_BINARY_SOURCES=x-gcs,gs://${_CACHE_BUCKET}/vcpkg-cache/${_DISTRO}-${_BUILD_NAME},readwrite'
+  ]
+  secretEnv: [
+    'GOOGLE_CLOUD_CPP_STORAGE_TEST_KEY_FILE_JSON_BASE64',
+    'GOOGLE_CLOUD_CPP_STORAGE_TEST_KEY_FILE_P12_BASE64'
   ]
 
   # Caches some directories in the homedir, in the specified GCS bucket.
