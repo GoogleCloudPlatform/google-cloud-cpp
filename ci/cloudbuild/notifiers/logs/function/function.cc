@@ -149,8 +149,13 @@ void LogError(std::string const& msg) {
   std::cerr << LogFormat("error", msg) << "\n";
 }
 
-void LogInfo(std::string const& msg) {
-  std::cout << LogFormat("info", msg) << "\n";
+void LogDebug(std::string const& msg) {
+  auto const kEnabled = [] {
+    auto const* enabled = std::getenv("ENABLE_DEBUG");
+    return enabled != nullptr;
+  }();
+  if (!kEnabled) return;
+  std::cout << LogFormat("debug", msg) << "\n";
 }
 
 }  // namespace
@@ -183,14 +188,12 @@ void IndexBuildLogs(CloudEvent event) {
   auto const contents = nlohmann::json::parse(data);
   auto const status = message["attributes"].value("status", "");
   if (kSkippedStatus.count(status) != 0) {
-    return LogInfo("skipped because status is " + status);
+    return LogDebug("skipped because status is " + status);
   }
 
   auto const trigger_type =
       contents["substitutions"].value("_TRIGGER_TYPE", "");
-  if (trigger_type != "pr") {
-    return LogInfo("skipping non-PR build");
-  }
+  if (trigger_type != "pr") return LogDebug("skipping non-PR build");
 
   auto const pr = contents["substitutions"].value("_PR_NUMBER", "");
   auto const build_name = contents["substitutions"].value("_BUILD_NAME", "");
