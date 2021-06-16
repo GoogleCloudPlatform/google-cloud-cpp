@@ -26,10 +26,10 @@ all: $(BIN)/quickstart
 
 # Configuration variables to compile and link against the Cloud Spanner C++
 # client library.
-PUBSUB_DEPS := iam_client
-PUBSUB_CXXFLAGS   := $(shell pkg-config $(PUBSUB_DEPS) --cflags)
-PUBSUB_CXXLDFLAGS := $(shell pkg-config $(PUBSUB_DEPS) --libs-only-L)
-PUBSUB_LIBS       := $(shell pkg-config $(PUBSUB_DEPS) --libs-only-l)
+IAM_DEPS := google_cloud_cpp_iam
+IAM_CXXFLAGS   := $(shell pkg-config $(IAM_DEPS) --cflags)
+IAM_CXXLDFLAGS := $(shell pkg-config $(IAM_DEPS) --libs-only-L)
+IAM_LIBS       := $(shell pkg-config $(IAM_DEPS) --libs-only-l)
 
 # A target using the Cloud Pubsub C++ client library.
 $(BIN)/quickstart: quickstart.cc

@@ -31,10 +31,10 @@ int main(int argc, char* argv[]) try {
   std::cout << "Service Accounts for project: " << project_id << "\n";
   int count = 0;
   for (auto const& service_account :
-       client.ListServiceAccounts(absl::StrCat("projects/", project_id))) {
+       client.ListServiceAccounts("projects/" + project_id)) {
     if (!service_account)
       throw std::runtime_error(service_account.status().message());
-    std::cout << service_account.name() << "\n";
+    std::cout << service_account->name() << "\n";
   }
 
   if (count == 0) {
