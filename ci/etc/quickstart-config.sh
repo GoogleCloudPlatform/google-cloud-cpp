@@ -40,7 +40,6 @@ function quickstart::arguments() {
     ;;
   "iam")
     echo "${GOOGLE_CLOUD_PROJECT}"
-    echo "quickstart"
     return 0
     ;;
   "spanner")

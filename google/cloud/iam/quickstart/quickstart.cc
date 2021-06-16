@@ -35,6 +35,7 @@ int main(int argc, char* argv[]) try {
     if (!service_account)
       throw std::runtime_error(service_account.status().message());
     std::cout << service_account->name() << "\n";
+    ++count;
   }
 
   if (count == 0) {
