@@ -23,6 +23,7 @@ source module ci/etc/integration-tests-config.sh
 
 function quickstart::libraries() {
   echo "bigtable"
+  echo "iam"
   echo "spanner"
   echo "storage"
   echo "pubsub"
@@ -34,6 +35,11 @@ function quickstart::arguments() {
   "bigtable")
     echo "${GOOGLE_CLOUD_PROJECT}"
     echo "${GOOGLE_CLOUD_CPP_BIGTABLE_TEST_INSTANCE_ID}"
+    echo "quickstart"
+    return 0
+    ;;
+  "iam")
+    echo "${GOOGLE_CLOUD_PROJECT}"
     echo "quickstart"
     return 0
     ;;
