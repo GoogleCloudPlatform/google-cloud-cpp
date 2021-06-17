@@ -26,15 +26,17 @@ TIMEFORMAT="==> 🕑 vcpkg installed in %R seconds"
 time {
   VCPKG_RELEASE_VERSION="6e024e744e7717c06ddacd5089401109c6298553"
   VCPKG_ROOT_DIR="${HOME}/vcpkg-${VCPKG_RELEASE_VERSION}"
+  WORKSPACE=$(pwd)
   io::log_h2 "Installing vcpkg ${VCPKG_RELEASE_VERSION} -> ${VCPKG_ROOT_DIR}"
   if [[ ! -d "${VCPKG_ROOT_DIR}" ]]; then
     mkdir -p "${VCPKG_ROOT_DIR}"
     # vcpkg needs git history to support versioning, so we clone a recent
     # release tag rather than just extracting a tarball without history.
-     git clone https://github.com/microsoft/vcpkg.git "${VCPKG_ROOT_DIR}"
-     cd "${VCPKG_ROOT_DIR}"
-     git checkout "${VCPKG_RELEASE_VERSION}"
-     cd ..
+    git clone https://github.com/microsoft/vcpkg.git "${VCPKG_ROOT_DIR}"
+    cd "${VCPKG_ROOT_DIR}" || exit
+    git checkout "${VCPKG_RELEASE_VERSION}"
+    cd "${WORKSPACE}" || exit
+    pwd
   fi
   env -C "${VCPKG_ROOT_DIR}" CC="ccache ${CC}" CXX="ccache ${CXX}" \
     ./bootstrap-vcpkg.sh
