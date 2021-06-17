@@ -23,5 +23,6 @@ cc_binary(
     ],
     deps = [
         "@com_github_googleapis_google_cloud_cpp//:experimental-iam",
+        "@com_github_grpc_grpc//:grpc++_base",
     ],
 )
