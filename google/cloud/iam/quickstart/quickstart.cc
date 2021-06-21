@@ -32,15 +32,14 @@ int main(int argc, char* argv[]) try {
   int count = 0;
   for (auto const& service_account :
        client.ListServiceAccounts("projects/" + project_id)) {
-    if (!service_account)
+    if (!service_account) {
       throw std::runtime_error(service_account.status().message());
+    }
     std::cout << service_account->name() << "\n";
     ++count;
   }
 
-  if (count == 0) {
-    std::cout << "No Service Accounts found.\n";
-  }
+  if (count == 0) std::cout << "No Service Accounts found.\n";
   return 0;
 } catch (std::exception const& ex) {
   std::cerr << "Standard exception raised: " << ex.what() << "\n";

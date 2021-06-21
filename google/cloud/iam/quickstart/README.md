@@ -72,7 +72,7 @@ https://cloud.google.com/docs/authentication/production
 3. Run the example, change the place holder to appropriate values:
 
    ```bash
-   bazel run :quickstart -- [GCP PROJECT ID] [TOPIC ID]
+   bazel run :quickstart -- [GCP PROJECT ID]
    ```
 
 ## Using with CMake
@@ -109,7 +109,7 @@ https://cloud.google.com/docs/authentication/production
 4. Run the example, change the place holder to appropriate values:
 
    ```bash
-   .build/quickstart [GCP PROJECT ID] [PUB/SUB TOPIC ID]
+   .build/quickstart [GCP PROJECT ID]
    ```
 
 
