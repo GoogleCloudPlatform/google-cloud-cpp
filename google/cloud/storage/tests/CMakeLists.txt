@@ -16,6 +16,7 @@
 
 set(storage_client_integration_tests
     # cmake-format : sort
+    auto_finalize_integration_test.cc
     bucket_integration_test.cc
     create_client_integration_test.cc
     curl_download_request_integration_test.cc
