@@ -139,7 +139,7 @@ class CurlHandle {
   }
 
   CurlPtr handle_;
-  DebugInfo debug_info_;
+  std::shared_ptr<DebugInfo> debug_info_;
   SocketOptions socket_options_;
 };
 
