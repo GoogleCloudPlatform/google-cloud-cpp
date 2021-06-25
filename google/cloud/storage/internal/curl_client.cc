@@ -111,7 +111,6 @@ std::string HostHeader(Options const& options, char const* service) {
   // using `VPC-SC` (or a proxy) would target `restricted.googleapis.com`, but
   // we need to tell the proxy what is the actual host to hit in the production
   // environment.
-  if (!options.has<RestEndpointOption>()) return {};
   auto const& endpoint = options.get<RestEndpointOption>();
   if (absl::StrContains(endpoint, "googleapis.com")) {
     return absl::StrCat("Host: ", service, ".googleapis.com");
