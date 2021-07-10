@@ -58,7 +58,7 @@ struct AdminEndpointOption {
   using Type = std::string;
 };
 
-/*
+/**
  * The endpoint for instance admin operations, in most scenarios this should
  * have the same value as `AdminEndpointOption`. The most common exception is
  * testing, where the emulator for instance admin operations may be different
@@ -68,7 +68,7 @@ struct InstanceAdminEndpointOption {
   using Type = std::string;
 };
 
-/*
+/**
  * Minimum time in ms to refresh connections before the server has a chance to
  * disconnect them due to being idle.
  */
@@ -76,7 +76,7 @@ struct MinConnectionRefreshOption {
   using Type = std::chrono::milliseconds;
 };
 
-/*
+/**
  * Maximum time in ms to refresh connections before the server has a chance to
  * disconnect them due to being idle.
  */
